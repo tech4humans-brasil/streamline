@@ -2,7 +2,7 @@
   <img width="150px" src="https://github.com/user-attachments/assets/f7d60e5e-e784-4d85-9608-65f6425927ae"/>
 </div>
 
-# 🎓 Streamline - Sistema Flexível para Gestão e Acompanhamento de TCCs
+# 🎓 Streamline - Sistema Flexível para Automação e Gestão de processos administrativos
 
 Streamline é um sistema configurável via low code 🚀, desenvolvido para otimizar a gestão e acompanhamento de atividades. Utilizando tecnologias modernas, este sistema permite a personalização de fluxos, melhorando a comunicação e automatizando processos burocráticos. 📈
 
