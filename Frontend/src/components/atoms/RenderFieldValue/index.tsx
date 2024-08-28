@@ -72,6 +72,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
         {value
           .map(
             (el) =>
+              // @ts-ignore
               field?.options?.find((option) => option?.value === el)?.label
           )
           .join(", ")}
@@ -85,6 +86,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
         <Text fontSize="sm" mr={2}>
           {label}:
         </Text>
+        {/* @ts-ignore */}
         {field?.options?.find((option) => option?.value === value)?.label}
       </Flex>
     );
@@ -109,9 +111,10 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
           {label}:
         </Text>
         {/* @ts-ignore */}
-        {value
-          ?.map(
+        {value?.map(
+            // @ts-ignore
             (el) =>
+              // @ts-ignore
               field?.options?.find((option) => option?.value === el)?.label
           )
           .join(", ")}
@@ -139,6 +142,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
         {label}:
       </Text>
       <Text fontSize="sm" fontWeight={"bold"}>
+        {/* @ts-ignore */}
         {value}
       </Text>
     </Flex>

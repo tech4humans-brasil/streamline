@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Box, Flex, Text, Heading, Divider, Icon } from "@chakra-ui/react";
 import { FaTasks, FaFileAlt, FaWpforms } from "react-icons/fa";
 import { GoTag, GoWorkflow } from "react-icons/go";
-import { BiMailSend } from "react-icons/bi";
+import { BiGitRepoForked, BiMailSend } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { updateTutorials } from "@apis/users";
 import useAuth from "@hooks/useAuth";
@@ -188,6 +188,22 @@ const steps = [
         <Text mt={2}>
           <b>Exemplo de Uso:</b> Após a submissão de um ticket iformar ao
           Discord que o ticket foi criado e notificar o usuário.
+        </Text>
+
+        <Divider my={4} />
+        <Flex align="center" mb={4}>
+          <Icon as={BiGitRepoForked} boxSize={6} color="green.500" mr={4} />
+          <Heading size="sm">Condicional</Heading>
+        </Flex>
+        <Text>
+          Utilizado para realizar ações condicionais com base em informações
+          fornecidas pelo usuário ou por sistemas externos. Com isso é possível
+          criar ramificações no fluxo de trabalho, permitindo que diferentes
+          ações sejam tomadas com base em critérios específicos.
+        </Text>
+        <Text mt={2}>
+          <b>Exemplo de Uso:</b> Se um campo específico for preenchido com
+          "Sim", enviar um email de notificação para o responsável.
         </Text>
       </Box>
     ),

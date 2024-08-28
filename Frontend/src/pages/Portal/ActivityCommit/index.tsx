@@ -22,7 +22,6 @@ import {
 } from "@apis/activity";
 import TextArea from "@components/atoms/Inputs/TextArea";
 import ActivityDetails from "@components/organisms/ActivityDetails";
-import InputUser from "@components/atoms/Inputs/InputUser";
 import ActivityProvider from "@contexts/ActivityContext";
 import { useTranslation } from "react-i18next";
 
