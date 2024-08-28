@@ -113,7 +113,9 @@ export const schema = new Schema<IFormDraft>(
   {
     timestamps: true,
   }
-).index({ parent: 1, status: 1 });
+)
+  .index({ parent: 1, status: 1 })
+  .index({ parent: 1, version: 1 }, { unique: true }).index({ version: -1 });
 
 export default class FormDraft {
   conn: mongoose.Connection;

@@ -17,7 +17,7 @@ const handler: HttpHandler = async (conn, req) => {
       createdAt: 1,
     },
     sort: {
-      createdAt: -1,
+      version: -1,
     },
     populate: [
       {

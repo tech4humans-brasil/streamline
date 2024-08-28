@@ -31,7 +31,7 @@ const handler: HttpHandler = async (conn, req, context) => {
       createdAt: 1,
     },
     sort: {
-      createdAt: -1,
+      version: -1,
     },
   });
 
