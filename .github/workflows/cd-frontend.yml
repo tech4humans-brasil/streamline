@@ -12,6 +12,7 @@ env:
   ARTIFACT_NAME: build-${{ github.event.repository.name }}frontend-${{ github.run_id }}
   OUTPUT_PATH: /dist
   CI: false
+  NODE_OPTIONS: "--max_old_space_size=4096"
 
 jobs:
   install:
