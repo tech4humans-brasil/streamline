@@ -1,4 +1,3 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 
@@ -13,17 +12,6 @@ export default ({ mode }) => {
   return defineConfig({
     plugins: [
       react(),
-      sentryVitePlugin({
-        org: "unifei-ut",
-        project: "javascript-react",
-        disable: mode === "development",
-        authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
-        telemetry: false,
-        release: {
-          dist: "main",
-          name: "main",
-        },
-      }),
     ],
   
     resolve: {
