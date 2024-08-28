@@ -180,8 +180,8 @@ export default class Http {
       if (this.conn) {
         if (LOGGING) {
           this.log.response_at = new Date();
+          await this.log.save();
         }
-        await this.log.save();
       }
       // await mongo.disconnect(this.conn);
     }
