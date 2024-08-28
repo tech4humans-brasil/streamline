@@ -80,7 +80,7 @@ jobs:
           VITE_GA_TOKEN: ${{ secrets.GA_TOKEN }}
         run: |
               cd ${{ env.PROJECT_PATH }}
-              npm run build --max-old-space-size=4096
+              npm run build
         
       - name: "Zip build artifact"
         shell: bash
