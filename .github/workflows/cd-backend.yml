@@ -149,7 +149,7 @@ jobs:
         uses: Azure/functions-action@v1
         id: deployFunctionApp
         with:
-          app-name: "streamline-services "
+          app-name: "dev-streamline-services"
           slot-name: "production"
           package: .
           publish-profile: ${{ secrets.PUBLISH_PROFILE }}
