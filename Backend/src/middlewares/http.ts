@@ -60,6 +60,8 @@ type callbackSchema = (schema: typeof yup) => {
   params?: yup.ObjectSchema<yup.AnyObject>;
 };
 
+const LOGGING = process.env.LOGGING === "true";
+
 export default class Http {
   private handler: HttpHandler;
   private isPublic: boolean = false;
@@ -119,21 +121,23 @@ export default class Http {
 
       if (user?.slug) {
         this.conn = mongo.connect(user.slug);
-        this.log = await new LogRepository(this.conn).create({
-          route: this.name,
-          data: {
-            body,
-            query,
-            params,
-            headers,
-          },
-          level: "info",
-          timestamp: new Date(),
-          user: {
-            _id: user.id,
-            name: user.name,
-          },
-        });
+        if (LOGGING) {
+          this.log = await new LogRepository(this.conn).create({
+            route: this.name,
+            data: {
+              body,
+              query,
+              params,
+              headers,
+            },
+            level: "info",
+            timestamp: new Date(),
+            user: {
+              _id: user.id,
+              name: user.name,
+            },
+          });
+        }
       }
 
       return await this.handler(
@@ -155,7 +159,7 @@ export default class Http {
         return res.unauthorized("Token expired in " + error.expiredAt);
       }
 
-      if (this.conn) {
+      if (this.conn && LOGGING) {
         this.log.level = "error";
         this.log.data = {
           ...this.log.data,
@@ -166,7 +170,7 @@ export default class Http {
         };
       }
 
-      Sentry.captureException(error);
+      // Sentry.captureException(error);
       if (error.status) {
         return res.error(error.status, null, error.message);
       }
