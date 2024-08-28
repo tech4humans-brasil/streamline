@@ -178,7 +178,9 @@ export default class Http {
       return res.internalServerError();
     } finally {
       if (this.conn) {
-        this.log.response_at = new Date();
+        if (LOGGING) {
+          this.log.response_at = new Date();
+        }
         await this.log.save();
       }
       // await mongo.disconnect(this.conn);
