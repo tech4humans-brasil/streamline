@@ -10,7 +10,6 @@ import { isAxiosError } from "axios";
 import { ErrorBoundary } from "react-error-boundary";
 import FallbackRender from "./fallback-error";
 import ReactGA from "react-ga4";
-import "@services/sentry.ts";
 import "./i18n";
 
 ReactGA.initialize(import.meta.env.VITE_GA_TOKEN);
