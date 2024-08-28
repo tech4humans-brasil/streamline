@@ -47,7 +47,7 @@ export const schema: Schema = new Schema<IUser>(
       },
     ],
     institute: {
-      type: instituteSchema,
+      type: Object,
       required: true,
     },
     tutorials: [{ type: String }],
