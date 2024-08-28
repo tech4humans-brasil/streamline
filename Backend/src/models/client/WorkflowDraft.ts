@@ -184,7 +184,9 @@ export const schemaBase = new Schema<IWorkflowDraft>(
 
 export const schema = schemaBase.clone();
 
-schema.index({ parent: 1, version: -1 }, { unique: true });
+schema
+  .index({ parent: 1, version: -1 }, { unique: true })
+  .index({ version: -1 });
 
 export default class WorkflowDraft {
   conn: mongoose.Connection;
