@@ -226,7 +226,7 @@ export const schema: Schema = new Schema<IActivity>(
       type: String,
       required: true,
       enum: Object.values(IActivityState),
-      default: IActivityState.committed,
+      default: IActivityState.processing,
     },
     users: [{ type: userSchema, required: true }],
     finished_at: { type: Date, required: false, default: null },

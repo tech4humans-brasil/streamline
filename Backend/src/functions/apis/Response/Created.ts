@@ -10,6 +10,11 @@ import ActivityRepository from "../../../repositories/Activity";
 import BlobUploader from "../../../services/upload";
 import AnswerRepository from "../../../repositories/Answer";
 import ResponseUseCases from "../../../use-cases/Response";
+import { IActivityStepStatus } from "../../../models/client/Activity";
+import sendNextQueue from "../../../utils/sendNextQueue";
+import sbusOutputs from "../../../utils/sbusOutputs";
+import WorkflowDraftRepository from "../../../repositories/WorkflowDraft";
+import WorkflowRepository from "../../../repositories/Workflow";
 
 interface IUser {
   _id: ObjectId;
@@ -23,7 +28,7 @@ type DtoCreated = {
   [key: string]: File | string | Array<string> | IUser | Array<IUser>;
 };
 
-const handler: HttpHandler = async (conn, req) => {
+const handler: HttpHandler = async (conn, req, context) => {
   const rest = req.body as DtoCreated;
   const { description } = rest;
 
@@ -31,6 +36,8 @@ const handler: HttpHandler = async (conn, req) => {
   const formDraftRepository = new FormDraftRepository(conn);
   const userRepository = new UserRepository(conn);
   const activityRepository = new ActivityRepository(conn);
+  const workflowRepository = new WorkflowRepository(conn);
+  const workflowDraftRepository = new WorkflowDraftRepository(conn);
 
   const form = (
     await formRepository.findOpenForms({
@@ -45,7 +52,14 @@ const handler: HttpHandler = async (conn, req) => {
     return res.notFound("Form not found");
   }
 
-  const formDraft = await formDraftRepository.findById({ id: form.published });
+  const [workflow, formDraft] = await Promise.all([
+    workflowRepository.findById({ id: form.workflow }),
+    formDraftRepository.findById({ id: form.published }),
+  ]);
+
+  if (!workflow) {
+    return res.notFound("Workflow not found");
+  }
 
   if (!formDraft) {
     return res.notFound("Form draft not found");
@@ -83,7 +97,7 @@ const handler: HttpHandler = async (conn, req) => {
 
   const answerRepository = new AnswerRepository(conn);
 
-  await answerRepository.updateMany({
+  const answers = answerRepository.updateMany({
     where: {
       form: form._id,
       user: req.user.id,
@@ -94,6 +108,42 @@ const handler: HttpHandler = async (conn, req) => {
       submitted: true,
     },
   });
+
+  const workflowDraft = await workflowDraftRepository.findById({
+    id: workflow.published,
+    select: { steps: 1 },
+  });
+
+  const firstStep = workflowDraft.steps.find((step) => step.id === "start");
+
+  if (!firstStep) {
+    return res.error(400, {}, "Invalid workflow");
+  }
+
+  activity.workflows.push({
+    workflow_draft: workflowDraft,
+    steps: [
+      {
+        step: firstStep._id,
+        status: IActivityStepStatus.inProgress,
+      },
+    ],
+  });
+
+  await sendNextQueue({
+    conn,
+    context,
+    activity,
+  }).catch((error) => {
+    console.error("Error sending to queue", error);
+    throw new Error(error);
+  });
+
+  activity.workflows[0].steps[0].status = IActivityStepStatus.finished;
+
+  await activity.save();
+
+  await answers;
 
   return res.created(activity);
 };
@@ -113,5 +163,6 @@ export default new Http(handler)
     options: {
       methods: ["POST"],
       route: "response/{form_id}/created",
+      extraOutputs: sbusOutputs,
     },
   });

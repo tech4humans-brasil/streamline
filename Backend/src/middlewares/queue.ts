@@ -152,26 +152,6 @@ export default class QueueWrapper<TMessage> {
             return activity.save();
           });
       }
-      await new Activity(conn)
-        .model()
-        .findById(message.activity_id)
-        .then((activity) => {
-          const activityWorkflowIndex = activity.workflows.findIndex(
-            (workflow) =>
-              workflow._id.toString() === message.activity_workflow_id
-          );
-          const activityStepIndex = activity.workflows[
-            activityWorkflowIndex
-          ].steps.findIndex(
-            (step) => step._id.toString() === message.activity_step_id
-          );
-
-          activity.workflows[activityWorkflowIndex].steps[
-            activityStepIndex
-          ].status = IActivityStepStatus.error;
-
-          return activity.save();
-        });
 
       return Promise.reject(error);
     }

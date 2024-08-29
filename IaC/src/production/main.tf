@@ -13,10 +13,8 @@ provider "azurerm" {
 }
 
 locals {
-  cosmos_connection_string = azurerm_cosmosdb_account.cosmos.connection_strings[0]
-  cosmos_connection_parts  = split("?", local.cosmos_connection_string)
-  MONGO_URI                = local.cosmos_connection_parts[0]
-  MONGO_PARAMS             = length(local.cosmos_connection_parts) > 1 ? local.cosmos_connection_parts[1] : ""
+  MONGO_URI                = ""
+  MONGO_PARAMS             = ""
 }
 
 
@@ -39,7 +37,7 @@ resource "azurerm_servicebus_namespace" "sbus" {
 }
 
 resource "azurerm_servicebus_queue" "send_email" {
-  name                = "dev-send_email"
+  name                = "send_email"
   namespace_id = azurerm_servicebus_namespace.sbus.id
   enable_partitioning = false
   max_delivery_count = 10
@@ -51,7 +49,7 @@ resource "azurerm_servicebus_queue" "send_email" {
 }
 
 resource "azurerm_servicebus_queue" "change_status" {
-  name                = "dev-change_status"
+  name                = "change_status"
   namespace_id = azurerm_servicebus_namespace.sbus.id
   enable_partitioning = false
   max_delivery_count = 10
@@ -63,7 +61,7 @@ resource "azurerm_servicebus_queue" "change_status" {
 }
 
 resource "azurerm_servicebus_queue" "swap_workflow" {
-  name                = "dev-swap_workflow"
+  name                = "swap_workflow"
   namespace_id = azurerm_servicebus_namespace.sbus.id
   enable_partitioning = false
   max_delivery_count = 10
@@ -75,7 +73,7 @@ resource "azurerm_servicebus_queue" "swap_workflow" {
 }
 
 resource "azurerm_servicebus_queue" "interaction" {
-  name                = "dev-interaction"
+  name                = "interaction"
   namespace_id = azurerm_servicebus_namespace.sbus.id
   enable_partitioning = false
   max_delivery_count = 10
@@ -87,7 +85,7 @@ resource "azurerm_servicebus_queue" "interaction" {
 }
 
 resource "azurerm_servicebus_queue" "interaction_process" {
-  name                = "dev-interaction_process"
+  name                = "interaction_process"
   namespace_id = azurerm_servicebus_namespace.sbus.id
   enable_partitioning = false
   max_delivery_count = 10
@@ -99,7 +97,7 @@ resource "azurerm_servicebus_queue" "interaction_process" {
 }
 
 resource "azurerm_servicebus_queue" "web_request" {
-  name                = "dev-web_request"
+  name                = "web_request"
   namespace_id = azurerm_servicebus_namespace.sbus.id
   enable_partitioning = false
   max_delivery_count = 10
@@ -111,7 +109,7 @@ resource "azurerm_servicebus_queue" "web_request" {
 }
 
 resource "azurerm_servicebus_queue" "conditional" {
-  name                = "dev-conditional"
+  name                = "conditional"
   namespace_id = azurerm_servicebus_namespace.sbus.id
   enable_partitioning = false
   max_delivery_count = 10
@@ -178,40 +176,6 @@ resource "azurerm_resource_group" "rg_mongo" {
   location = "eastus2"
 }
 
-resource "azurerm_cosmosdb_account" "cosmos" {
-  kind                = "MongoDB"
-  location            =  azurerm_resource_group.rg_mongo.location
-  name                = "dev-streamline-mongo"
-  offer_type          = "Standard"
-  resource_group_name = azurerm_resource_group.rg_mongo.name
-  backup {
-    type = "Periodic"
-    storage_redundancy = "Local"
-    interval_in_minutes         = 240     
-    retention_in_hours          = 8        
-  }
-  minimal_tls_version = "Tls12"
-  capacity {
-    total_throughput_limit = 500
-  }
-  tags = {
-    defaultExperience       = "Azure Cosmos DB for MongoDB API"
-    hidden-cosmos-mmspecial = ""
-  }
-  consistency_policy {
-    consistency_level = "Session"
-  }
-  geo_location {
-    failover_priority = 0
-    location          = "eastus2"
-  }
-
-  depends_on = [
-    azurerm_resource_group.rg_mongo
-  ]
-}
-
-
 resource "azurerm_linux_function_app" "func1" {
   name                       = "dev-streamline-services"
   resource_group_name = azurerm_resource_group.rg_functions.name
@@ -241,7 +205,7 @@ resource "azurerm_linux_function_app" "func1" {
   site_config {
     cors {
       allowed_origins     = [azurerm_static_web_app.static.default_host_name, "streamline.hml-tech4h.com.br"]
-      support_credentials = false
+      support_credentials = true
     }
     application_stack {
       node_version = "20"
@@ -251,7 +215,6 @@ resource "azurerm_linux_function_app" "func1" {
     azurerm_service_plan.ASP-functionsrg-a025,
     azurerm_storage_account.storage,
     azurerm_servicebus_namespace.sbus,
-    azurerm_cosmosdb_account.cosmos,
     azurerm_static_web_app.static,
   ]
 }
