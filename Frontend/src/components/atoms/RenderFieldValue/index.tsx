@@ -40,28 +40,28 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
     );
   }
 
-  if (type === FieldTypes.teachers) {
-    if (Array.isArray(value)) {
-      return value.map((el) => (
-        <Flex direction={"column"} key={el.id}>
-          <Text fontSize="sm" mr={2} mb={2}>
-            {label}:
-          </Text>
-          <UserDetails user={el} />
-        </Flex>
-      ));
-    }
+  // if (type === FieldTypes.teachers) {
+  //   if (Array.isArray(value)) {
+  //     return value.map((el) => (
+  //       <Flex direction={"column"} key={el.id}>
+  //         <Text fontSize="sm" mr={2} mb={2}>
+  //           {label}:
+  //         </Text>
+  //         <UserDetails user={el} />
+  //       </Flex>
+  //     ));
+  //   }
 
-    return (
-      <Flex direction={"column"}>
-        <Text fontSize="sm" mr={2} mb={2}>
-          {label}:
-        </Text>
-        {/* @ts-ignore */}
-        <UserDetails user={value} />
-      </Flex>
-    );
-  }
+  //   return (
+  //     <Flex direction={"column"}>
+  //       <Text fontSize="sm" mr={2} mb={2}>
+  //         {label}:
+  //       </Text>
+  //       {/* @ts-ignore */}
+  //       <UserDetails user={value} />
+  //     </Flex>
+  //   );
+  // }
 
   if (type === FieldTypes.checkbox && Array.isArray(value)) {
     return (

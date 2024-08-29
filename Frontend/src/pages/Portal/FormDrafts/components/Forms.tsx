@@ -17,7 +17,7 @@ interface FormEditProps {
   isCreated: boolean;
 }
 
-const FormEdit: React.FC<FormEditProps> = memo(({ formType, isEditing }) => {
+const FormEdit: React.FC<FormEditProps> = memo(({ formType }) => {
   const { control } = useFormContext<formFormSchema>();
 
   const { fields, insert, remove, swap } = useFieldArray({
