@@ -1,7 +1,7 @@
 const html = `
 <div class="email-container">
     <div class="header">
-        <img src="https://github.com/user-attachments/assets/80770cce-faf3-49d1-9c65-42fe614112f3" alt="Edu Flow" />
+        <img src="https://github.com/user-attachments/assets/f7d60e5e-e784-4d85-9608-65f6425927ae" alt="Streamline" />
         <h1>Streamline</h1>
     </div>
     <div class="content">

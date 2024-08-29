@@ -55,11 +55,13 @@ export const schema: Schema = new Schema<IUser>(
   {
     timestamps: true,
   }
-).pre("save", function (next) {
-  if (this.isExternal) {
-    this.matriculation = null;
+).pre<IUser>("save", function (next) {
+  if (!this.isNew) {
+    return next();
   }
-
+  const year = new Date().getFullYear();
+  const timestamp = new Date().getTime().toString().slice(-5);
+  this.matriculation = `${year}${timestamp}`;
   next();
 });
 

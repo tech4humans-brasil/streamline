@@ -31,7 +31,8 @@ const Schema = z
       .min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
     matriculation: z
       .string()
-      .max(15, { message: "Matrícula deve ter no máximo 15 caracteres" }),
+      .max(15, { message: "Matrícula deve ter no máximo 15 caracteres" })
+      .optional(),
     email: z.string().email({ message: "Email inválido" }),
     roles: z.array(z.nativeEnum(IUserRoles)),
     isExternal: z.boolean().optional().default(false),
@@ -221,7 +222,6 @@ export default function User() {
                     id: "matriculation",
                     label: t("common.fields.matriculation"),
                     placeholder: t("common.fields.matriculation"),
-                    required: true,
                   }}
                 />
               )}
@@ -294,13 +294,15 @@ export default function User() {
                 {t("common.cancel")}
               </Button>
 
-              <Button
-                mt={4}
-                onClick={handleResendEmail}
-                isLoading={isPendingReset}
-              >
-                {t("user.resendEmail")}
-              </Button>
+              {isEditing && (
+                <Button
+                  mt={4}
+                  onClick={handleResendEmail}
+                  isLoading={isPendingReset}
+                >
+                  {t("user.resendEmail")}
+                </Button>
+              )}
               <Can permission={isEditing ? "user.update" : "user.create"}>
                 <Button
                   mt={4}

@@ -85,7 +85,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
             </>
           )}
           <Text fontWeight={"bold"} fontSize="md">
-            Alunos
+            Solicitante
           </Text>
           <Flex flexWrap="wrap" gap={4}>
             {activity.users.map((user) => (

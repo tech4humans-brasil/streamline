@@ -300,14 +300,14 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
               }}
             />
 
-            <Select
+            {/* <Select
               input={{
                 label: "Caso não tenha resposta",
                 id: "ifNotExists",
                 placeholder: "Selecione um formulário",
                 options: formsData?.workflows ?? [],
               }}
-            />
+            /> */}
 
             <ConditionalRender form_id={watch("form_id")} />
           </>

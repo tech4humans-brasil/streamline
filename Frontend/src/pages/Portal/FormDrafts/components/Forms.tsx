@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback } from "react";
 import {
   UseFieldArrayInsert,
   useFieldArray,
@@ -9,6 +9,7 @@ import FieldArray from "./FieldArray";
 import { FaPlus } from "react-icons/fa";
 import { formFormSchema } from "../schema";
 import ErrorMessages from "@components/atoms/Inputs/ErrorMessage";
+import { FieldTypes } from "@interfaces/FormDraft";
 
 interface FormEditProps {
   isEditing: boolean;
@@ -17,26 +18,12 @@ interface FormEditProps {
 }
 
 const FormEdit: React.FC<FormEditProps> = memo(({ formType, isEditing }) => {
-  const { control, setValue } = useFormContext<formFormSchema>();
+  const { control } = useFormContext<formFormSchema>();
 
   const { fields, insert, remove, swap } = useFieldArray({
     control,
     name: "fields",
   });
-  
-  useEffect(() => {
-    if (formType === "evaluated" && !isEditing) {
-      const evaluatedFields = fields.filter(
-        (field) => field.type === "evaluated"
-      );
-      const weight = 10 / evaluatedFields.length;
-      evaluatedFields.forEach((field, i) => {
-        if (field.type === "evaluated") {
-          setValue(`fields.${i}.weight`, weight);
-        }
-      });
-    }
-  }, [fields, formType, control, setValue, isEditing]);
 
   return (
     <React.Fragment>
@@ -47,7 +34,7 @@ const FormEdit: React.FC<FormEditProps> = memo(({ formType, isEditing }) => {
       <Heading size="md">Campos do formulário</Heading>
       <Divider />
 
-      <ButtonAdd {...{ formType, insert }} />
+      <ButtonAdd {...{ insert }} />
 
       {fields.map((field, index) => (
         <Flex key={field.id} direction="column" gap="4">
@@ -69,14 +56,12 @@ interface ButtonAddProps {
   insert: UseFieldArrayInsert<formFormSchema, "fields">;
   index?: number;
   length?: number;
-  formType: "created" | "interaction" | "evaluated";
 }
 
 const ButtonAdd: React.FC<ButtonAddProps> = ({
   insert,
   index = 0,
   length = 0,
-  formType,
 }) => {
   const handleAddField = useCallback(() => {
     insert(
@@ -85,7 +70,7 @@ const ButtonAdd: React.FC<ButtonAddProps> = ({
         id: `field-${length}`,
         label: "",
         placeholder: "",
-        type: formType === "evaluated" ? "evaluated" : "text",
+        type: FieldTypes.text,
         required: true,
         system: false,
         value: "",

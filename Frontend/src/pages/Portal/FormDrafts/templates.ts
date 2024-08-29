@@ -9,16 +9,6 @@ const created: Template = {
   type: "created",
   fields: [
     {
-      id: "name",
-      type: "text",
-      required: true,
-      visible: true,
-      system: true,
-      label: "Resumo da solicitação",
-      predefined: null,
-      value: null,
-    },
-    {
       id: "description",
       type: "textarea",
       required: true,
@@ -36,17 +26,11 @@ const interaction: Template = {
   fields: [],
 };
 
-const evaluated: Template = {
-  type: "evaluated",
-  fields: [],
-};
-
 const templates: {
   [key: string]: Template;
 } = {
   created,
   interaction,
-  evaluated,
 };
 
 const keys = Object.keys(templates);

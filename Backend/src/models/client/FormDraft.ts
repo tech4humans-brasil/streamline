@@ -14,8 +14,7 @@ export enum FieldTypes {
   Checkbox = "checkbox",
   Date = "date",
   File = "file",
-  Evaluated = "evaluated",
-  Teacher = "teacher",
+  placeholder = "placeholder",
 }
 
 export enum IFormStatus {

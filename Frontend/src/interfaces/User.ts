@@ -12,7 +12,7 @@ type IUser = {
   email: string;
   isExternal: boolean;
   password: string;
-  matriculation: string;
+  matriculation?: string;
   institute: IInstitute;
   active: boolean;
   roles: IUserRoles[];

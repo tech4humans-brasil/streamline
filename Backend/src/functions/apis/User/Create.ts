@@ -84,13 +84,6 @@ export default new Http(handler)
       password: schema.string().min(6).max(255).optional(),
       email: schema.string().required().email(),
       isExternal: schema.boolean().default(false),
-      matriculation: schema
-        .string()
-        .when("isExternal", ([isExternal], schema) =>
-          isExternal
-            ? schema.notRequired().nullable()
-            : schema.min(6).max(15).required()
-        ),
       roles: schema
         .array(schema.mixed().oneOf(["admin", "student", "teacher"]))
         .required(),

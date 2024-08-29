@@ -13,7 +13,7 @@ export enum FieldTypes {
   multiselect = "multiselect",
   date = "date",
   file = "file",
-  teachers = "teacher",
+  placeholder = "placeholder",
 }
 
 export type IField = {
@@ -29,7 +29,7 @@ export type IField = {
     | "radio"
     | "select"
     | "date"
-    | "evaluated"
+    | "placeholder"
     | "multiselect"
     | "file"
     | "teacher";
