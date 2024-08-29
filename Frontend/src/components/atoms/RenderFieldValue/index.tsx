@@ -1,5 +1,4 @@
 import { Flex, Text } from "@chakra-ui/react";
-import UserDetails from "@components/organisms/ActivityDetails/sections/UserDetails";
 import { FileUploaded } from "@interfaces/Answer";
 import { memo } from "react";
 import FileItem from "../FileItem";
