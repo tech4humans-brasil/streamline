@@ -20,7 +20,7 @@ const GoogleAuth = () => {
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
 
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: samlGoogle,
     onSuccess: ({ data }) => {
       toast({
