@@ -41,8 +41,8 @@ export const handler: HttpHandler = async (_, req, context) => {
   const password = await bcrypt.hash("admin", 10);
 
   const institute = await instituteRepository.create({
-    name: "Instituto de Matemática e Computação",
-    acronym: "IMC",
+    name: acronym,
+    acronym,
     active: true,
   });
 

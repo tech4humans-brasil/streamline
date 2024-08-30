@@ -79,6 +79,7 @@ jobs:
           VITE_BASE_URL: ${{ vars.VITE_BASE_URL }}
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           VITE_GA_TOKEN: ${{ secrets.GA_TOKEN }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         run: |
               cd ${{ env.PROJECT_PATH }}
               npm run build

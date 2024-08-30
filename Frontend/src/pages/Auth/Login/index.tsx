@@ -26,6 +26,7 @@ import SwitchTheme from "@components/molecules/SwitchTheme";
 import { useTranslation } from "react-i18next";
 import LocaleSwap from "@components/atoms/LocaleSwap";
 import { IUserRoles } from "@interfaces/User";
+import GoogleAuth from "@components/molecules/GoogleAuth";
 
 const schema = z.object({
   acronym: z
@@ -198,7 +199,7 @@ const Login: React.FC = () => {
               </Flex>
             </form>
 
-            <Box mt={4}>
+            <Box mt={4} w={"100"}>
               <Text
                 as="span"
                 color="blue.500"
@@ -209,6 +210,9 @@ const Login: React.FC = () => {
               >
                 {t("login.forgot")}
               </Text>
+            </Box>
+            <Box mt={4}>
+              <GoogleAuth />
             </Box>
           </CardBody>
         </Card>

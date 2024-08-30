@@ -12,6 +12,14 @@ export const login = async (data: {
   return response.data;
 };
 
+export const samlGoogle = async (data: {
+  credential: string;
+  client_id: string;
+}): Promise<LoginResponse> => {
+  const response = await api.post<LoginResponse>("/auth/google", data);
+  return response.data;
+};
+
 export const forgotPassword = async (data: {
   email: string;
   acronym: string;
