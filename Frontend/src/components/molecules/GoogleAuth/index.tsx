@@ -1,5 +1,5 @@
 import { samlGoogle } from "@apis/auth";
-import { useToast } from "@chakra-ui/react";
+import { Box, Center, Spinner, useToast } from "@chakra-ui/react";
 import useAuth from "@hooks/useAuth";
 import { IUserRoles } from "@interfaces/JwtData";
 import {
@@ -20,7 +20,7 @@ const GoogleAuth = () => {
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
 
-  const { mutateAsync } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: samlGoogle,
     onSuccess: ({ data }) => {
       toast({
@@ -82,6 +82,21 @@ const GoogleAuth = () => {
         }}
         useOneTap
       />
+
+      {isPending && (
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="rgba(0, 0, 0, 0.5)"
+        >
+          <Center h="100%">
+            <Spinner />
+          </Center>
+        </Box>
+      )}
     </GoogleOAuthProvider>
   );
 };

@@ -8,7 +8,7 @@ import { connect, connectAdmin } from "../../../services/mongo";
 import AdminClient from "../../../models/admin/Client";
 import UserRepository from "../../../repositories/User";
 import { Permissions } from "../../../services/permissions";
-import { IUserRoles } from "../../../models/client/User";
+import { IUserProviders, IUserRoles } from "../../../models/client/User";
 import InstituteRepository from "../../../repositories/Institute";
 
 interface Body {
@@ -21,6 +21,7 @@ interface GoogleUserToken {
   email: string;
   email_verified: boolean;
   name: string;
+  jti: string;
 }
 
 export const handler: HttpHandler = async (_, req, context) => {
@@ -70,6 +71,8 @@ export const handler: HttpHandler = async (_, req, context) => {
       roles: [IUserRoles.student],
       active: true,
       institute: institute.toObject(),
+      providers: [IUserProviders.google],
+      password: await bcrypt.hash(payload.jti, 10),
     });
   }
 

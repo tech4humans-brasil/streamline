@@ -7,6 +7,11 @@ export enum IUserRoles {
   teacher = "teacher",
 }
 
+export enum IUserProviders {
+  self = "self",
+  google = "google",
+}
+
 export type IUser = {
   _id: ObjectId;
   name: string;
@@ -17,6 +22,7 @@ export type IUser = {
   roles: IUserRoles[];
   institute: IInstitute;
   active: boolean;
+  providers: IUserProviders[];
   isExternal: boolean;
   tutorials: string[];
 } & mongoose.Document;
@@ -47,9 +53,17 @@ export const schema: Schema = new Schema<IUser>(
       },
     ],
     institute: {
-      type: Object,
+      type: instituteSchema,
       required: true,
     },
+    providers: [
+      {
+        type: String,
+        required: true,
+        enum: Object.values(IUserProviders),
+        default: IUserProviders.self,
+      },
+    ],
     tutorials: [{ type: String }],
   },
   {
