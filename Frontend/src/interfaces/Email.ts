@@ -4,4 +4,5 @@ export default interface IEmail {
   subject: string;
   htmlTemplate: string;
   cssTemplate: string;
+  project: string;
 }

@@ -27,6 +27,7 @@
       "protocol": "Protocolo",
       "search": "Pesquisar",
       "acronym": "Sigla",
+      "user": "Usuário",
       "email": "E-mail",
       "password": "Senha",
       "newPassword": "Nova senha",
@@ -99,7 +100,8 @@
       "emails": "Clique aqui para criar/editar os templates de emails.",
       "forms": "Clique aqui para criar/editar os formulários.",
       "workflows": "Clique aqui para criar/editar os fluxos.",
-      "reportings": "Clique aqui para criar/editar os relatórios."
+      "reportings": "Clique aqui para criar/editar os relatórios.",
+      "projects": "Clique aqui para criar/editar os projetos."
     }
   },
   "tutorial": {
@@ -155,7 +157,8 @@
     "workflows": "Fluxos",
     "emails": "Templates de e-mail",
     "forms": "Formulários",
-    "reportings": "Relatórios"
+    "reportings": "Relatórios",
+    "projects": "Projetos"
   },
   "table": {
     "noData": "Nenhum dado encontrado",
@@ -334,7 +337,8 @@
     "type": {
       "created": "Criação",
       "interaction": "Interação",
-      "evaluation": "Avaliação"
+      "evaluation": "Avaliação",
+      "evaluated": "Avaliação"
     }
   },
   "form": {
@@ -369,5 +373,22 @@
     "invalid": "Formulário inválido",
     "back": "Voltar",
     "config": "Configuração"
+  },
+  "projects": {
+    "title": "Projetos",
+    "create": "Criar projeto",
+    "cancel": "Cancelar",
+    "success": "Projeto salvo com sucesso",
+    "error": "Erro ao carregar projeto",
+    "select": "Selecione um projeto"
+  },
+  "project": {
+    "create": "Criar projeto",
+    "edit": "Editar projeto",
+    "created": "Projeto criado com sucesso",
+    "edited": "Projeto editado com sucesso",
+    "cancel": "Cancelar",
+    "submit": "Salvar Alterações",
+    "error": "Erro ao salvar projeto"
   }
 }

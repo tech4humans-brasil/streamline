@@ -2,14 +2,14 @@ import { AdminRole } from "./admin";
 import { TeacherRole } from "./teacher";
 import { StudentRole } from "./student";
 
-type Permission = {
+export type IPermission<T> = {
   name: string;
-  permissions: Array<string>;
+  permissions: Array<T>;
 };
 
 export type Role = {
   name: string;
-  permissions: Array<Permission>;
+  permissions: Array<IPermission<string>>;
 };
 
 export const roles = [AdminRole, TeacherRole, StudentRole];

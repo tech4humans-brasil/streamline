@@ -3,18 +3,19 @@ import Response from "@interfaces/Response";
 import IEmail from "@interfaces/Email";
 import api from "@services/api";
 
-type Email = Pick<IEmail, "_id" | "slug" | "subject" | "htmlTemplate" | "cssTemplate">;
+type Email = Pick<
+  IEmail,
+  "_id" | "slug" | "subject" | "htmlTemplate" | "cssTemplate"
+>;
 type ReqEmails = Response<{ emails: Email[] } & IPagination>;
 type ReqEmail = Response<Email>;
 
 export const getEmails = async ({
-  queryKey: [, page = "1", limit = "10"],
+  queryKey: [, query],
 }: {
   queryKey: string[];
 }) => {
-  const res = await api.get<ReqEmails>("/emails", {
-    params: { page, limit },
-  });
+  const res = await api.get<ReqEmails>(`/emails?${query}`);
 
   return res.data.data;
 };
@@ -42,7 +43,7 @@ export const updateEmail = async (data: Email) => {
 };
 
 export const createOrUpdateEmail = async (
-  data: Omit<Email, "_id"> & { _id?: string },
+  data: Omit<Email, "_id"> & { _id?: string }
 ) => {
   if (data?._id) {
     return updateEmail(data as Email);

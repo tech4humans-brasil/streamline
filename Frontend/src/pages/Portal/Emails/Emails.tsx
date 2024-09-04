@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { createOrUpdateEmail, getEmail } from "@apis/email";
 import EmailTemplateHook from "@components/organisms/EmailTemplate/hook";
@@ -33,6 +33,7 @@ const emailSchema = z.object({
     .string()
     .min(3, { message: "Titulo deve ter no mínimo 3 caracteres" })
     .max(100, { message: "Titulo deve ter no máximo 50 caracteres" }),
+  project: z.string().optional().nullable(),
 });
 
 type EmailFormSchema = z.infer<typeof emailSchema>;
@@ -43,6 +44,9 @@ const EmailTemplate: React.FC = () => {
   const navigate = useNavigate();
   const params = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
+  const location = useLocation();
+
+  const project = location.state?.project as string | undefined;
 
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
@@ -117,6 +121,10 @@ const EmailTemplate: React.FC = () => {
   const handleCancel = useCallback(() => {
     reset(email);
   }, [reset, email]);
+
+  useEffect(() => {
+    methods.setValue("project", project);
+  }, [project]);
 
   return (
     <Flex justify="center" align="center" w="100%" direction="column">

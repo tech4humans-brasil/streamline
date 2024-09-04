@@ -15,7 +15,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
 import Switch from "@components/atoms/Inputs/Switch";
 import DraftItem from "@components/molecules/DraftItem";
@@ -45,6 +45,7 @@ const statusSchema = z
       close: z.string().nullable(),
     }),
     active: z.boolean().default(true),
+    project: z.string().optional().nullable(),
     description: z
       .string()
       .max(255, "O tamanho máximo é 255 caracteres")
@@ -84,6 +85,9 @@ export default function Workflow() {
   const navigate = useNavigate();
   const params = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
+  const location = useLocation();
+
+  const project = location.state?.project as string | undefined;
 
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
@@ -153,6 +157,10 @@ export default function Workflow() {
   }, [form, reset]);
 
   useEffect(() => {}, [errors]);
+
+  useEffect(() => {
+    methods.setValue("project", project);
+  }, [project]);
 
   const formType = watch("type");
   const isCreated = formType === "created";

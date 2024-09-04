@@ -18,6 +18,7 @@ import {
   BsFileEarmarkText,
   BsPostcardFill,
   BsActivity,
+  BsFolder,
 } from "react-icons/bs";
 import { AiOutlineTeam } from "react-icons/ai";
 import { FaRegEnvelope } from "react-icons/fa";
@@ -60,6 +61,10 @@ const steps: JoyrideSteps = [
   {
     target: "#workflows",
     content: "navbar.joyride.workflows",
+  },
+  {
+    target: "#projects",
+    content: "navbar.joyride.projects",
   },
   {
     target: "#reportings",
@@ -122,6 +127,16 @@ function Sidebar() {
             label="title.activities"
             icon={BsActivity}
             active={location.pathname === "/portal/activities"}
+          />
+        </Can>
+
+        <Can permission="project.view">
+          <NavLink
+            id="projects"
+            to="/portal/projects"
+            label="title.projects"
+            icon={BsFolder}
+            active={location.pathname === "/portal/projects"}
           />
         </Can>
 

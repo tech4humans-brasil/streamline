@@ -13,6 +13,7 @@ interface Query {
   active?: boolean;
   name?: string;
   slug?: string;
+  project?: string;
 }
 
 const filterQueryBuilder = new FilterQueryBuilder({
@@ -20,6 +21,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
   active: WhereEnum.BOOLEAN,
   name: WhereEnum.ILIKE,
   slug: WhereEnum.ILIKE,
+  project: { type: WhereEnum.EQUAL, alias: "project" },
 });
 
 const handler: HttpHandler = async (conn, req) => {
@@ -41,7 +43,7 @@ const handler: HttpHandler = async (conn, req) => {
     },
   });
 
-  const total = await new FormRepository(conn).count({ where });
+  const total = await formRepository.count({ where });
   const totalPages = Math.ceil(total / limit);
 
   return res.success({
@@ -75,6 +77,7 @@ export default new Http(handler)
         active: schema.boolean().optional(),
         name: schema.string().min(3).max(255).optional().default(undefined),
         slug: schema.string().min(3).max(255).optional().default(undefined),
+        project: schema.string().optional(),
       })
       .optional(),
   }))

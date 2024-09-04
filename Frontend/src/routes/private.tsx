@@ -25,6 +25,8 @@ import FirstPage from "@pages/Welcome/Firstpage";
 import SecondPage from "@pages/Welcome/SecondPage";
 import Welcome from "@pages/Welcome";
 import NewTicket from "@pages/Portal/NewTicket";
+import Projects from "@pages/Portal/Project";
+import Project from "@pages/Portal/Project/Project";
 
 const routes: RouteType = [
   {
@@ -164,6 +166,21 @@ const routes: RouteType = [
         path: "/portal/new",
         element: <NewTicket />,
         permission: "activity.create",
+      },
+      {
+        path: "/portal/projects/:id?",
+        element: <Projects />,
+        permission: "project.read",
+      },
+      {
+        path: "/portal/project/:id",
+        element: <Project />,
+        permission: "project.update",
+      },
+      {
+        path: "/portal/project",
+        element: <Project />,
+        permission: "project.create",
       },
     ],
   },

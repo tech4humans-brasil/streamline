@@ -4,13 +4,14 @@ import { IStatus } from "../../../models/client/Status";
 import StatusRepository from "../../../repositories/Status";
 
 const handler: HttpHandler = async (conn, req) => {
-  const { name, type } = req.body as IStatus;
+  const { name, type, project } = req.body as IStatus;
 
   const statusRepository = new StatusRepository(conn);
 
   const status = await statusRepository.create({
     name,
     type,
+    project,
   });
 
   status.save();

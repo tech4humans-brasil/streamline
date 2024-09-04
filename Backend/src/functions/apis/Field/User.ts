@@ -1,22 +1,14 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import { IUserRoles } from "../../../models/client/User";
 import UserRepository from "../../../repositories/User";
 
-const handler: HttpHandler = async (conn, req, context) => {
-  const { role } = req.params as { role: IUserRoles };
-
+const handler: HttpHandler = async (conn, req) => {
   const userReposiory = new UserRepository(conn);
 
   const users = await userReposiory.find({
     where: {
       active: true,
       isExternal: false,
-      roles: {
-        $elemMatch: {
-          $eq: role,
-        },
-      },
     },
     select: {
       name: 1,
@@ -36,6 +28,6 @@ export default new Http(handler).configure({
   name: "FieldTeacherList",
   options: {
     methods: ["GET"],
-    route: "field/users/{role}",
+    route: "field/users",
   },
 });

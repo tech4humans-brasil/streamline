@@ -9,7 +9,7 @@ export const getUsersByRole = async ({
 }: {
   queryKey: string[];
 }) => {
-  const res = await api.get<ReqUsers>(`/field/users/${role}`);
+  const res = await api.get<ReqUsers>(`/field/users`);
 
   return res.data.data;
 };

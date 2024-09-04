@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 
 export enum StatusType {
   PROGRESS = "progress",
@@ -10,6 +10,7 @@ export interface IStatus extends mongoose.Document {
   _id: string;
   name: string;
   type: StatusType;
+  project: ObjectId | string | null;
 }
 
 export const schema: Schema = new Schema(
@@ -20,10 +21,16 @@ export const schema: Schema = new Schema(
       required: true,
       enum: ["progress", "done", "canceled"],
     },
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      default: null,
+      index: true,
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export default class Status {

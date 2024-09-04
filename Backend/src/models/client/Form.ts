@@ -18,6 +18,7 @@ export type IForm = {
   published: ObjectId | string | null;
   institute: ObjectId | string | null;
   workflow: ObjectId | string | null;
+  project: ObjectId | string | null;
 } & mongoose.Document;
 
 export const schema = new Schema<IForm>(
@@ -40,6 +41,12 @@ export const schema = new Schema<IForm>(
     description: { type: String, required: false, default: "" },
     published: { type: Schema.Types.ObjectId, ref: "FormDraft", default: null },
     institute: { type: Schema.Types.ObjectId, ref: "Institute", default: null },
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      default: null,
+      index: true,
+    },
   },
   {
     timestamps: true,

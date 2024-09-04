@@ -13,7 +13,7 @@ import {
   Flex,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getStatus, createOrUpdateStatus } from "@apis/status";
 import Text from "@components/atoms/Inputs/Text";
 import Select from "@components/atoms/Inputs/Select";
@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 const statusSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
   type: z.enum(["done", "progress", "canceled"]),
+  project: z.string().optional().nullable(),
 });
 
 type StatusFormSchema = z.infer<typeof statusSchema>;
@@ -41,6 +42,9 @@ const StatusForm: React.FC<StatusFormProps> = ({
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const location = useLocation();
+
+  const project = location.state?.project as string | undefined;
 
   const isEditing = !!id;
 
@@ -101,6 +105,10 @@ const StatusForm: React.FC<StatusFormProps> = ({
   }, [status, reset]);
 
   useEffect(() => {}, [errors]);
+
+  useEffect(() => {
+    methods.setValue("project", project);
+  }, [project]);
 
   return (
     <FormProvider {...methods}>

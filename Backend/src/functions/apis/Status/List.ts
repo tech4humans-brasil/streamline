@@ -11,11 +11,13 @@ interface Query {
   limit?: number;
   name?: string;
   type?: StatusType;
+  project?: string;
 }
 
 const filterQueryBuilder = new FilterQueryBuilder({
   name: WhereEnum.ILIKE,
   type: WhereEnum.ARRAY,
+  project: { type: WhereEnum.EQUAL, alias: "project" },
 });
 
 const handler: HttpHandler = async (conn, req, context) => {
@@ -61,6 +63,7 @@ export default new Http(handler)
           .transform((v) => Number(v)),
         name: schema.string().optional(),
         type: schema.mixed().oneOf(["active", "inactive"]).optional(),
+        project: schema.string().optional(),
       })
       .optional(),
   }))

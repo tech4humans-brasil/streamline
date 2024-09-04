@@ -4,7 +4,8 @@ import { IEmail } from "../../../models/client/Email";
 import EmailRepository from "../../../repositories/Email";
 
 export const handler: HttpHandler = async (conn, req) => {
-  const { slug, htmlTemplate, subject, cssTemplate } = req.body as IEmail;
+  const { slug, htmlTemplate, subject, cssTemplate, project } =
+    req.body as IEmail;
   const emailRepository = new EmailRepository(conn);
 
   const email = await emailRepository.create({
@@ -12,6 +13,7 @@ export const handler: HttpHandler = async (conn, req) => {
     subject,
     htmlTemplate,
     cssTemplate,
+    project,
   });
 
   if (email instanceof Error) {

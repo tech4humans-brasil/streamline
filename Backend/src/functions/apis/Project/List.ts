@@ -1,41 +1,47 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import EmailRepository from "../../../repositories/Email";
-import FilterQueryBuilder, { WhereEnum } from "../../../utils/filterQueryBuilder";
+import StatusRepository from "../../../repositories/Status";
+import { StatusType } from "../../../models/client/Status";
+import FilterQueryBuilder, {
+  WhereEnum,
+} from "../../../utils/filterQueryBuilder";
+import ProjectRepository from "../../../repositories/Project";
 
 interface Query {
   page?: number;
   limit?: number;
-  project?: string;
+  name?: string;
+  type?: StatusType;
 }
 
 const filterQueryBuilder = new FilterQueryBuilder({
-  project: { type: WhereEnum.EQUAL, alias: "project" },
+  name: WhereEnum.ILIKE,
+  type: WhereEnum.ARRAY,
 });
 
-
-export const handler: HttpHandler = async (conn, req, context) => {
+const handler: HttpHandler = async (conn, req, context) => {
   const { page = 1, limit = 10, ...filter } = req.query as Query;
-  const emailRepository = new EmailRepository(conn);
+
+  const projectRepository = new ProjectRepository(conn);
 
   const where = filterQueryBuilder.build(filter);
 
-  const emails = await emailRepository.find({
+  const projects = await projectRepository.find({
     where,
     skip: (page - 1) * limit,
     limit,
   });
 
-  const total = await emailRepository.count({ where });
+  const total = await projectRepository.count({ where });
   const totalPages = Math.ceil(total / limit);
 
   return res.success({
-    emails,
+    projects,
     pagination: {
       page: Number(page),
       total,
       totalPages,
-      count: emails.length + (page - 1) * limit,
+      count: projects.length + (page - 1) * limit,
     },
   });
 };
@@ -58,10 +64,10 @@ export default new Http(handler)
       .optional(),
   }))
   .configure({
-    name: "EmailList",
-    permission: "email.update",
+    name: "ProjectList",
+    permission: "project.create",
     options: {
       methods: ["GET"],
-      route: "emails",
+      route: "projects",
     },
   });

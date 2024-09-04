@@ -11,9 +11,14 @@ export const StudentRole: Role = {
     {
       name: "activity",
       permissions: [
+        "view",
         "create",
         "update",
         "read",
+        "delete",
+        "board-definition",
+        "committed",
+        "accept",
       ],
     },
     {
@@ -27,6 +32,42 @@ export const StudentRole: Role = {
     {
       name: "comment",
       permissions: ["view", "create", "read", "update", "delete"],
+    },
+    {
+      name: "user",
+      permissions: ["read"],
+    },
+    {
+      name: "workflow",
+      permissions: ["read", "create", "update"],
+    },
+    {
+      name: "workflowDraft",
+      permissions: ["read", "create", "publish", "delete"],
+    },
+    {
+      name: "email",
+      permissions: ["read", "create", "update", "delete"],
+    },
+    {
+      name: "status",
+      permissions: ["read", "create", "update", "delete"],
+    },
+    {
+      name: "form",
+      permissions: ["read", "create", "update", "delete"],
+    },
+    {
+      name: "formDraft",
+      permissions: ["read", "create", "publish", "delete"],
+    },
+    {
+      name: "institute",
+      permissions: ["read", "create", "update", "delete"],
+    },
+    {
+      name: "project",
+      permissions: ["view", "read", "create", "update", "delete"],
     },
   ],
 };

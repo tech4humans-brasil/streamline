@@ -25,13 +25,17 @@ const customTheme = {
           default: "#f5f4f5",
           _dark: "#151D32",
         },
+        pageDark: {
+          default: "#FFF",
+          _dark: "#1c2745",
+        },
         card: {
           default: "#FFF",
           _dark: "#292F45",
         },
         cardDark: {
           default: "#F3F3F3",
-          _dark: "#151D32",
+          _dark: "#1c2745",
         },
         navbar: {
           default: "#FFF",

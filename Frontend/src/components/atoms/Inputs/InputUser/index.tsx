@@ -136,8 +136,10 @@ interface InputUserProps {
 
 const InputUser: React.FC<InputUserProps> = ({ input }) => {
   const { data: teachers, isLoading } = useQuery({
-    queryKey: ["field", IUserRoles.teacher],
+    queryKey: ["field", "users"],
     queryFn: getUsersByRole,
+    retry: false,
+    staleTime: 1000 * 60 * 10,
   });
 
   const {

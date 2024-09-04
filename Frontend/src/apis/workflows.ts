@@ -12,13 +12,11 @@ type ReqWorkflows = Response<
 >;
 
 export const getWorkflows = async ({
-  queryKey: [, page = "1", limit = "10"],
+  queryKey: [, query],
 }: {
   queryKey: string[];
 }) => {
-  const res = await api.get<ReqWorkflows>("/workflows", {
-    params: { page, limit },
-  });
+  const res = await api.get<ReqWorkflows>(`/workflows?${query}`);
 
   return res.data.data;
 };
@@ -34,7 +32,7 @@ export const getWorkflow = async ({
 };
 
 export const createWorkflow = async (
-  data: Pick<IWorkflow, "name" | "active">,
+  data: Pick<IWorkflow, "name" | "active">
 ) => {
   const res = await api.post<ReqWorkflow>("/workflow", data);
 
@@ -48,7 +46,7 @@ export const updateWorkflow = async (data: IWorkflow) => {
 };
 
 export const createOrUpdateWorkflow = async (
-  data: Pick<IWorkflow, "name" | "active"> & { _id?: string },
+  data: Pick<IWorkflow, "name" | "active"> & { _id?: string }
 ) => {
   if (data?._id) {
     return updateWorkflow(data as IWorkflow);

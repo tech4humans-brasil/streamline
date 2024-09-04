@@ -15,7 +15,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
 import { createOrUpdateWorkflow, getWorkflow } from "@apis/workflows";
 import Switch from "@components/atoms/Inputs/Switch";
@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 const statusSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
   active: z.boolean().default(true),
+  project: z.string().optional().nullable(),
 });
 
 type StatusFormSchema = z.infer<typeof statusSchema>;
@@ -37,6 +38,9 @@ export default function Workflow() {
   const navigate = useNavigate();
   const params = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
+  const location = useLocation();
+
+  const project = location.state?.project as string | undefined;
 
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
@@ -98,6 +102,10 @@ export default function Workflow() {
   }, [workflow, reset]);
 
   useEffect(() => {}, [errors]);
+
+  useEffect(() => {
+    methods.setValue("project", project);
+  }, [project]);
 
   return (
     <Flex w="100%" my="6" mx="auto" px="6" justify="center">

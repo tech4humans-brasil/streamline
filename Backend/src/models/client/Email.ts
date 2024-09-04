@@ -6,6 +6,7 @@ export interface IEmail extends mongoose.Document {
   subject: string;
   htmlTemplate: string;
   cssTemplate: string;
+  project: string | mongoose.Types.ObjectId;
 }
 
 export const schema = new Schema<IEmail>(
@@ -14,6 +15,7 @@ export const schema = new Schema<IEmail>(
     subject: { type: String, required: true },
     htmlTemplate: { type: String, required: true },
     cssTemplate: { type: String, required: true },
+    project: { type: Schema.Types.ObjectId, ref: "Project" },
   },
   {
     timestamps: true,
