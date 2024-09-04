@@ -1,6 +1,5 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import StatusRepository from "../../../repositories/Status";
 import { StatusType } from "../../../models/client/Status";
 import FilterQueryBuilder, {
   WhereEnum,

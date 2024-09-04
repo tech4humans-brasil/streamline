@@ -1,7 +1,6 @@
 import React from "react";
 import MyActivities from "./components/MyActivities";
 import { Flex } from "@chakra-ui/react";
-import ApprovedActivities from "./components/ActivitiesProcess";
 import OpenForms from "./components/OpenForms";
 import PendingInteractions from "./components/MyPendingInteractions";
 import Can from "@components/atoms/Can";
@@ -38,9 +37,6 @@ const Dashboard: React.FC = () => {
         <OpenForms />
       </Can>
       <MyActivities />
-      <Can permission="activity.committed">
-        <ApprovedActivities />
-      </Can>
 
       <PendingInteractions />
     </Flex>

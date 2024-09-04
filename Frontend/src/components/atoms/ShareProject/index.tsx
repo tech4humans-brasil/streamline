@@ -14,10 +14,11 @@ import {
   Tag,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IProject } from "@interfaces/Project";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { FaPlus, FaShare, FaTrash } from "react-icons/fa";
@@ -58,6 +59,8 @@ interface ShareProjectProps {
 const ShareProject: React.FC<ShareProjectProps> = ({ permissions = [] }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const toast = useToast();
 
   const project = searchParams.get("project");
 
@@ -70,6 +73,20 @@ const ShareProject: React.FC<ShareProjectProps> = ({ permissions = [] }) => {
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: updatePermission,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      onClose();
+      toast({
+        title: "Permissões atualizadas com sucesso",
+        status: "success",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro ao atualizar permissões",
+        status: "error",
+      });
+    },
   });
 
   const allOptions = useMemo(() => {
@@ -167,7 +184,7 @@ const ShareProject: React.FC<ShareProjectProps> = ({ permissions = [] }) => {
           <ModalCloseButton />
           <ModalContent>
             <ModalBody>
-              <form onSubmit={onSubmit}>
+              <form onSubmit={onSubmit} id="share-project">
                 <Flex direction="row" alignItems="end" gap={3} mt="2">
                   <Select
                     input={{
@@ -195,6 +212,7 @@ const ShareProject: React.FC<ShareProjectProps> = ({ permissions = [] }) => {
             </ModalBody>
             <ModalFooter>
               <Button
+                form="share-project"
                 type="submit"
                 isLoading={isPending}
                 colorScheme="blue"

@@ -44,7 +44,7 @@ const handler: HttpHandler = async (conn, req) => {
   });
 
   const institutesPromises = instituteRepository.find({
-    where: { id: institutes.map((institute) => institute._id) },
+    where: { _id: institutes.map((institute) => institute._id) },
     select: {
       _id: 1,
     },
