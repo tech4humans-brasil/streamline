@@ -6,7 +6,7 @@ import useProject from "@hooks/useProject";
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { BsFileEarmarkTextFill } from "react-icons/bs";
-import { FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
+import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
 import { GoWorkflow } from "react-icons/go";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -38,6 +38,7 @@ const List: React.FC = () => {
                       </ProjectItem.Text>
                     </div>
                   </ProjectItem.Body>
+                  <Edit route="form" id={form._id} />
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -61,6 +62,7 @@ const List: React.FC = () => {
                       <ProjectItem.Title>{workflow.name}</ProjectItem.Title>
                     </div>
                   </ProjectItem.Body>
+                  <Edit route="workflow" id={workflow._id} />
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -83,6 +85,7 @@ const List: React.FC = () => {
                       <ProjectItem.Text>{email.subject}</ProjectItem.Text>
                     </div>
                   </ProjectItem.Body>
+                  <Edit route="email" id={email._id} />
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -102,6 +105,7 @@ const List: React.FC = () => {
                     <ProjectItem.Icon>{<FaTags />}</ProjectItem.Icon>
                     <ProjectItem.Title>{status.name}</ProjectItem.Title>
                   </ProjectItem.Body>
+                  <Edit route="status" id={status._id} />
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -136,3 +140,27 @@ const Create: React.FC<{ route: "email" | "workflow" | "status" | "form" }> =
       </Box>
     );
   });
+
+const Edit: React.FC<{
+  route: "email" | "workflow" | "status" | "form";
+  id: string;
+}> = memo(({ route, id }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const project = searchParams.get("project");
+
+  const handleClick = useCallback(() => {
+    navigate(`/portal/${route}/${id}`);
+  }, [navigate, project, route]);
+
+  if (!project) return null;
+
+  return (
+    <Box p={[4, 2]} textAlign="right" mb={4}>
+      <Button onClick={handleClick} variant="outline">
+        <FaPen />
+      </Button>
+    </Box>
+  );
+});
