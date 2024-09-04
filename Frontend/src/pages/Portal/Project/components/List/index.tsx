@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Tag } from "@chakra-ui/react";
+import { Box, Button, Flex, Tag } from "@chakra-ui/react";
 import Accordion from "@components/atoms/Accordion";
 import ProjectItem from "@components/molecules/ProjectItem";
 import Pagination from "@components/organisms/Pagination";
@@ -9,8 +9,6 @@ import { BsFileEarmarkTextFill } from "react-icons/bs";
 import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
 import { GoWorkflow } from "react-icons/go";
 import { useNavigate, useSearchParams } from "react-router-dom";
-
-// import { Container } from './styles';
 
 const List: React.FC = () => {
   const project = useProject();

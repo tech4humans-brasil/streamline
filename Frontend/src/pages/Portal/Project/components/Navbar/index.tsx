@@ -7,7 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Navbar: React.FC = () => {
