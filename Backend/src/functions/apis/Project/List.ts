@@ -30,15 +30,20 @@ const handler: HttpHandler = async (conn, req, context) => {
   const whereUser = req.user.roles.includes(IUserRoles.admin)
     ? {}
     : {
-        or: [
-          { "permissions.user": req.user.id },
-          { "permissions.institute": req.user.institute._id },
+        $and: [
+          {
+            $or: [
+              { "permissions.user": req.user.id },
+              { "permissions.institute": req.user.institute._id },
+            ],
+          },
         ],
       };
 
   const projects = await projectRepository.find({
     where: {
-      and: [where, whereUser],
+      ...where,
+      ...whereUser,
     },
     skip: (page - 1) * limit,
     limit,
