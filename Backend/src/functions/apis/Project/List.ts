@@ -6,6 +6,7 @@ import FilterQueryBuilder, {
   WhereEnum,
 } from "../../../utils/filterQueryBuilder";
 import ProjectRepository from "../../../repositories/Project";
+import { IUserRoles } from "../../../models/client/User";
 
 interface Query {
   page?: number;
@@ -26,8 +27,19 @@ const handler: HttpHandler = async (conn, req, context) => {
 
   const where = filterQueryBuilder.build(filter);
 
+  const whereUser = req.user.roles.includes(IUserRoles.admin)
+    ? {}
+    : {
+        or: [
+          { "permissions.user": req.user.id },
+          { "permissions.institute": req.user.institute._id },
+        ],
+      };
+
   const projects = await projectRepository.find({
-    where,
+    where: {
+      and: [where, whereUser],
+    },
     skip: (page - 1) * limit,
     limit,
   });
