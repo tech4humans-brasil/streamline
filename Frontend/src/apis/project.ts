@@ -27,7 +27,9 @@ export const getProject = async ({
   return res.data.data;
 };
 
-export const createProject = async (data: Omit<Project, "_id">) => {
+export const createProject = async (
+  data: Omit<Project, "_id" | "permissions">
+) => {
   const res = await api.post<ReqProject>("/projects", data);
 
   return res.data.data;
@@ -40,7 +42,7 @@ export const updateProject = async (data: Project) => {
 };
 
 export const createOrUpdateProject = async (
-  data: Omit<Project, "_id"> & { _id?: string }
+  data: Omit<Project, "_id" | "permissions"> & { _id?: string }
 ) => {
   if (data?._id) {
     return updateProject(data as Project);

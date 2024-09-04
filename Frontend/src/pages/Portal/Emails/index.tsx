@@ -25,7 +25,7 @@ const columns = [
   },
 ];
 
-const Action = memo((email: IEmail) => {
+const Action = memo((email: Pick<IEmail, "_id">) => {
   const navigate = useNavigate();
 
   const handleEdit = useCallback(() => {
