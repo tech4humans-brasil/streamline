@@ -1,4 +1,4 @@
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Tag } from "@chakra-ui/react";
 import Accordion from "@components/atoms/Accordion";
 import ProjectItem from "@components/molecules/ProjectItem";
 import Pagination from "@components/organisms/Pagination";
@@ -18,7 +18,11 @@ const List: React.FC = () => {
 
   return (
     <Box w="full" p={[4, 2]}>
-      <Accordion.Container defaultIndex={[0, 1]} allowToggle allowMultiple>
+      <Accordion.Container
+        defaultIndex={[0, 1, 2, 3]}
+        allowToggle
+        allowMultiple
+      >
         <Accordion.Item>
           <Accordion.Button>{t("forms.title")}</Accordion.Button>
           <Accordion.Panel>
@@ -38,7 +42,19 @@ const List: React.FC = () => {
                       </ProjectItem.Text>
                     </div>
                   </ProjectItem.Body>
-                  <Edit route="form" id={form._id} />
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={4}
+                    p={2}
+                  >
+                    <Tag colorScheme={form.active ? "green" : "red"}>
+                      {form.active
+                        ? t("common.fields.active")
+                        : t("common.fields.inactive")}
+                    </Tag>
+                    <Edit route="form" id={form._id} />
+                  </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -62,7 +78,19 @@ const List: React.FC = () => {
                       <ProjectItem.Title>{workflow.name}</ProjectItem.Title>
                     </div>
                   </ProjectItem.Body>
-                  <Edit route="workflow" id={workflow._id} />
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={4}
+                    p={2}
+                  >
+                    <Tag colorScheme={workflow.active ? "green" : "red"}>
+                      {workflow.active
+                        ? t("common.fields.active")
+                        : t("common.fields.inactive")}
+                    </Tag>
+                    <Edit route="workflow" id={workflow._id} />
+                  </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -85,7 +113,14 @@ const List: React.FC = () => {
                       <ProjectItem.Text>{email.subject}</ProjectItem.Text>
                     </div>
                   </ProjectItem.Body>
-                  <Edit route="email" id={email._id} />
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={4}
+                    p={2}
+                  >
+                    <Edit route="email" id={email._id} />
+                  </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -105,7 +140,14 @@ const List: React.FC = () => {
                     <ProjectItem.Icon>{<FaTags />}</ProjectItem.Icon>
                     <ProjectItem.Title>{status.name}</ProjectItem.Title>
                   </ProjectItem.Body>
-                  <Edit route="status" id={status._id} />
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={4}
+                    p={2}
+                  >
+                    <Edit route="status" id={status._id} />
+                  </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
@@ -157,7 +199,7 @@ const Edit: React.FC<{
   if (!project) return null;
 
   return (
-    <Box p={[4, 2]} textAlign="right" mb={4}>
+    <Box textAlign="right">
       <Button onClick={handleClick} variant="outline">
         <FaPen />
       </Button>

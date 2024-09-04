@@ -14,7 +14,7 @@ const Projects: React.FC = () => {
         p="4"
         borderRadius="md"
         direction="column"
-        bg={"bg.pageDark"}
+        bg={"bg.card"}
         margin="0 auto"
         mt={5}
       >

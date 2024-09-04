@@ -37,10 +37,6 @@ const Navbar: React.FC = () => {
     navigate(`/portal/project`);
   }, [navigate]);
 
-  const handleBack = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
-
   const handleAlterProject = useCallback(
     (e: { project: string }) => {
       if (e.project) {
@@ -89,15 +85,6 @@ const Navbar: React.FC = () => {
         <Heading size="md" fontWeight="bold">
           {t(`projects.title`)}
         </Heading>
-        <Button
-          colorScheme="blue"
-          onClick={handleBack}
-          variant="ghost"
-          size="sm"
-          title={t("formDraft.back")}
-        >
-          <FaArrowLeft />
-        </Button>
 
         <Box w="300px">
           <FormProvider {...methods}>

@@ -55,7 +55,7 @@ const Icon: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Box
       mr={4}
-      bg="bg.page"
+      bg="bg.cardDark"
       borderRadius="md"
       w="70px"
       h="70px"
