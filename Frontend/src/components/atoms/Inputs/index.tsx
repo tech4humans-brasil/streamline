@@ -26,6 +26,7 @@ const fieldComponents: {
   placeholder: null;
   text: typeof Text;
   email: typeof Text;
+  date: typeof Text;
 } = {
   select: Select,
   multiselect: Select,
@@ -39,6 +40,7 @@ const fieldComponents: {
   placeholder: null,
   email: Text,
   password: Password,
+  date: Text,
 };
 
 const Inputs: React.FC<Props> = memo(({ fields }) => {

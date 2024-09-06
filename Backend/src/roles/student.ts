@@ -43,7 +43,7 @@ export const StudentRole: Role = {
     },
     {
       name: "workflowDraft",
-      permissions: ["read", "create", "publish", "delete"],
+      permissions: ["view","read", "create", "publish", "delete"],
     },
     {
       name: "email",
@@ -59,7 +59,7 @@ export const StudentRole: Role = {
     },
     {
       name: "formDraft",
-      permissions: ["read", "create", "publish", "delete"],
+      permissions: ["view", "read", "create", "publish", "delete"],
     },
     {
       name: "institute",
