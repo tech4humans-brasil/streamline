@@ -32,7 +32,7 @@ export default new Http(handler)
     }),
   }))
   .configure({
-    name: "projectUpdate",
+    name: "ProjectUpdate",
     permission: "project.update",
     options: {
       methods: ["PUT"],

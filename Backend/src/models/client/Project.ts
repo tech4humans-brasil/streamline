@@ -1,7 +1,15 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
+import { encrypt } from "../../utils/crypto";
+
+export interface IVariable {
+  _id?: string | ObjectId;
+  name: string;
+  type: "variable" | "secret";
+  value: string;
+}
 
 export interface IProject extends mongoose.Document {
-  _id: string;
+  _id: string | ObjectId;
   name: string;
   description: string;
   permissions: {
@@ -14,7 +22,15 @@ export interface IProject extends mongoose.Document {
   forms: ObjectId[];
   workflows: ObjectId[];
   status: ObjectId;
+  variables: mongoose.Types.DocumentArray<IVariable>;
 }
+
+const variableSchema = new Schema<IVariable>({
+  _id: { type: Schema.Types.ObjectId, auto: true },
+  name: { type: String, required: true },
+  type: { type: String, required: true, enum: ["variable", "secret"] },
+  value: { type: String, required: true },
+});
 
 export const schema: Schema = new Schema(
   {
@@ -41,6 +57,7 @@ export const schema: Schema = new Schema(
     forms: [{ type: Schema.Types.ObjectId, ref: "Form" }],
     workflows: [{ type: Schema.Types.ObjectId, ref: "Workflow" }],
     status: { type: Schema.Types.ObjectId, ref: "Status" },
+    variables: [variableSchema],
   },
   {
     timestamps: true,

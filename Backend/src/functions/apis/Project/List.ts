@@ -44,6 +44,12 @@ const handler: HttpHandler = async (conn, req, context) => {
       ...where,
       ...whereUser,
     },
+    select: {
+      _id: 1,
+      name: 1,
+      description: 1,
+      permissions: 1,
+    },
     skip: (page - 1) * limit,
     limit,
   });
@@ -81,7 +87,7 @@ export default new Http(handler)
   }))
   .configure({
     name: "ProjectList",
-    permission: "project.create",
+    permission: "project.read",
     options: {
       methods: ["GET"],
       route: "projects",

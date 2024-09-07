@@ -1,18 +1,22 @@
 import { Connection, Types } from "mongoose";
-import Activity from "../models/client/Activity";
+import Activity, { IActivity } from "../models/client/Activity";
+import { IVariable } from "../models/client/Project";
 
 const replaceSmartValues = async <T extends string | string[]>({
   conn,
   activity_id,
   replaceValues,
+  vars = {},
 }: {
   conn: Connection;
-  activity_id: string;
+  activity_id: string | IActivity;
+  vars?: { [key: string]: string };
   replaceValues: T;
 }): Promise<T> => {
-  const activityBase = (
-    await new Activity(conn).model().findById(activity_id)
-  ).toObject();
+  const activityBase =
+    typeof activity_id === "string"
+      ? (await new Activity(conn).model().findById(activity_id)).toObject()
+      : activity_id;
 
   if (!activityBase) {
     return replaceValues;
@@ -34,10 +38,10 @@ const replaceSmartValues = async <T extends string | string[]>({
 
   if (Array.isArray(replaceValues)) {
     return replaceValues.map((replaceValue) => {
-      return replaceVariables({ activity }, replaceValue);
+      return replaceVariables({ activity, vars }, replaceValue);
     }) as T;
   } else {
-    return replaceVariables({ activity }, replaceValues) as T;
+    return replaceVariables({ activity, vars }, replaceValues) as T;
   }
 };
 

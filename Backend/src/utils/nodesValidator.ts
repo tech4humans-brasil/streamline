@@ -38,8 +38,11 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
   if (type === NodeTypes.WebRequest) {
     return schema.object().shape({
       name: schema.string().required(),
-      url: schema.string().url().required(),
+      url: schema
+        .string()
+        .matches(/^((http|https):\/\/[^ "]+|\$\{\{vars\.[^}]+\}\})/),
       method: schema.string().required(),
+      active: schema.boolean().default(true),
       headers: schema
         .array()
         .of(

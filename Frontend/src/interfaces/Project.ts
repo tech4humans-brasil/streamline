@@ -19,3 +19,9 @@ export interface IProject {
   workflows: string[];
   status: string;
 }
+
+export interface IVariable {
+  name: string;
+  value: string;
+  type: "variable" | "secret";
+}

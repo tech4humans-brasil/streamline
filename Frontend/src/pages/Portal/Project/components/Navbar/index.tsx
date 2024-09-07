@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import VariableForm from "../Variables";
 
 const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -110,6 +111,12 @@ const Navbar: React.FC = () => {
 
       <Flex gap="2" align="center">
         {projectData && <ShareProject permissions={projectData?.permissions} />}
+
+        {projectData && (
+          <Can permission="project.update">
+            <VariableForm />
+          </Can>
+        )}
 
         <Can permission="project.create">
           <Button

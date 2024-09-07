@@ -390,5 +390,14 @@
     "cancel": "Cancelar",
     "submit": "Salvar Alterações",
     "error": "Erro ao salvar projeto"
+  },
+  "variables": {
+    "create": "Cadastrar Variáveis",
+    "name": "Nome",
+    "value": "Valor",
+    "submit": "Salvar",
+    "cancel": "Cancelar",
+    "saved": "Variável salva com sucesso",
+    "error": "Erro ao salvar a variável"
   }
 }

@@ -5,6 +5,10 @@ import QueueWrapper, {
 import { IActivityStepStatus } from "../../models/client/Activity";
 import { IWebRequest, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
+import ProjectRepository from "../../repositories/Project";
+import WorkflowRepository from "../../repositories/Workflow";
+import WorkflowDraftRepository from "../../repositories/WorkflowDraft";
+import { decrypt } from "../../utils/crypto";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
 import axios from "axios";
@@ -68,32 +72,86 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error("Data not found");
     }
 
+    const projectRepository = new ProjectRepository(conn);
+    const workflowRepository = new WorkflowRepository(conn);
+    const workflowDraftRepository = new WorkflowDraftRepository(conn);
+
+    const workflowDraft = await workflowDraftRepository.findById({
+      id: activityWorkflow.workflow_draft._id,
+      select: {
+        parent: 1,
+      },
+    });
+
+    const workflow = await workflowRepository.findById({
+      id: workflowDraft.parent,
+      select: {
+        project: 1,
+      },
+    });
+
+    if (!workflow) {
+      throw new Error("Workflow not found");
+    }
+
+    console.log("workflow", workflow);
+
+    const project = await projectRepository.findById({
+      id: workflow.project,
+      select: {
+        variables: 1,
+      },
+    });
+
+    console.log("project", project);
+
     const { body, field_populate, headers, method, url } = data;
 
-    const bodyReplaced = await replaceSmartValues({
-      conn,
-      activity_id,
-      replaceValues: body,
-    });
-
-    const urlReplaced = await replaceSmartValues({
-      conn,
-      activity_id,
-      replaceValues: url,
-    });
-
-    const headersReplaced = headers?.reduce((acc, header) => {
-      const key = header.key;
-      const value = header.value;
-
-      acc[key] = value;
-
+    const vars = project.variables.reduce((acc, variable) => {
+      acc[variable.name] =
+        variable.type === "variable" ? variable.value : decrypt(variable.value);
       return acc;
     }, {});
 
+    const bodyReplacedPromise = replaceSmartValues({
+      conn,
+      activity_id: activity.toObject(),
+      replaceValues: body,
+      vars,
+    });
+
+    const urlReplacedPromise = replaceSmartValues({
+      conn,
+      activity_id: activity.toObject(),
+      replaceValues: url,
+      vars,
+    });
+
+    const headersReplaced: { key: string; value: string }[] = [];
+
+    for (const header of headers) {
+      headersReplaced.push({
+        key: header.key,
+        value: await replaceSmartValues({
+          conn,
+          activity_id: activity.toObject(),
+          replaceValues: header.value,
+          vars,
+        }),
+      });
+    }
+
+    const [bodyReplaced, urlReplaced] = await Promise.all([
+      bodyReplacedPromise,
+      urlReplacedPromise,
+    ]);
+
     const request = {
       data: await JSON.parse(bodyReplaced),
-      headers: headersReplaced,
+      headers: headersReplaced.reduce((acc, header) => {
+        acc[header.key] = header.value;
+        return acc;
+      }, {}),
       method,
       url: urlReplaced,
     };

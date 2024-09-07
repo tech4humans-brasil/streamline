@@ -9,17 +9,7 @@ import {
   useForm,
   useFormContext,
 } from "react-hook-form";
-import {
-  Button,
-  Divider,
-  Flex,
-  Heading,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Spinner,
-} from "@chakra-ui/react";
+import { Button, Divider, Flex, Heading, Spinner } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Text from "@components/atoms/Inputs/Text";
 import nodesSchema, {
@@ -27,8 +17,7 @@ import nodesSchema, {
 } from "../../../../../pages/Portal/WorkflowDraft/nodesSchema";
 import Switch from "@components/atoms/Inputs/Switch";
 import { getFormWithFields } from "@apis/form";
-import { FaPlusCircle, FaTrash } from "react-icons/fa";
-import StatusForm from "@pages/Portal/Statuses/Form";
+import { FaTrash } from "react-icons/fa";
 import TextArea from "@components/atoms/Inputs/TextArea";
 import { useParams } from "react-router-dom";
 
@@ -168,17 +157,6 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
                   required: true,
                 }}
               />
-
-              <Popover>
-                <PopoverTrigger>
-                  <Button leftIcon={<FaPlusCircle />}></Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverBody>
-                    <StatusForm bg={"transparent"} isModal />
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
             </Flex>
 
             <Switch
@@ -331,6 +309,13 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
                 label: "URL",
                 id: "url",
                 placeholder: "URL",
+                required: true,
+              }}
+            />
+            <Switch
+              input={{
+                label: "Visivel",
+                id: "visible",
                 required: true,
               }}
             />
