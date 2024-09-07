@@ -59,7 +59,7 @@ type VariableFormSchema = z.infer<typeof variableSchema>;
 
 interface VariableFormProps extends CardProps {}
 
-const VariableForm: React.FC<VariableFormProps> = (props) => {
+const VariableForm: React.FC<VariableFormProps> = () => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
