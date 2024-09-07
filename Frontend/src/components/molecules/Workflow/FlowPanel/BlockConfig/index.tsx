@@ -30,6 +30,7 @@ import { getFormWithFields } from "@apis/form";
 import { FaPlusCircle, FaTrash } from "react-icons/fa";
 import StatusForm from "@pages/Portal/Statuses/Form";
 import TextArea from "@components/atoms/Inputs/TextArea";
+import { useParams } from "react-router-dom";
 
 interface BlockConfigProps {
   type: NodeTypes;
@@ -69,6 +70,8 @@ const conditionalOperators = [
 ];
 
 const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
+  const params = useParams<{ workflow_id: string }>();
+
   const methods = useForm<BlockFormInputs>({
     defaultValues: data,
     resolver: zodResolver(nodesSchema[type]),
@@ -82,7 +85,7 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
   } = methods;
 
   const { data: formsData, isLoading: isLoadingForms } = useQuery({
-    queryKey: ["forms", "workflow"],
+    queryKey: ["forms", "workflow", params?.workflow_id ?? ""],
     queryFn: getWorkflowDraftForms,
     retryOnMount: false,
     staleTime: 1000 * 60 * 60,

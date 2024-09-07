@@ -38,18 +38,18 @@ export const getWorkflowDraft = async ({
 };
 
 export const createWorkflow = async (
-  data: Pick<IWorkflowDraft, "steps" | "viewport" | "parent">,
+  data: Pick<IWorkflowDraft, "steps" | "viewport" | "parent">
 ) => {
   const res = await api.post<ReqWorkflow>(
     `/workflow-draft/${data.parent}`,
-    data,
+    data
   );
 
   return res.data.data;
 };
 
 export const publishUnpublish = async (
-  data: Pick<IWorkflowDraft, "_id" | "status">,
+  data: Pick<IWorkflowDraft, "_id" | "status">
 ) => {
   const res = await api.patch<ReqWorkflow>(`/workflow-draft/${data._id}`, data);
 
@@ -57,7 +57,7 @@ export const publishUnpublish = async (
 };
 
 export const createOrUpdateWorkflow = async (
-  data: Pick<IWorkflowDraft, "steps" | "viewport" | "parent">,
+  data: Pick<IWorkflowDraft, "steps" | "viewport" | "parent">
 ) => {
   return createWorkflow(data);
 };
@@ -73,8 +73,16 @@ type ReqWorkflowForms = Response<{
   };
 }>;
 
-export const getWorkflowDraftForms = async () => {
-  const res = await api.get<ReqWorkflowForms>("/workflows-draft/forms");
+export const getWorkflowDraftForms = async ({
+  queryKey: [, , id],
+}: {
+  queryKey: string[];
+}) => {
+  const res = await api.get<ReqWorkflowForms>("/workflows-draft/forms", {
+    params: {
+      workflow: id,
+    },
+  });
 
   return res.data.data;
 };
