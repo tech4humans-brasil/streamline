@@ -1,15 +1,10 @@
-import {
-  Flex,
-  Text,
-  Box,
-  Heading,
-  Divider,
-} from "@chakra-ui/react";
+import { Flex, Text, Box, Heading, Divider } from "@chakra-ui/react";
 import { SwapWorkflowIcon } from "@components/atoms/Workflow/Nodes/SwapWorkflow";
 import { InteractionIcon } from "@components/atoms/Workflow/Nodes/Interaction";
 import { ConditionalIcon } from "@components/atoms/Workflow/Nodes/Conditional";
 import { SendEmailIcon } from "@components/atoms/Workflow/Nodes/SendEmail";
 import { ChangeStatusIcon } from "@components/atoms/Workflow/Nodes/ChangeStatus";
+import { WebRequestIcon } from "@components/atoms/Workflow/Nodes/WebRequest";
 
 const data = [
   {
@@ -38,9 +33,15 @@ const data = [
   },
   {
     icon: <ConditionalIcon />,
-    title: "Avaliação",
+    title: "Condicional",
     description:
       "Avalia o desempenho do aluno em diferentes fases do TCC, com critérios configuráveis.",
+  },
+  {
+    icon: <WebRequestIcon />,
+    title: "Requisição Web",
+    description:
+      "Realiza solicitações HTTP para integração com sistemas externos, como jira, discord...",
   },
 ];
 

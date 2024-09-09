@@ -43,7 +43,7 @@
       "users": "Usuários",
       "finished": "Finalizado",
       "students": "Usuarios",
-      "slug": "Slug",
+      "slug": "Domínio",
       "title": "Titulo",
       "subject": "Assunto",
       "profiles": "Perfis",
@@ -310,7 +310,27 @@
       "draft": "Rascunho",
       "published": "Publicado"
     },
-    "versions": "Versões"
+    "versions": "Versões",
+    "nodes": {
+      "send_email": {
+        "title": "Enviar e-mail"
+      },
+      "conditional": {
+        "title": "Condicional"
+      },
+      "web_request": {
+        "title": "Requisição Web"
+      },
+      "interaction": {
+        "title": "Interação"
+      },
+      "swap_workflow": {
+        "title": "Trocar fluxo"
+      },
+      "change_status": {
+        "title": "Alterar status"
+      }
+    }
   },
   "workflowDraft": {
     "title": "Rascunho",
