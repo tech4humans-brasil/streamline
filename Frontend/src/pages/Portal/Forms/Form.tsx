@@ -48,7 +48,7 @@ const statusSchema = z
     project: z.string().optional().nullable(),
     description: z
       .string()
-      .max(255, "O tamanho máximo é 255 caracteres")
+      .max(512, "O tamanho máximo é 512 caracteres")
       .min(3, "Minimo 3 letras"),
     institute: z.string().optional().nullable(),
   })
