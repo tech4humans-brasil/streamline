@@ -33,19 +33,23 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          pip install -r requirements.txt
 
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: |
+          pushd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          zip -r ${{ env.ARTIFACT_NAME }}.zip *
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: |
-            release.zip
+            ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/${{ env.ARTIFACT_NAME }}.zip
             !venv/
 
   deploy:
@@ -60,15 +64,17 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip     
-        
+        run: |
+          unzip ${{ env.ARTIFACT_NAME }}.zip -d .
+          rm ${{ env.ARTIFACT_NAME }}.zip
+
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
         id: deploy-to-function
         with:
           app-name: 'dev-streamline-assistant'
           slot-name: 'production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: "."
           scm-do-build-during-deployment: true
           enable-oryx-build: true
           publish-profile: ${{ secrets.PUBLISH_PROFILE_ASSISTANT }}
