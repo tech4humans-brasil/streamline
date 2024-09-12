@@ -75,6 +75,4 @@ jobs:
           app-name: 'dev-streamline-assistant'
           slot-name: 'production'
           package: "."
-          scm-do-build-during-deployment: true
-          enable-oryx-build: true
           publish-profile: ${{ secrets.PUBLISH_PROFILE_ASSISTANT }}
