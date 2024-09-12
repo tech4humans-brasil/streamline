@@ -25,7 +25,7 @@ func.HttpResponse.mimetype = "application/json"
     route="ping", auth_level=func.AuthLevel.ANONYMOUS, methods=["get"]
 )
 def ping(req: func.HttpRequest) -> func.HttpResponse:
-    return func.HttpResponse({"response": "pong"}, status_code=200)
+    return func.HttpResponse(json.dumps({"status": "ok"}), status_code=200)
 
 @app.route(
     route="assistant/form", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST"]
