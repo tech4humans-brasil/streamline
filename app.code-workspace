@@ -9,6 +9,13 @@
  {
       "path": "IaC",
     },
+ {
+      "path": "Assistant",
+    },
+ {
+	"name": "Actions",
+      "path": ".github/workflows",
+    }
 
   ],
   "settings": {},

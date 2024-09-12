@@ -17,10 +17,10 @@ jobs:
     name: Install Dependencies
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -30,7 +30,7 @@ jobs:
 
       - name: Cache Dependencies
         id: packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ${{env.PROJECT_PATH}}/node_modules
@@ -49,10 +49,10 @@ jobs:
     needs: [install]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -62,7 +62,7 @@ jobs:
 
       - name: Cache dependencies
         id: packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ${{env.PROJECT_PATH}}/node_modules
@@ -87,7 +87,7 @@ jobs:
           zip -r ${{env.ARTIFACT_NAME}}.zip * 
 
       - name: "Upload Artifact of Function App"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{env.ARTIFACT_NAME}}
           path:  ${{env.PROJECT_PATH}}/${{env.ARTIFACT_NAME}}.zip
@@ -99,10 +99,10 @@ jobs:
   #   needs: [install]
   #   steps:
   #     - name: Checkout code
-  #       uses: actions/checkout@v3
+  #       uses: actions/checkout@v4
 
   #     - name: Use Node.js ${{ env.NODE_VERSION }}
-  #       uses: actions/setup-node@v3
+  #       uses: actions/setup-node@v4
   #       with:
   #         node-version: ${{ env.NODE_VERSION }}
 
@@ -112,7 +112,7 @@ jobs:
 
   #     - name: Cache dependencies
   #       id: packages
-  #       uses: actions/cache@v3
+  #       uses: actions/cache@v4
   #       with:
   #         path: |
   #           ${{env.PROJECT_PATH}}/node_modules
@@ -135,7 +135,7 @@ jobs:
         url: ${{ steps.deployFunctionApp.outputs.app-url }}
     steps:
       - name: "Download Artifact"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
             name: ${{ env.ARTIFACT_NAME }}
 

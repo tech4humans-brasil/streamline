@@ -39,17 +39,14 @@ export type IField = {
   visible: boolean;
   system?: boolean;
   multi?: boolean;
-  created?: string;
   value: any;
   options?:
     | { label: string; value: string }[]
     | { label: string; options: { label: string; value: string }[] }[];
   validation?: { min?: number; max?: number; pattern?: string };
   describe?: string;
-  weight?: number;
   label?: string;
   placeholder?: string;
-  create: boolean;
 };
 
 export type IFormDraft = {
@@ -62,6 +59,13 @@ export type IFormDraft = {
   createdAt: string;
   updatedAt: string;
 } & mongoose.Document;
+
+export const hasOptions = [
+  FieldTypes.Select,
+  FieldTypes.MultiSelect,
+  FieldTypes.Radio,
+  FieldTypes.Checkbox,
+];
 
 export const schema = new Schema<IFormDraft>(
   {
@@ -114,7 +118,8 @@ export const schema = new Schema<IFormDraft>(
   }
 )
   .index({ parent: 1, status: 1 })
-  .index({ parent: 1, version: 1 }, { unique: true }).index({ version: -1 });
+  .index({ parent: 1, version: 1 }, { unique: true })
+  .index({ version: -1 });
 
 export default class FormDraft {
   conn: mongoose.Connection;

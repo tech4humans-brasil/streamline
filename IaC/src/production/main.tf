@@ -39,7 +39,6 @@ resource "azurerm_servicebus_namespace" "sbus" {
 resource "azurerm_servicebus_queue" "send_email" {
   name                = "send_email"
   namespace_id = azurerm_servicebus_namespace.sbus.id
-  enable_partitioning = false
   max_delivery_count = 10
   lock_duration = "PT5M"
 
@@ -51,7 +50,6 @@ resource "azurerm_servicebus_queue" "send_email" {
 resource "azurerm_servicebus_queue" "change_status" {
   name                = "change_status"
   namespace_id = azurerm_servicebus_namespace.sbus.id
-  enable_partitioning = false
   max_delivery_count = 10
   lock_duration = "PT5M"
 
@@ -63,7 +61,6 @@ resource "azurerm_servicebus_queue" "change_status" {
 resource "azurerm_servicebus_queue" "swap_workflow" {
   name                = "swap_workflow"
   namespace_id = azurerm_servicebus_namespace.sbus.id
-  enable_partitioning = false
   max_delivery_count = 10
   lock_duration = "PT5M"
 
@@ -75,7 +72,6 @@ resource "azurerm_servicebus_queue" "swap_workflow" {
 resource "azurerm_servicebus_queue" "interaction" {
   name                = "interaction"
   namespace_id = azurerm_servicebus_namespace.sbus.id
-  enable_partitioning = false
   max_delivery_count = 10
   lock_duration = "PT5M"
 
@@ -87,7 +83,6 @@ resource "azurerm_servicebus_queue" "interaction" {
 resource "azurerm_servicebus_queue" "interaction_process" {
   name                = "interaction_process"
   namespace_id = azurerm_servicebus_namespace.sbus.id
-  enable_partitioning = false
   max_delivery_count = 10
   lock_duration = "PT5M"
 
@@ -99,7 +94,6 @@ resource "azurerm_servicebus_queue" "interaction_process" {
 resource "azurerm_servicebus_queue" "web_request" {
   name                = "web_request"
   namespace_id = azurerm_servicebus_namespace.sbus.id
-  enable_partitioning = false
   max_delivery_count = 10
   lock_duration = "PT5M"
 
@@ -108,16 +102,21 @@ resource "azurerm_servicebus_queue" "web_request" {
   ]
 }
 
+
 resource "azurerm_servicebus_queue" "conditional" {
   name                = "conditional"
   namespace_id = azurerm_servicebus_namespace.sbus.id
-  enable_partitioning = false
   max_delivery_count = 10
   lock_duration = "PT5M"
 
   depends_on = [
     azurerm_servicebus_namespace.sbus
   ]
+}
+
+resource "azurerm_resource_group" "rg_mongo" {
+  name     = "static-data-rg"
+  location = "eastus2"
 }
 
 resource "azurerm_resource_group" "rg_static" {
@@ -141,12 +140,6 @@ resource "azurerm_static_web_app" "static" {
 resource "azurerm_resource_group" "rg_functions" {
   name     = "functions-rg"
   location = "eastus2"
-
-  depends_on = [
-    azurerm_resource_group.rg_static,
-    azurerm_resource_group.rg,
-    azurerm_servicebus_namespace.sbus,
-  ]
 }
 
 resource "azurerm_storage_account" "storage" {
@@ -169,11 +162,6 @@ resource "azurerm_service_plan" "ASP-functionsrg-a025" {
   depends_on = [
     azurerm_resource_group.rg_functions
   ]
-}
-
-resource "azurerm_resource_group" "rg_mongo" {
-  name     = "static-data-rg"
-  location = "eastus2"
 }
 
 resource "azurerm_linux_function_app" "func1" {
@@ -216,5 +204,61 @@ resource "azurerm_linux_function_app" "func1" {
     azurerm_storage_account.storage,
     azurerm_servicebus_namespace.sbus,
     azurerm_static_web_app.static,
+  ]
+}
+
+resource "azurerm_storage_account" "py_storage" {
+  name                     = "assistantstorage"
+  resource_group_name      = azurerm_resource_group.rg_functions.name
+  location                 = azurerm_resource_group.rg_functions.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  depends_on = [
+    azurerm_resource_group.rg_functions
+  ]
+}
+
+resource "azurerm_service_plan" "ASP-functionsrg-a026" {
+  name                = "dev-assistant-serv-plan"
+  location            = azurerm_resource_group.rg_functions.location
+  resource_group_name = azurerm_resource_group.rg_functions.name
+  sku_name = "Y1"
+  os_type = "Linux"
+  depends_on = [
+    azurerm_resource_group.rg_functions
+  ]
+}
+
+resource "azurerm_linux_function_app" "func2" {
+  name                       = "dev-assistant-services"
+  resource_group_name = azurerm_resource_group.rg_functions.name
+  location            = azurerm_resource_group.rg_functions.location
+
+  storage_account_name       = azurerm_storage_account.py_storage.name
+  storage_account_access_key = azurerm_storage_account.py_storage.primary_access_key
+  service_plan_id            = azurerm_service_plan.ASP-functionsrg-a026.id
+  https_only = true
+
+  app_settings = {
+    "FUNCTIONS_WORKER_RUNTIME" = "python",
+    "AZURE_SERVICE_BUS_CONNECTION_STRING" = azurerm_servicebus_namespace.sbus.default_primary_connection_string,
+    "AZURE_STORAGE_CONNECTION_STRING" = azurerm_storage_account.py_storage.primary_connection_string,
+    "JWT_SECRET": "UbF6O#71K5(",
+    "FRONTEND_URL": "streamline.hml-tech4h.com.br",
+    "LOGGING": "false",
+    NODE_ENV = "development"
+  }
+  site_config {
+    cors {
+      allowed_origins     = ["streamline.hml-tech4h.com.br"]
+      support_credentials = true
+    }
+    application_stack {
+      python_version = "3.12"
+    }
+  }
+  depends_on = [
+    azurerm_service_plan.ASP-functionsrg-a026,
+    azurerm_storage_account.py_storage,
   ]
 }
