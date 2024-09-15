@@ -10,6 +10,7 @@ import JwtData from "@interfaces/JwtData";
 import { jwtDecode } from "jwt-decode";
 import api from "@services/api";
 import { useQueryClient } from "@tanstack/react-query";
+import assistant from "@services/assistant";
 
 interface AuthContextType {
   token: JwtData | null;
@@ -42,6 +43,7 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     localStorage.setItem("token", token);
 
     api.defaults.headers["Authorization"] = `Bearer ${token}`;
+    assistant.defaults.headers["Authorization"] = `Bearer ${token}`;
 
     setToken(decodedToken);
 

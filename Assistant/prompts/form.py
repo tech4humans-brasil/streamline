@@ -25,6 +25,7 @@ type IForm = Array<{
   type: field-type;
   required?: boolean;
   multi?: boolean;
+  placeholder: string;
   value: string | null;
   visible: boolean;
   describe?: string | null;
@@ -42,8 +43,8 @@ required: Whether the field is mandatory.
 multi: Whether multiple values can be selected.
 visible: If the field should be visible.
 validation: Add any validation rules, such as min, max, or a pattern for text.
-options: If applicable, provide options for selection-based fields like select, multiselect, radio or checkbox.
-placeholder: Provide placeholder text, if relevant.
+options: Use this for fields like radio, select, checkbox or multiselect.
+placeholder: Provide placeholder text, .
 describe: Add a description of the field if mentioned.
 
 If the basis of the Form exists, you must make the changes only requested in the description.

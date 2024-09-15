@@ -33,6 +33,7 @@ import {
 import { AxiosError } from "axios";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
+import Assistant from "@components/organisms/Assistant";
 
 export default function FormDraft() {
   const { t } = useTranslation();
@@ -274,6 +275,7 @@ export default function FormDraft() {
                   {...{ isEditing, isCreated, isLoading }}
                   formType={formType ?? "created"}
                 />
+                <Assistant />
               </FormProvider>
             )}
           </CardBody>
