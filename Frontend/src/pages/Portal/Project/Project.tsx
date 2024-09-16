@@ -67,7 +67,7 @@ export default function Project() {
     },
   });
 
-  const metohods = useForm<UniversityFormInputs>({
+  const methods = useForm<UniversityFormInputs>({
     resolver: zodResolver(Schema),
   });
 
@@ -75,7 +75,7 @@ export default function Project() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = metohods;
+  } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     await mutateAsync(isEditing ? { ...data, _id: id } : data);
@@ -97,7 +97,7 @@ export default function Project() {
 
   return (
     <Flex w="100%" my="6" mx="auto" px="6" justify="center">
-      <FormProvider {...metohods}>
+      <FormProvider {...methods}>
         <Card
           as="form"
           onSubmit={onSubmit}
