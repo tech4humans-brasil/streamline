@@ -32,7 +32,6 @@ const List: React.FC = () => {
                     <ProjectItem.Icon>
                       <BsFileEarmarkTextFill />
                     </ProjectItem.Icon>
-
                     <div>
                       <ProjectItem.Title>{form.name}</ProjectItem.Title>
                       <ProjectItem.Text>

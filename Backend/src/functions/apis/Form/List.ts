@@ -41,6 +41,9 @@ const handler: HttpHandler = async (conn, req) => {
       active: 1,
       slug: 1,
     },
+    sort: {
+      type: 1,
+    },
   });
 
   const total = await formRepository.count({ where });

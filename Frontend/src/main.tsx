@@ -12,7 +12,7 @@ import FallbackRender from "./fallback-error";
 import ReactGA from "react-ga4";
 import "./i18n";
 
-ReactGA.initialize(import.meta.env.VITE_GA_TOKEN);
+import.meta.env.VITE_GA_TOKEN && ReactGA.initialize(import.meta.env.VITE_GA_TOKEN);
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -10,13 +10,19 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ pagination, isLoading }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const handlePageClick = useCallback(
     (data: { selected: number }) => {
-      setSearchParams({ ...searchParams, page: String(data.selected + 1) });
+      setSearchParams((prev) => {
+        const searchParams = new URLSearchParams(prev);
+
+        searchParams.set("page", (data.selected + 1).toString());
+
+        return searchParams;
+      });
     },
-    [setSearchParams, searchParams]
+    [setSearchParams]
   );
 
   const arrayPages = useMemo(() => {
