@@ -16,7 +16,7 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, isLoading }) => {
     (data: { selected: number }) => {
       setSearchParams({ ...searchParams, page: String(data.selected + 1) });
     },
-    [setSearchParams]
+    [setSearchParams, searchParams]
   );
 
   const arrayPages = useMemo(() => {
