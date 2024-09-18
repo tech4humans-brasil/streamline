@@ -197,7 +197,6 @@ export default function Workflow() {
               input={{
                 id: "active",
                 label: t("common.fields.active"),
-                required: true,
               }}
             />
 
