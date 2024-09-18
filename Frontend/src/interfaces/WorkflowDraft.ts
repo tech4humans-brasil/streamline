@@ -14,6 +14,7 @@ export interface ISendEmail {
   name: string;
   email_id: string;
   to: string[];
+  sender: string;
   visible: boolean;
 }
 

@@ -13,13 +13,14 @@ export const sendEmail = async (
   to: string | Array<string>,
   subject: string,
   html: string,
-  css: string
+  css: string,
+  sender?: string
 ) => {
   const { html: htmlWithCid, attachments } = convertBase64ToCid(html, css);
 
   await sendgrid
     .send({
-      from: process.env.EMAIL_ACCOUNT,
+      from: sender || process.env.SENDGRID_SENDER,
       to,
       subject,
       html: htmlWithCid,

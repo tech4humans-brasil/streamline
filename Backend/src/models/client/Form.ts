@@ -34,6 +34,7 @@ export const schema = new Schema<IForm>(
       type: String,
       required: true,
       enum: Object.values(IFormType),
+      index: -1,
     },
     active: { type: Boolean, required: true, default: true },
     period: { open: Date, close: Date },

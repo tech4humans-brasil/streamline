@@ -63,7 +63,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error("Data not found");
     }
 
-    const { to, email_id } = data;
+    const { to, email_id, sender } = data;
 
     const email = await emailRepository.findById({ id: email_id });
 
@@ -97,7 +97,8 @@ const handler: QueueWrapperHandler<TMessage> = async (
       toReplaced,
       subjectReplaced,
       htmlTemplateReplaced,
-      cssTemplate
+      cssTemplate,
+      sender,
     );
 
     await sendNextQueue({

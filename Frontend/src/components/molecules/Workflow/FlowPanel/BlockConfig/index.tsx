@@ -20,6 +20,7 @@ import { getFormWithFields } from "@apis/form";
 import { FaTrash } from "react-icons/fa";
 import TextArea from "@components/atoms/Inputs/TextArea";
 import { useParams } from "react-router-dom";
+import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 
 interface BlockConfigProps {
   type: NodeTypes;
@@ -94,6 +95,8 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
     reset();
   }, [reset]);
 
+  console.log("erros", methods.formState.errors);
+
   const RenderInputs = useCallback(() => {
     switch (type) {
       case NodeTypes.SendEmail:
@@ -107,7 +110,15 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
                 required: true,
               }}
             />
-            <Select
+            <Text
+              input={{
+                id: "sender",
+                label: "Email do Remetente",
+                type: "email",
+                placeholder: "Caso não queira usar o padrão",
+              }}
+            />
+            <CreatableSelect
               input={{
                 label: "Destinatario",
                 id: "to",

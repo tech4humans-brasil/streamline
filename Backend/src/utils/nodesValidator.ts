@@ -30,6 +30,7 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
       name: schema.string().required(),
       form_id: schema.string().required(),
       to: schema.array().of(schema.string()).required(),
+      sender: schema.string().email().optional().nullable(),
       visible: schema.boolean().default(true),
       waitForOne: schema.boolean().required(),
     });

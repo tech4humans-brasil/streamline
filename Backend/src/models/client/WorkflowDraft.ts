@@ -13,6 +13,7 @@ export enum NodeTypes {
 export interface ISendEmail {
   name: string;
   email_id: string;
+  sender: string;
   to: string[];
   visible: boolean;
 }

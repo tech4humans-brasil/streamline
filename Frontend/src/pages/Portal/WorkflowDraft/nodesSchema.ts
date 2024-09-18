@@ -9,6 +9,7 @@ const schemas: NodeSchemas = {
   [NodeTypes.SendEmail]: z.object({
     name: z.string().min(3, { message: "Nome é obrigatório" }),
     email_id: z.string().min(3, { message: "Selecione um template de email" }),
+    sender: z.string().email().optional().nullable(),
     to: z
       .array(z.string())
       .min(1, { message: "Selecione pelo menos 1 destinatario" }),
