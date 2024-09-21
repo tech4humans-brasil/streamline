@@ -1,4 +1,4 @@
-export function convertDateTime(date?: string | null) {
+export function convertDateTime(date?: string | null | Date): string {
   if (!date) return "Sem data";
 
   try {
@@ -11,6 +11,6 @@ export function convertDateTime(date?: string | null) {
       hour: "2-digit",
     }).format(d);
   } catch (error) {
-    return date;
+    return date.toLocaleString();
   }
 }

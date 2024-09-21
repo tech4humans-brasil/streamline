@@ -14,6 +14,7 @@ export enum FieldTypes {
   date = "date",
   file = "file",
   placeholder = "placeholder",
+  "time" = "time",
 }
 
 export type IField = {
@@ -32,6 +33,7 @@ export type IField = {
     | "placeholder"
     | "multiselect"
     | "file"
+    | "time"
     | "teacher";
   required?: boolean;
   predefined?: "teachers" | "students" | "institutions" | null;

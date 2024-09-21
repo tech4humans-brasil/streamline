@@ -42,7 +42,7 @@ export default new Http(handler)
       type: schema
         .string()
         .required()
-        .oneOf(["created", "interaction", "evaluated"]),
+        .oneOf(["created", "interaction", "time-trigger"]),
       initial_status: schema.string().when("type", ([type], schema) => {
         if (type === "created") {
           return schema.required();

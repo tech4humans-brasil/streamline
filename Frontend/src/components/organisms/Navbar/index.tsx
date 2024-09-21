@@ -28,6 +28,7 @@ import Can from "@components/atoms/Can";
 import Icon from "@components/atoms/Icon";
 import Tutorial, { JoyrideSteps } from "@components/molecules/Tutorial";
 import { useTranslation } from "react-i18next";
+import { BiTime } from "react-icons/bi";
 
 const steps: JoyrideSteps = [
   {
@@ -197,6 +198,16 @@ function Sidebar() {
             label="title.workflows"
             icon={GoWorkflow}
             active={location.pathname === "/portal/workflows"}
+          />
+        </Can>
+
+        <Can permission="schedule.view">
+          <NavLink
+            id="schedules"
+            to="/portal/schedules"
+            label="title.schedules"
+            icon={BiTime}
+            active={location.pathname === "/portal/schedules"}
           />
         </Can>
 

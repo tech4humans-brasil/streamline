@@ -102,6 +102,7 @@ export type IActivity = {
   form: mongoose.Types.ObjectId | string;
   form_draft: IFormDraft;
   finished_at: Date | null;
+  automatic: boolean;
   status: IStatus;
   comments: IComment[];
   workflows: mongoose.Types.DocumentArray<ActivityWorkflow>;
@@ -217,6 +218,7 @@ export const ActivityWorkflowSchema = new Schema<ActivityWorkflow>({
 export const schema: Schema = new Schema<IActivity>(
   {
     name: { type: String, required: true },
+    automatic: { type: Boolean, required: false, default: false },
     form: { type: Schema.Types.ObjectId, ref: "Form", required: true },
     form_draft: { type: schemaFormDraft, required: true },
     protocol: { type: String, required: false, unique: true },

@@ -28,7 +28,7 @@ type DtoCreated = {
   [key: string]: File | string | Array<string> | IUser | Array<IUser>;
 };
 
-const handler: HttpHandler = async (conn, req, context) => {
+export const handler: HttpHandler = async (conn, req, context) => {
   const rest = req.body as DtoCreated;
   const { description } = rest;
 

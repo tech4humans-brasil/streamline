@@ -15,6 +15,7 @@ export enum FieldTypes {
   Date = "date",
   File = "file",
   placeholder = "placeholder",
+  time = "time",
 }
 
 export enum IFormStatus {

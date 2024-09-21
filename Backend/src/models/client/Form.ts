@@ -3,7 +3,7 @@ import mongoose, { ObjectId, Schema } from "mongoose";
 export enum IFormType {
   Created = "created",
   Interaction = "interaction",
-  Evaluated = "evaluated",
+  TimeTrigger = "time-trigger",
 }
 
 export type IForm = {

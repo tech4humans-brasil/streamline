@@ -2,7 +2,9 @@ import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import moment from "moment";
 import FormRepository from "../../../repositories/Form";
-import { IForm } from "../../../models/client/Form";
+import { IForm, IFormType } from "../../../models/client/Form";
+import FormDraftRepository from "../../../repositories/FormDraft";
+import { IFormStatus } from "../../../models/client/FormDraft";
 
 const handler: HttpHandler = async (conn, req) => {
   const { period, ...formData } = req.body as IForm;
@@ -17,7 +19,20 @@ const handler: HttpHandler = async (conn, req) => {
     },
   });
 
-  form.save();
+  if (formData.type === IFormType.TimeTrigger) {
+    const formDraftRepository = new FormDraftRepository(conn);
+
+    const formDraft = await formDraftRepository.create({
+      parent: form._id,
+      status: IFormStatus.Published,
+      fields: [],
+      owner: req.user.id,
+    });
+
+    form.published = formDraft._id;
+  }
+
+  await form.save();
 
   return res.created(form);
 };
@@ -35,7 +50,7 @@ export default new Http(handler)
       type: schema
         .string()
         .required()
-        .oneOf(["created", "interaction", "evaluated"]),
+        .oneOf(["created", "interaction", "time-trigger"]),
       initial_status: schema.string().when("type", ([type], schema) => {
         if (type === "created") {
           return schema.required();

@@ -29,6 +29,7 @@ const fieldTypes = {
   date: "Data",
   file: "Arquivo",
   placeholder: "Requisição Web",
+  time: "Hora",
 };
 
 const fieldOptions = Object.entries(fieldTypes).map(([value, label]) => ({
@@ -50,7 +51,7 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
 
     const { watch, setValue } = useFormContext<formFormSchema>();
 
-    const isEvaluated = watch(`type`) === "evaluated";
+    const isTimeTrigger = watch(`type`) === "time-trigger";
     const fieldType = watch(`fields.${index}.type`);
     const haveOptions = ["select", "multiselect", "radio", "checkbox"].includes(
       fieldType
@@ -187,10 +188,8 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
               label: "Tipo",
               placeholder: "Tipo",
               required: true,
-              options: isEvaluated
-                ? [{ value: "evaluated", label: "Nota de Avaliação" }].concat(
-                    fieldOptions
-                  )
+              options: isTimeTrigger
+                ? [{ value: "placeholder", label: "Requisição Web" }]
                 : fieldOptions,
               isDisabled: field.system,
             }}

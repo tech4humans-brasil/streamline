@@ -38,7 +38,7 @@ const statusSchema = z
       .min(3, "Slug precisa ter pelo menos 3 caracteres"),
     status: z.enum(["draft", "published"]).default("draft"),
     initial_status: z.string().optional().nullable(),
-    type: z.enum(["created", "interaction"]),
+    type: z.enum(["created", "interaction", "time-trigger"]),
     workflow: z.string().optional().nullable(),
     period: z.object({
       open: z.string().nullable(),
@@ -164,6 +164,7 @@ export default function Workflow() {
 
   const formType = watch("type");
   const isCreated = formType === "created";
+  const isTimerTrigger = formType === "time-trigger";
 
   return (
     <Flex w="100%" my="6" mx="auto" px="6" justify="center">
@@ -216,12 +217,13 @@ export default function Workflow() {
                   options: [
                     { label: t("form.type.created"), value: "created" },
                     { label: t("form.type.interaction"), value: "interaction" },
+                    { label: t("form.type.time-trigger"), value: "time-trigger" },
                   ],
                   isDisabled: isEditing,
                 }}
               />
 
-              {isCreated && (
+              {isCreated || isTimerTrigger && (
                 <Select
                   input={{
                     id: "initial_status",

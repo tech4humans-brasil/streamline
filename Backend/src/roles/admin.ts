@@ -68,6 +68,10 @@ export const AdminRole: Role = {
     {
       name: "project",
       permissions: ["view", "read", "create", "update", "delete"],
-    }
+    },
+    {
+      name: "schedule",
+      permissions: ["view", "read", "create", "update", "delete"],
+    },
   ],
 };

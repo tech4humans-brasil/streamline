@@ -27,6 +27,8 @@ import Welcome from "@pages/Welcome";
 import NewTicket from "@pages/Portal/NewTicket";
 import Projects from "@pages/Portal/Project";
 import Project from "@pages/Portal/Project/Project";
+import Schedules from "@pages/Portal/Schedules";
+import Schedule from "@pages/Portal/Schedules/Schedule";
 
 const routes: RouteType = [
   {
@@ -181,6 +183,15 @@ const routes: RouteType = [
         path: "/portal/project",
         element: <Project />,
         permission: "project.create",
+      },
+      {
+        path: "/portal/schedules",
+        element: <Schedules />,
+        permission: "schedule.view",
+      },
+      {
+        path: "/portal/schedule/:id?",
+        element: <Schedule />,
       },
     ],
   },

@@ -24,9 +24,15 @@
     "fields": {
       "name": "Nome",
       "description": "Descrição",
+      "start": "Início",
+      "end": "Fim",
+      "project": "Projeto",
       "protocol": "Protocolo",
+      "timezone": "Fuso horário",
       "search": "Pesquisar",
       "acronym": "Sigla",
+      "form": "Formulário",
+      "expression": "Expressão",
       "user": "Usuário",
       "email": "E-mail",
       "password": "Senha",
@@ -52,6 +58,11 @@
       "matriculation": "Matrícula",
       "external": "Externo",
       "institute": "Grupo",
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "days": "Dias",
+      "weeks": "Semanas",
+      "months": "Meses",
       "university": "Universidade",
       "statusType": {
         "done": "Concluído",
@@ -70,6 +81,19 @@
         "success": "Copiado para área de transferência",
         "error": "Erro ao copiar para área de transferência"
       }
+    },
+    "cron": {
+      "everyMinute": "A cada minuto",
+      "everyHour": "A cada hora",
+      "everyDay": "Todos os dias",
+      "everyWeek": "Toda semana",
+      "everyMonth": "Todo mês",
+      "everyYear": "Todo ano",
+      "atMinute": "No minuto :minute",
+      "atHour": "Às :hour horas",
+      "onDay": "No dia :day",
+      "onWeekday": "Na :weekday",
+      "inMonth": "No mês de :month"
     }
   },
   "input": {
@@ -158,7 +182,8 @@
     "emails": "Templates de e-mail",
     "forms": "Formulários",
     "reportings": "Relatórios",
-    "projects": "Projetos"
+    "projects": "Projetos",
+    "schedules": "Agendamentos"
   },
   "table": {
     "noData": "Nenhum dado encontrado",
@@ -376,7 +401,7 @@
     "type": {
       "created": "Criação",
       "interaction": "Interação",
-      "evaluation": "Avaliação"
+      "time-trigger": "Tempo"
     }
   },
   "formDraft": {
@@ -419,5 +444,13 @@
     "cancel": "Cancelar",
     "saved": "Variável salva com sucesso",
     "error": "Erro ao salvar a variável"
+  },
+  "schedule": {
+    "title": "Agendamentos",
+    "create": "Criar agendamento",
+    "cancel": "Cancelar",
+    "success": "Agendamento salvo com sucesso",
+    "error": "Erro ao carregar agendamento",
+    "edit": "Editar agendamento"
   }
 }

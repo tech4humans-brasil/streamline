@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const formsZodSchema = z.object({
-  type: z.enum(["created", "interaction", "evaluated"]),
+  type: z.enum(["created", "interaction", "time-trigger"]),
   fields: z
     .array(
       z.object({
@@ -25,6 +25,7 @@ const formsZodSchema = z.object({
           "date",
           "file",
           "placeholder",
+          "time",
         ]),
         multi: z.boolean().optional().default(false),
         created: z.boolean().optional().default(false),

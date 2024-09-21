@@ -3,7 +3,7 @@ type IForm = {
   name: string;
   slug: string;
   active: boolean;
-  type: "created" | "interaction" | "evaluated";
+  type: "created" | "interaction" | "time-trigger";
   period: { open?: string | null; close?: string | null };
   description: string;
 } & (
