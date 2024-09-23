@@ -9,10 +9,21 @@ import { BsFileEarmarkTextFill } from "react-icons/bs";
 import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
 import { GoWorkflow } from "react-icons/go";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import cronstrue from "cronstrue/i18n";
 
 const List: React.FC = () => {
   const project = useProject();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const cronTranslation = useCallback(
+    (expression: string) => {
+      return cronstrue.toString(expression, {
+        locale: i18n.language.replace("-", "_"),
+        throwExceptionOnParseError: false,
+      });
+    },
+    [i18n.language]
+  );
 
   return (
     <Box w="full" p={[4, 2]}>
@@ -21,6 +32,43 @@ const List: React.FC = () => {
         allowToggle
         allowMultiple
       >
+        <Accordion.Item>
+          <Accordion.Button>{t("workflows.title")}</Accordion.Button>
+          <Accordion.Panel>
+            <ProjectItem.List>
+              <Create route="workflow" />
+              {project?.workflows?.map((workflow) => (
+                <ProjectItem.Container key={workflow._id}>
+                  <ProjectItem.Body>
+                    <ProjectItem.Icon>
+                      <GoWorkflow />
+                    </ProjectItem.Icon>
+
+                    <div>
+                      <ProjectItem.Title>{workflow.name}</ProjectItem.Title>
+                    </div>
+                  </ProjectItem.Body>
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={4}
+                    p={2}
+                  >
+                    <Tag colorScheme={workflow.active ? "green" : "red"}>
+                      {workflow.active
+                        ? t("common.fields.active")
+                        : t("common.fields.inactive")}
+                    </Tag>
+                    <Edit route="workflow" id={workflow._id} />
+                  </Flex>
+                </ProjectItem.Container>
+              ))}
+            </ProjectItem.List>
+
+            <Pagination pagination={project?.pagination?.workflows} />
+          </Accordion.Panel>
+        </Accordion.Item>
+
         <Accordion.Item>
           <Accordion.Button>{t("forms.title")}</Accordion.Button>
           <Accordion.Panel>
@@ -56,43 +104,6 @@ const List: React.FC = () => {
               ))}
             </ProjectItem.List>
             <Pagination pagination={project?.pagination?.forms} />
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        <Accordion.Item>
-          <Accordion.Button>{t("workflows.title")}</Accordion.Button>
-          <Accordion.Panel>
-            <ProjectItem.List>
-              <Create route="workflow" />
-              {project?.workflows?.map((workflow) => (
-                <ProjectItem.Container key={workflow._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>
-                      <GoWorkflow />
-                    </ProjectItem.Icon>
-
-                    <div>
-                      <ProjectItem.Title>{workflow.name}</ProjectItem.Title>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Tag colorScheme={workflow.active ? "green" : "red"}>
-                      {workflow.active
-                        ? t("common.fields.active")
-                        : t("common.fields.inactive")}
-                    </Tag>
-                    <Edit route="workflow" id={workflow._id} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-
-            <Pagination pagination={project?.pagination?.workflows} />
           </Accordion.Panel>
         </Accordion.Item>
 
@@ -151,6 +162,44 @@ const List: React.FC = () => {
             <Pagination pagination={project?.pagination?.statuses} />
           </Accordion.Panel>
         </Accordion.Item>
+
+        <Accordion.Item>
+          <Accordion.Button>{t("schedule.title")}</Accordion.Button>
+          <Accordion.Panel>
+            <ProjectItem.List>
+              <Create route="schedule" />
+              {project?.schedules?.map((schedule) => (
+                <ProjectItem.Container key={schedule._id}>
+                  <ProjectItem.Body>
+                    <ProjectItem.Icon>
+                      <BsFileEarmarkTextFill />
+                    </ProjectItem.Icon>
+                    <div>
+                      <ProjectItem.Title>{schedule.name}</ProjectItem.Title>
+                      <ProjectItem.Text>
+                        {cronTranslation(schedule.expression)}
+                      </ProjectItem.Text>
+                    </div>
+                  </ProjectItem.Body>
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={4}
+                    p={2}
+                  >
+                    <Tag colorScheme={schedule.active ? "green" : "red"}>
+                      {schedule.active
+                        ? t("common.fields.active")
+                        : t("common.fields.inactive")}
+                    </Tag>
+                    <Edit route="schedule" id={schedule._id} />
+                  </Flex>
+                </ProjectItem.Container>
+              ))}
+            </ProjectItem.List>
+            <Pagination pagination={project?.pagination?.forms} />
+          </Accordion.Panel>
+        </Accordion.Item>
       </Accordion.Container>
     </Box>
   );
@@ -158,30 +207,31 @@ const List: React.FC = () => {
 
 export default List;
 
-const Create: React.FC<{ route: "email" | "workflow" | "status" | "form" }> =
-  memo(({ route }) => {
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+const Create: React.FC<{
+  route: "email" | "workflow" | "status" | "form" | "schedule";
+}> = memo(({ route }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-    const project = searchParams.get("project");
+  const project = searchParams.get("project");
 
-    const handleClick = useCallback(() => {
-      navigate(`/portal/${route}`, { state: { project } });
-    }, [navigate, project, route]);
+  const handleClick = useCallback(() => {
+    navigate(`/portal/${route}`, { state: { project } });
+  }, [navigate, project, route]);
 
-    if (!project) return null;
+  if (!project) return null;
 
-    return (
-      <Box w="full" p={[4, 2]} textAlign="right" mb={4}>
-        <Button onClick={handleClick} variant="outline">
-          <FaPlusCircle />
-        </Button>
-      </Box>
-    );
-  });
+  return (
+    <Box w="full" p={[4, 2]} textAlign="right" mb={4}>
+      <Button onClick={handleClick} variant="outline">
+        <FaPlusCircle />
+      </Button>
+    </Box>
+  );
+});
 
 const Edit: React.FC<{
-  route: "email" | "workflow" | "status" | "form";
+  route: "email" | "workflow" | "status" | "form" | "schedule";
   id: string;
 }> = memo(({ route, id }) => {
   const navigate = useNavigate();
@@ -190,7 +240,7 @@ const Edit: React.FC<{
   const project = searchParams.get("project");
 
   const handleClick = useCallback(() => {
-    navigate(`/portal/${route}/${id}`);
+    navigate(`/portal/${route}/${id}`, { state: { project } });
   }, [navigate, project, route]);
 
   if (!project) return null;

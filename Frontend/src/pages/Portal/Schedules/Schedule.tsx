@@ -11,6 +11,7 @@ import {
   CardHeader,
   Divider,
   Flex,
+  Heading,
   useToast,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -27,6 +28,7 @@ import NumberInput from "@components/atoms/Inputs/NumberInput";
 import cronstrue from "cronstrue/i18n";
 import Switch from "@components/atoms/Inputs/Switch";
 import { convertFromCron, convertToCron } from "@utils/convertCronExpression";
+import { FaArrowLeft } from "react-icons/fa";
 
 const Schema = z
   .object({
@@ -221,9 +223,23 @@ export default function Schedule() {
           maxW="600px"
         >
           <CardHeader>
-            <Box textAlign="center" fontSize="lg" fontWeight="bold">
-              {t(`schedule.${isEditing ? "edit" : "create"}`)}
-            </Box>
+            <Flex align="center" justify="space-between">
+              <Button
+                variant="ghost"
+                onClick={() => navigate(-1)}
+                w="fit-content"
+              >
+                <FaArrowLeft />
+              </Button>
+              <Heading
+                fontSize="2xl"
+                fontWeight="bold"
+                w="100%" 
+                textAlign="center"
+              >
+                {t(`schedule.${isEditing ? "edit" : "create"}`)}
+              </Heading>
+            </Flex>
           </CardHeader>
           <CardBody display="flex" flexDirection="column" gap="4">
             <Text
