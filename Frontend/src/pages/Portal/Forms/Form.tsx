@@ -54,7 +54,7 @@ const statusSchema = z
   })
   .refine(
     (data) => {
-      if (data.type === "created") {
+      if (data.type !== "interaction") {
         return !!data.workflow;
       }
       return true;
@@ -66,7 +66,7 @@ const statusSchema = z
   )
   .refine(
     (data) => {
-      if (data.type === "created") {
+      if (data.type !== "interaction") {
         return !!data.initial_status;
       }
       return true;
@@ -143,6 +143,7 @@ export default function Workflow() {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    // @ts-ignore
     await mutateAsync(isEditing ? { ...data, _id: id } : data);
   });
 
@@ -217,23 +218,27 @@ export default function Workflow() {
                   options: [
                     { label: t("form.type.created"), value: "created" },
                     { label: t("form.type.interaction"), value: "interaction" },
-                    { label: t("form.type.time-trigger"), value: "time-trigger" },
+                    {
+                      label: t("form.type.time-trigger"),
+                      value: "time-trigger",
+                    },
                   ],
                   isDisabled: isEditing,
                 }}
               />
 
-              {isCreated || isTimerTrigger && (
-                <Select
-                  input={{
-                    id: "initial_status",
-                    label: t("common.fields.initialStatus"),
-                    required: true,
-                    options: formsData?.status ?? [],
-                  }}
-                  isLoading={isLoadingForms}
-                />
-              )}
+              {isCreated ||
+                (isTimerTrigger && (
+                  <Select
+                    input={{
+                      id: "initial_status",
+                      label: t("common.fields.initialStatus"),
+                      required: true,
+                      options: formsData?.status ?? [],
+                    }}
+                    isLoading={isLoadingForms}
+                  />
+                ))}
             </Flex>
 
             <Flex gap="4">
