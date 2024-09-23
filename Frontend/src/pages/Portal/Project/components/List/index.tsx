@@ -197,7 +197,7 @@ const List: React.FC = () => {
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.forms} />
+            <Pagination pagination={project?.pagination?.schedules} />
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion.Container>
