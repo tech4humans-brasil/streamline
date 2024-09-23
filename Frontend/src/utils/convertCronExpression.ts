@@ -34,7 +34,7 @@ export function convertToCron(
 }
 
 export function convertFromCron(cron: string) {
-  const [minute, hour, day, month, week] = cron.split(" ");
+  const [minute, hour, day, , week] = cron.split(" ");
 
   if (week !== "*") {
     throw new Error(

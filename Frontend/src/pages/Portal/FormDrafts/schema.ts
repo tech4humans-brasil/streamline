@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const formsZodSchema = z.object({
-  type: z.enum(["created", "interaction", "time-trigger"]),
+  type: z.enum(["created", "interaction", "time-trigger", "evaluated"]),
   fields: z
     .array(
       z.object({

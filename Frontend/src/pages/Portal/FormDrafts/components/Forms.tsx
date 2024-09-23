@@ -13,7 +13,7 @@ import { FieldTypes } from "@interfaces/FormDraft";
 
 interface FormEditProps {
   isEditing: boolean;
-  formType: "created" | "interaction" | "evaluated";
+  formType: "created" | "interaction" | "time-trigger";
   isCreated: boolean;
 }
 

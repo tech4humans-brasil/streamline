@@ -47,7 +47,7 @@ export default function FormDraft() {
   const formType = location.state?.formType as
     | "created"
     | "interaction"
-    | "evaluated"
+    | "time-trigger"
     | undefined;
 
   const isCreated = formType === "created";
