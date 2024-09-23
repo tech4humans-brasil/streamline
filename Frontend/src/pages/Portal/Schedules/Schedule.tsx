@@ -38,6 +38,7 @@ const Schema = z
     time: z.string().nullable().optional(),
     workflow: z.string().min(3, { message: "Workflow é obrigatório" }),
     expression: z.string().min(3, { message: "Expressão é obrigatória" }),
+    day: z.coerce.number().min(1).max(31).nullable().optional(),
     advanced: z.boolean().optional(),
     form: z.string().min(3, { message: "Formulário é obrigatório" }),
     start: z.coerce.date(),
@@ -162,6 +163,7 @@ export default function Schedule() {
   const time = watch("time");
   const advanced = watch("advanced");
   const expression = watch("expression");
+  const day = watch("day");
 
   const onSubmit = handleSubmit(async (data) => {
     await mutateAsync(isEditing ? { ...data, _id: id } : data);
@@ -178,7 +180,9 @@ export default function Schedule() {
       );
       reset({
         ...scheduleData,
+        //@ts-ignore
         start: new Date(scheduleData.start).toISOString().split("T")[0],
+        //@ts-ignore
         end: scheduleData.end
           ? new Date(scheduleData.end).toISOString().split("T")[0]
           : null,
@@ -191,7 +195,7 @@ export default function Schedule() {
 
   useEffect(() => {
     if (interval && schedule && time) {
-      const cron = convertToCron(interval, schedule, time);
+      const cron = convertToCron(interval, schedule, time, day);
 
       methods.setValue("expression", cron);
     }
@@ -348,14 +352,27 @@ export default function Schedule() {
                     }}
                   />
                 </Flex>
-                As
-                <Text
-                  input={{
-                    id: "time",
-                    type: "time",
-                    label: "",
-                  }}
-                />
+                {schedule !== "minute" && (
+                  <>
+                    As
+                    <Text
+                      input={{
+                        id: "time",
+                        type: "time",
+                        label: "",
+                      }}
+                    />
+                  </>
+                )}
+                {schedule === "month" && (
+                  <Text
+                    input={{
+                      id: "day",
+                      type: "number",
+                      label: "Dia do mês",
+                    }}
+                  />
+                )}
               </>
             )}
             {expression && (

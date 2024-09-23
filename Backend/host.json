@@ -5,6 +5,12 @@
       "samplingSettings": {
         "isEnabled": true,
         "excludedTypes": "Request"
+      },
+      "logLevel": {
+        "default": "Information",
+        "Host.Results": "Warning",
+        "Function": "Information",
+        "Host.Aggregator": "Error"
       }
     }
   },

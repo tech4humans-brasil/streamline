@@ -1,4 +1,9 @@
-export function convertToCron(value: number, schedule: string, time: string) {
+export function convertToCron(
+  value: number,
+  schedule: string,
+  time: string,
+  day: number | null | string = "*"
+) {
   const [hour, minute] = time.split(":").map(Number);
 
   let cronExpression = "";
@@ -17,7 +22,7 @@ export function convertToCron(value: number, schedule: string, time: string) {
       cronExpression = `${minute} ${hour} * * ${value % 7}`;
       break;
     case "month":
-      cronExpression = `${minute} ${hour} 1 */${value} *`;
+      cronExpression = `${minute} ${hour} ${day} */${value} *`;
       break;
     default:
       throw new Error(
@@ -31,7 +36,7 @@ export function convertToCron(value: number, schedule: string, time: string) {
 export function convertFromCron(cron: string) {
   const [minute, hour, day, month, week] = cron.split(" ");
 
-  if (week !== "*" && day !== "*") {
+  if (week !== "*") {
     throw new Error(
       'Expressão inválida. Use "minutos", "horas", "dias", "semanas" ou "meses".'
     );
@@ -61,9 +66,19 @@ export function convertFromCron(cron: string) {
     };
   }
 
+  if (day !== "*") {
+    return {
+      value: Number(day),
+      schedule: "day",
+      time: `${hour}:${minute}`,
+      day: Number(day),
+    };
+  }
+
   return {
     interval: Number(minute.split("/")[1]),
     schedule: "minute",
     time: `${minute.split("/")[0]}:00`,
+    day: "*",
   };
 }
