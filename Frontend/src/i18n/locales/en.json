@@ -5,16 +5,16 @@
     "pt-BR": "Portuguese"
   },
   "welcome": {
-    "title": "Welcome to Edu Flow",
-    "description": "Log in to access the academic management system"
+    "title": "Welcome to Streamline",
+    "description": "Log in to access the corporate automation system"
   },
   "login": {
-    "title": "Log in",
+    "title": "Log In",
     "submit": "Enter",
     "forgot": "Forgot password?"
   },
   "common": {
-    "activities": "Activities",
+    "activities": "Tickets",
     "back": "Back",
     "yes": "Yes",
     "no": "No",
@@ -24,45 +24,76 @@
     "fields": {
       "name": "Name",
       "description": "Description",
+      "start": "Start",
+      "end": "End",
+      "project": "Project",
       "protocol": "Protocol",
-      "acronym": "Domain",
+      "timezone": "Timezone",
+      "search": "Search",
+      "acronym": "Acronym",
+      "form": "Form",
+      "expression": "Expression",
+      "user": "User",
       "email": "Email",
       "password": "Password",
-      "newPassword": "New password",
-      "confirmPassword": "Confirm password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
       "profile": "Profile",
-      "createdAt": "Created at",
-      "updateAt": "Updated at",
-      "closedAt": "Closed at",
-      "finishedAt": "Finished at",
+      "createdAt": "Created At",
+      "updateAt": "Updated At",
+      "closedAt": "Closed At",
+      "finishedAt": "Finished At",
       "status": "Status",
       "actions": "Actions",
       "undefined": "Undefined",
       "users": "Users",
       "finished": "Finished",
-      "doctorate": "Doctorate",
-      "students": "Students",
-      "slug": "Slug",
+      "students": "Users",
+      "slug": "Domain",
       "title": "Title",
       "subject": "Subject",
       "profiles": "Profiles",
       "active": "Active",
       "inactive": "Inactive",
-      "matriculation": "Enrollment",
+      "matriculation": "Matriculation",
       "external": "External",
-      "institute": "Institute",
+      "institute": "Group",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "days": "Days",
+      "weeks": "Weeks",
+      "months": "Months",
       "university": "University",
       "statusType": {
         "done": "Completed",
         "canceled": "Canceled",
-        "progress": "In progress"
+        "progress": "In Progress"
       },
       "type": "Type",
       "version": "Version",
       "by": "Created by",
       "anonymous": "Anonymous",
-      "initialStatus": "Initial status",
+      "initialStatus": "Initial Status",
       "workflow": "Workflow"
+    },
+    "actions": {
+      "copy": {
+        "success": "Copied to clipboard",
+        "error": "Error copying to clipboard"
+      }
+    },
+    "cron": {
+      "everyMinute": "Every minute",
+      "everyHour": "Every hour",
+      "everyDay": "Every day",
+      "everyWeek": "Every week",
+      "everyMonth": "Every month",
+      "everyYear": "Every year",
+      "atMinute": "At minute :minute",
+      "atHour": "At :hour hours",
+      "onDay": "On day :day",
+      "onWeekday": "On :weekday",
+      "inMonth": "In the month of :month"
     }
   },
   "input": {
@@ -74,39 +105,42 @@
     }
   },
   "forgotPassword": {
-    "title": "Forgot password",
+    "title": "Forgot Password",
     "description": "Enter your email to recover your password",
-    "submit": "Recover password",
+    "submit": "Recover Password",
     "success": "Email sent successfully",
     "error": "Error sending email",
-    "send": "Recover password",
+    "send": "Recover Password",
     "back": "Back to login"
   },
   "navbar": {
     "joyride": {
-      "dashboard": "Click here to return to the homepage whenever you want.",
-      "activities": "Click here to view your activities.",
+      "dashboard": "Click here to return to the homepage anytime.",
+      "activities": "Click here to view your Tickets.",
       "users": "Click here to add/view users.",
-      "institutes": "Click here to view institutes.",
+      "institutions": "Click here to view groups.",
       "universities": "Click here to view universities.",
       "statuses": "Click here to create/edit statuses.",
       "emails": "Click here to create/edit email templates.",
       "forms": "Click here to create/edit forms.",
       "workflows": "Click here to create/edit workflows.",
-      "reportings": "Click here to create/edit reports."
+      "reportings": "Click here to create/edit reports.",
+      "projects": "Click here to create/edit projects."
     }
   },
   "tutorial": {
     "back": "Back",
     "close": "Close",
     "last": "Finish",
+    "previous": "Previous",
     "next": "Next",
-    "skip": "Skip"
+    "skip": "Skip",
+    "finish": "Finish"
   },
   "alterPassword": {
-    "title": "Change password",
+    "title": "Change Password",
     "description": "Enter your new password",
-    "submit": "Change password",
+    "submit": "Change Password",
     "success": "Password changed successfully",
     "error": "Error changing password",
     "back": "Back to login"
@@ -118,55 +152,53 @@
   },
   "dashboard": {
     "title": {
-      "openForms": "Open forms",
-      "myActivities": "My activities",
-      "activityTracking": "Activity tracking",
-      "evaluationPending": "Pending evaluations",
-      "interactionPending": "Pending interactions",
-      "activitiesAccept": "Activities by acceptance",
-      "activityProcess": "Activities in progress",
-      "boardDefinition": "Board definition"
+      "openForms": "New ticket",
+      "myActivities": "My Tickets",
+      "interactionPending": "Pending Interactions",
+      "activityProcess": "Ticket Approval"
     },
     "joyride": {
-      "open-forms": "Welcome to EduFlow! Here you can view the forms available for completion.",
-      "my-activities": "Here you will see the activities you have created.",
-      "activity-tracking": "Here you will see the activities you are participating in and their progress.",
+      "open-forms": "Welcome to EduFlow! Here you can view available forms for filling.",
+      "my-activities": "Here you'll see tickets you've created.",
+      "pending-interactions": "Here you'll see tickets awaiting response.",
       "switch-theme": "Click here to switch between light and dark themes.",
       "profile-menu": "Click here to access your profile and log out."
     },
     "description": {
-      "evaluationPending": "Activities pending evaluation",
-      "interactionPending": "Interactions pending response",
-      "activitiesAccept": "Activities pending acceptance",
-      "activityProcess": "Activities in progress"
+      "evaluationPending": "Tickets pending evaluation",
+      "interactionPending": "Interactions awaiting response",
+      "activitiesAccept": "Tickets pendente acceptance",
+      "activityProcess": "Tickets in progress"
     }
   },
   "title": {
     "dashboard": "Dashboard",
-    "activities": "Activities",
+    "activities": "Tickets",
     "users": "Users",
-    "institutes": "Institutes",
+    "institutes": "Groups",
     "universities": "Universities",
     "statuses": "Statuses",
     "workflows": "Workflows",
-    "emails": "Email templates",
+    "emails": "Email Templates",
     "forms": "Forms",
-    "reportings": "Reports"
+    "reportings": "Reports",
+    "projects": "Projects",
+    "schedules": "Schedules"
   },
   "table": {
     "noData": "No data found",
     "error": "Error loading data"
   },
   "role": {
-    "admin": "Admin",
+    "admin": "Administrator",
     "teacher": "Teacher",
-    "student": "Student"
+    "user": "User"
   },
   "state": {
     "active": "Active",
     "inactive": "Inactive",
     "pending": "Pending",
-    "inProgress": "In progress",
+    "inProgress": "In Progress",
     "completed": "Completed",
     "finished": "Finished"
   },
@@ -174,7 +206,7 @@
     "logout": "Logout"
   },
   "activityAccept": {
-    "title": "Accept activity",
+    "title": "Accept Activity",
     "description": "Do you want to accept the activity?",
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -184,142 +216,240 @@
     "error": "Error accepting activity"
   },
   "activityBoardDefinition": {
-    "title": "Board definition",
+    "title": "Board Definition",
     "description": "Do you want to define the board for the activity?",
-    "addBoard": "Add evaluators",
+    "addBoard": "Add Evaluators",
     "confirm": "Do you want to confirm the activity? This action cannot be undone",
     "cancel": "Cancel",
-    "submit": "Define board",
+    "submit": "Define Board",
     "success": "Board defined successfully",
     "error": "Error defining board"
   },
   "activityConfirm": {
-    "title": "Confirm activity",
+    "title": "Confirm Activity",
     "description": "Do you want to confirm the activity?",
     "confirm": "Do you want to confirm the activity? This action cannot be undone",
     "cancel": "Cancel",
-    "submit": "Confirm activity",
+    "submit": "Confirm Activity",
     "success": "Activity confirmed successfully",
     "error": "Error confirming activity"
   },
   "emails": {
-    "title": "Email template",
-    "create": "Create template",
+    "title": "Email Template",
+    "create": "Create Template",
     "cancel": "Cancel",
     "success": "Template saved successfully",
     "error": "Error saving template"
   },
   "email": {
-    "create": "Create template",
-    "edit": "Edit template",
+    "create": "Create Template",
+    "edit": "Edit Template",
     "created": "Template created successfully",
     "edited": "Template edited successfully",
     "cancel": "Cancel",
-    "submit": "Save changes"
+    "submit": "Save Changes"
   },
   "users": {
     "title": "Users",
-    "create": "Create user",
+    "create": "Create User",
     "cancel": "Cancel",
     "success": "User saved successfully",
     "error": "Error saving user"
   },
   "user": {
-    "create": "Create user",
-    "edit": "Edit user",
+    "create": "Create User",
+    "edit": "Edit User",
     "created": "User created successfully",
     "edited": "User edited successfully",
     "cancel": "Cancel",
-    "submit": "Save changes",
+    "submit": "Save Changes",
     "error": "Error saving user",
     "reseted": "Password reset successfully",
     "noReseted": "Error resetting password",
     "resendEmail": "Reset password"
   },
   "institutes": {
-    "title": "Institutes",
-    "create": "Create institute",
+    "title": "Groups",
+    "create": "Create Group",
     "cancel": "Cancel",
-    "success": "Institute saved successfully",
-    "error": "Error loading institute"
+    "success": "Group saved successfully",
+    "error": "Error loading institution"
   },
   "institute": {
-    "create": "Create institute",
-    "edit": "Edit institute",
-    "created": "Institute created successfully",
-    "edited": "Institute edited successfully",
+    "create": "Create Group",
+    "edit": "Edit Group",
+    "created": "Group created successfully",
+    "edited": "Group edited successfully",
     "cancel": "Cancel",
-    "submit": "Save changes",
-    "error": "Error saving institute"
+    "submit": "Save Changes",
+    "error": "Error saving group"
   },
   "statuses": {
     "title": "Statuses",
-    "create": "Create statuses",
+    "create": "Create Status",
     "cancel": "Cancel",
     "success": "Status saved successfully",
     "error": "Error loading statuses"
   },
   "status": {
-    "create": "Create status",
-    "edit": "Edit status",
+    "create": "Create Status",
+    "edit": "Edit Status",
     "created": "Status created successfully",
-    "edited": "Status edited successfully",
+    "updated": "Status edited successfully",
     "cancel": "Cancel",
-    "submit": "Save changes",
+    "submit": "Save Changes",
     "error": "Error saving status"
   },
-  "forms": {
-    "title": "Forms",
-    "create": "Create form",
+  "universities": {
+    "title": "Universities",
+    "create": "Create University",
     "cancel": "Cancel",
-    "success": "Form saved successfully",
-    "error": "Error loading form"
+    "success": "University saved successfully",
+    "error": "Error loading university"
   },
-  "form": {
-    "create": "Create form",
-    "edit": "Edit form",
-    "created": "Form created successfully",
-    "edited": "Form edited successfully",
+  "university": {
+    "create": "Create University",
+    "edit": "Edit University",
+    "created": "University created successfully",
+    "edited": "University edited successfully",
     "cancel": "Cancel",
-    "submit": "Save changes",
-    "error": "Error saving form"
+    "submit": "Save Changes",
+    "error": "Error saving university"
   },
   "workflows": {
     "title": "Workflows",
-    "create": "Create workflow",
+    "create": "Create Workflow",
     "cancel": "Cancel",
     "success": "Workflow saved successfully",
     "error": "Error loading workflow"
   },
   "workflow": {
-    "create": "Create workflow",
-    "edit": "Edit workflow",
+    "create": "Create Workflow",
+    "edit": "Edit Workflow",
     "created": "Workflow created successfully",
-    "edited": "Workflow edited successfully",
+    "updated": "Workflow edited successfully",
     "cancel": "Cancel",
-    "submit": "Save changes",
-    "error": "Error saving workflow"
+    "submit": "Save Changes",
+    "error": "Error saving workflow",
+    "status": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "versions": "Versions",
+    "nodes": {
+      "send_email": {
+        "title": "Send Email"
+      },
+      "conditional": {
+        "title": "Conditional"
+      },
+      "web_request": {
+        "title": "Web Request"
+      },
+      "interaction": {
+        "title": "Interaction"
+      },
+      "swap_workflow": {
+        "title": "Swap Workflow"
+      },
+      "change_status": {
+        "title": "Change Status"
+      }
+    }
   },
-  "reportings": {
-    "title": "Reports",
-    "create": "Create report",
+  "workflowDraft": {
+    "title": "Draft",
+    "edit": "Edit Workflow",
+    "view": "View Workflow",
+    "updated": "Workflow edited successfully",
+    "created": "Workflow created successfully",
+    "error": "Error saving workflow",
+    "submit": "Save New Version",
+    "create": "Create Workflow",
+    "publish": "Publish",
+    "unPublish": "Unpublish",
+    "published": "Workflow published successfully",
+    "invalid": "Invalid workflow",
+    "back": "Back",
+    "config": "Configuration"
+  },
+  "forms": {
+    "title": "Forms",
+    "create": "Create Form",
     "cancel": "Cancel",
-    "success": "Report saved successfully",
-    "error": "Error loading report"
+    "created": "Form saved successfully",
+    "error": "Error loading form",
+    "type": {
+      "created": "Creation",
+      "interaction": "Interaction",
+      "time-trigger": "Time"
+    }
   },
-  "reporting": {
-    "create": "Create report",
-    "edit": "Edit report",
-    "created": "Report created successfully",
-    "edited": "Report edited successfully",
+  "form": {
+    "title": "Forms",
+    "create": "Create Form",
+    "created": "Form created successfully",
+    "edit": "Edit Form",
+    "updated": "Form edited successfully",
     "cancel": "Cancel",
-    "submit": "Save changes",
-    "error": "Error saving report"
+    "success": "Form saved successfully",
+    "error": "Error saving form",
+    "submit": "Save Changes",
+    "drafts": "Drafts",
+    "newDraft": "Create Draft",
+    "type": {
+      "created": "Creation",
+      "interaction": "Interaction",
+      "time-trigger": "Time"
+    }
   },
-  "confirmDialog": {
-    "title": "Confirmation",
-    "message": "Are you sure you want to proceed?",
-    "confirm": "Confirm",
-    "cancel": "Cancel"
+  "formDraft": {
+    "title": "Draft",
+    "create": "Create Form",
+    "edit": "Edit Form",
+    "view": "View Form",
+    "created": "Form edited successfully",
+    "error": "Error saving form",
+    "submit": "Save New Version",
+    "publish": "Publish",
+    "unPublish": "Unpublish",
+    "published": "Form published successfully",
+    "invalid": "Invalid form",
+    "back": "Back",
+    "config": "Configuration"
+  },
+  "projects": {
+    "title": "Projects",
+    "create": "Create Project",
+    "cancel": "Cancel",
+    "success": "Project saved successfully",
+    "error": "Error loading project",
+    "select": "Select a project"
+  },
+  "project": {
+    "create": "Create Project",
+    "edit": "Edit Project",
+    "created": "Project created successfully",
+    "edited": "Project edited successfully",
+    "cancel": "Cancel",
+    "submit": "Save Changes",
+    "error": "Error saving project"
+  },
+  "variables": {
+    "create": "Register Variables",
+    "name": "Name",
+    "value": "Value",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "saved": "Variable saved successfully",
+    "error": "Error saving variable"
+  },
+  "schedule": {
+    "title": "Schedules",
+    "create": "Create Schedule",
+    "cancel": "Cancel",
+    "success": "Schedule saved successfully",
+    "error": "Error loading schedule",
+    "edit": "Edit Schedule"
   }
 }

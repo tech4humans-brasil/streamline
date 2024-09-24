@@ -382,8 +382,7 @@
     "type": {
       "created": "Criação",
       "interaction": "Interação",
-      "evaluation": "Avaliação",
-      "evaluated": "Avaliação"
+      "time-trigger": "Tempo"
     }
   },
   "form": {

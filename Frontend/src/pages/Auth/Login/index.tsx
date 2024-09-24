@@ -161,9 +161,9 @@ const Login: React.FC = () => {
                 <InputText
                   input={{
                     id: "acronym",
-                    label: t("common.fields.acronym"),
+                    label: t("common.fields.slug"),
                     placeholder: t("input.enter.male", {
-                      field: t("common.fields.acronym"),
+                      field: t("common.fields.slug"),
                     }),
                   }}
                 />

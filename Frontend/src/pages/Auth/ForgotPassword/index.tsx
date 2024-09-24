@@ -114,7 +114,7 @@ const ForgotPassword: React.FC = () => {
                     id: "acronym",
                     label: t("common.fields.acronym"),
                     placeholder: t("input.enter.male", {
-                      field: t("common.fields.acronym"),
+                      field: t("common.fields.slug"),
                     }),
                   }}
                 />
