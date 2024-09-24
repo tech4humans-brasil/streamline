@@ -54,7 +54,7 @@ const statusSchema = z
   })
   .refine(
     (data) => {
-      if (data.type !== "interaction") {
+      if (data.type === "created") {
         return !!data.workflow;
       }
       return true;
