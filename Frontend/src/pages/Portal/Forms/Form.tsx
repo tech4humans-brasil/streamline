@@ -163,6 +163,8 @@ export default function Workflow() {
     methods.setValue("project", project);
   }, [project]);
 
+  console.log("errors", errors);
+
   const formType = watch("type");
   const isCreated = formType === "created";
   const isTimerTrigger = formType === "time-trigger";
@@ -227,18 +229,17 @@ export default function Workflow() {
                 }}
               />
 
-              {isCreated ||
-                (isTimerTrigger && (
-                  <Select
-                    input={{
-                      id: "initial_status",
-                      label: t("common.fields.initialStatus"),
-                      required: true,
-                      options: formsData?.status ?? [],
-                    }}
-                    isLoading={isLoadingForms}
-                  />
-                ))}
+              {(isCreated || isTimerTrigger) && (
+                <Select
+                  input={{
+                    id: "initial_status",
+                    label: t("common.fields.initialStatus"),
+                    required: true,
+                    options: formsData?.status ?? [],
+                  }}
+                  isLoading={isLoadingForms}
+                />
+              )}
             </Flex>
 
             <Flex gap="4">
