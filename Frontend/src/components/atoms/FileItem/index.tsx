@@ -7,7 +7,18 @@ interface FileProps {
 }
 
 const FileItem: React.FC<FileProps> = ({ file }) => {
-  if (!file.name) return null;
+  if (!file?.name) return (
+    <Box
+      p={2}
+      px={4}
+      borderRadius={4}
+      w={"fit-content"}
+      borderColor="border.primary"
+      borderWidth={1}
+    >
+      <Text fontSize="sm" fontWeight={"bold"}>Sem arquivo</Text>
+    </Box>
+  )
 
   const extension = file.mimeType.split("/").pop() as DefaultExtensionType;
 
