@@ -24,7 +24,7 @@ import Text from "@components/atoms/Inputs/Text";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
 import { createOrUpdateVariable, getVariables } from "@apis/variables";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FaLock, FaPlus, FaTrash, FaUnlock } from "react-icons/fa";
 
 const variableSchema = z.object({

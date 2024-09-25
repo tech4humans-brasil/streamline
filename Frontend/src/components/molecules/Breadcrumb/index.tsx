@@ -15,7 +15,7 @@ const Breadcrumb = () => {
   return (
     <BreadcrumbChackra separator=">" px={4}>
       {history.map((path, index) => {
-        const pathName = path.split("/").filter(Boolean).at(1);
+        const pathName = path.split("/").filter(Boolean)?.[1];
 
         return (
           <BreadcrumbItem key={index}>
