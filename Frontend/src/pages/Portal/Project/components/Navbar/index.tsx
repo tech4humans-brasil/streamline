@@ -9,6 +9,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import VariableForm from "../Variables";
+import { FaPen } from "react-icons/fa";
 
 const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -16,7 +17,6 @@ const Navbar: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const methods = useForm({
-    mode: "onBlur",
     defaultValues: {
       project: searchParams.get("project") ?? "",
     },
@@ -36,6 +36,10 @@ const Navbar: React.FC = () => {
   const handleCreate = useCallback(() => {
     navigate(`/portal/project`);
   }, [navigate]);
+
+  const handleEdit = useCallback(() => {
+    navigate(`/portal/project/${project}`);
+  }, [navigate, project]);
 
   const handleAlterProject = useCallback(
     (e: { project: string }) => {
@@ -86,7 +90,7 @@ const Navbar: React.FC = () => {
           {t(`projects.title`)}
         </Heading>
 
-        <Box w="300px">
+        <Flex w="300px" alignItems="center" gap="2">
           <FormProvider {...methods}>
             <search onSubmit={onSubmit}>
               <Select
@@ -101,12 +105,23 @@ const Navbar: React.FC = () => {
             </search>
           </FormProvider>
 
+          <Button
+            colorScheme="blue"
+            onClick={handleEdit}
+            variant="outline"
+            size="sm"
+            isDisabled={!project}
+          >
+            <FaPen />
+          </Button>
+
           {isError && (
             <Box color="red.500" fontSize="sm">
               {t("projects.error")}
             </Box>
           )}
-        </Box>
+        </Flex>
+        <Box opacity={0.7}>{projectData?.description}</Box>
       </Flex>
 
       <Flex gap="2" align="center">

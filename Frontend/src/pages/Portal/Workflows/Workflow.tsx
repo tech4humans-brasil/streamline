@@ -23,6 +23,7 @@ import { getWorkflowDrafts } from "@apis/workflowDraft";
 import DraftItem from "@components/molecules/DraftItem";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
+import { FaArrowLeft } from "react-icons/fa";
 
 const statusSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
@@ -119,9 +120,23 @@ export default function Workflow() {
           maxW="600px"
         >
           <CardHeader>
-            <Box textAlign="center" fontSize="lg" fontWeight="bold">
-              {t(`workflow.${isEditing ? "edit" : "create"}`)}
-            </Box>
+            <Flex align="center" justify="space-between">
+              <Button
+                variant="ghost"
+                onClick={() => navigate(-1)}
+                w="fit-content"
+              >
+                <FaArrowLeft />
+              </Button>
+              <Heading
+                fontSize="2xl"
+                fontWeight="bold"
+                w="100%"
+                textAlign="center"
+              >
+                {t(`workflow.${isEditing ? "edit" : "create"}`)}
+              </Heading>
+            </Flex>
           </CardHeader>
           <CardBody display="flex" flexDirection="column" gap="4">
             <Text

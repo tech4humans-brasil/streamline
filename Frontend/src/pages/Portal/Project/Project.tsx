@@ -10,6 +10,7 @@ import {
   CardBody,
   CardHeader,
   Flex,
+  Heading,
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,6 +18,7 @@ import Text from "@components/atoms/Inputs/Text";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
 import { createOrUpdateProject, getProject } from "@apis/project";
+import { FaArrowLeft } from "react-icons/fa";
 
 const Schema = z.object({
   name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
@@ -37,7 +39,7 @@ export default function Project() {
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
 
-  const { data: institute, isLoading } = useQuery({
+  const { data: project, isLoading } = useQuery({
     queryKey: ["project", id],
     queryFn: getProject,
     enabled: isEditing,
@@ -46,9 +48,9 @@ export default function Project() {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createOrUpdateProject,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["institutes"] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
       toast({
-        title: t(`institute.${isEditing ? "updated" : "created"}`),
+        title: t(`project.${isEditing ? "updated" : "created"}`),
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -58,7 +60,7 @@ export default function Project() {
     },
     onError: () => {
       toast({
-        title: t(`institute.${isEditing ? "updated" : "created"}`),
+        title: t(`project.${isEditing ? "updated" : "created"}`),
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -82,16 +84,16 @@ export default function Project() {
   });
 
   const handleCancel = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
+    reset(project);
+  }, [navigate, project]);
 
   useEffect(() => {
-    if (institute) {
+    if (project) {
       reset({
-        ...institute,
+        ...project,
       });
     }
-  }, [institute, reset]);
+  }, [project, reset]);
 
   useEffect(() => {}, [errors]);
 
@@ -107,9 +109,23 @@ export default function Project() {
           maxW="600px"
         >
           <CardHeader>
-            <Box textAlign="center" fontSize="lg" fontWeight="bold">
-              {t(`project.${isEditing ? "edit" : "create"}`)}
-            </Box>
+            <Flex align="center" justify="space-between">
+              <Button
+                variant="ghost"
+                onClick={() => navigate(-1)}
+                w="fit-content"
+              >
+                <FaArrowLeft />
+              </Button>
+              <Heading
+                fontSize="2xl"
+                fontWeight="bold"
+                w="100%"
+                textAlign="center"
+              >
+                {t(`project.${isEditing ? "edit" : "create"}`)}
+              </Heading>
+            </Flex>
           </CardHeader>
           <CardBody display="flex" flexDirection="column" gap="4">
             <Text

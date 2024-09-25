@@ -129,7 +129,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
         </Text>
         <Text fontSize="sm" fontWeight={"bold"}>
           {/* @ts-ignore */}
-          {convertDateTime(value)}
+          {convertDateTime(new Date(value).format("dd/MM/yyyy"))}
         </Text>
       </Flex>
     );

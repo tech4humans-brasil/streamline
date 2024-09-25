@@ -180,13 +180,24 @@ export default function Workflow() {
           w="100%"
           maxW="600px"
         >
-          <Button variant="ghost" onClick={() => navigate(-1)} w="fit-content">
-            <FaArrowLeft />
-          </Button>
           <CardHeader>
-            <Box textAlign="center" fontSize="lg" fontWeight="bold">
-              {t(`form.${isEditing ? "edit" : "create"}`)}
-            </Box>
+            <Flex align="center" justify="space-between">
+              <Button
+                variant="ghost"
+                onClick={() => navigate(-1)}
+                w="fit-content"
+              >
+                <FaArrowLeft />
+              </Button>
+              <Heading
+                fontSize="2xl"
+                fontWeight="bold"
+                w="100%"
+                textAlign="center"
+              >
+                {t(`form.${isEditing ? "edit" : "create"}`)}
+              </Heading>
+            </Flex>
           </CardHeader>
           <CardBody display="flex" flexDirection="column" gap="4">
             <Text
