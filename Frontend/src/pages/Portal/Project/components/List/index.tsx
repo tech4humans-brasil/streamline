@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { BsFileEarmarkTextFill } from "react-icons/bs";
 import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
 import { GoWorkflow } from "react-icons/go";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import cronstrue from "cronstrue/i18n";
 
 const List: React.FC = () => {
