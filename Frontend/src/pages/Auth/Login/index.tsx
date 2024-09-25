@@ -17,7 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import useAuth from "@hooks/useAuth";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import InputText from "@components/atoms/Inputs/Text";
 import Password from "@components/atoms/Inputs/Password";
 import { login } from "@apis/auth";
@@ -42,6 +42,9 @@ type FormData = z.infer<typeof schema>;
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+
+  const redirect = searchParams.get("redirect") ?? "/";
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -55,6 +58,8 @@ const Login: React.FC = () => {
   });
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
+
+  console.log("redirect", redirect);
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: login,
@@ -72,7 +77,7 @@ const Login: React.FC = () => {
           user?.roles.includes(IUserRoles.admin) &&
           !user.tutorials.includes("first-page")
             ? "/welcome"
-            : "/portal"
+            : redirect
         }`
       );
     },

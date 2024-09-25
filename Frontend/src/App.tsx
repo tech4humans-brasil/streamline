@@ -1,9 +1,26 @@
 import useAuth from "./hooks/useAuth";
 import { publicRoutes, privateRoutes } from "./routes";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import api from "./services/api";
-import { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import ReactGA from "react-ga4";
+
+function RequireAuth({ children }: { children: React.ReactNode }) {
+  const [auth] = useAuth();
+  const location = useLocation();
+
+  if (!auth) {
+    return <Navigate to={`/?redirect=${location.pathname}`} replace />;
+  }
+
+  return children;
+}
 
 function App() {
   const [auth, setAuth] = useAuth();
@@ -23,6 +40,8 @@ function App() {
   );
 
   const privateRoutesPermitted = useMemo(() => {
+    if(!permissions) return privateRoutes;
+
     return privateRoutes
       .map((route) => {
         if (route?.children?.length) {
@@ -55,6 +74,8 @@ function App() {
       .filter(Boolean);
   }, [permissions]);
 
+  console.log(privateRoutesPermitted);
+
   useEffect(() => {
     ReactGA.send({
       hitType: "pageview",
@@ -69,23 +90,22 @@ function App() {
         {publicRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
-        {auth &&
-          privateRoutesPermitted.map((route) => (
-            <Route
-              key={route?.path}
-              path={route?.path}
-              element={route?.element}
-            >
-              {route?.children?.map((child) => (
-                <Route
-                  key={`${route?.path}-${child?.path}`}
-                  path={child?.path}
-                  element={child?.element}
-                  index={child?.index}
-                />
-              ))}
-            </Route>
-          ))}
+        {privateRoutesPermitted.map((route) => (
+          <Route
+            key={route?.path}
+            path={route?.path}
+            element={<RequireAuth>{route?.element}</RequireAuth>}
+          >
+            {route?.children?.map((child) => (
+              <Route
+                key={`${route?.path}-${child?.path}`}
+                path={child?.path}
+                element={<RequireAuth>{child?.element}</RequireAuth>}
+                index={child?.index}
+              />
+            ))}
+          </Route>
+        ))}
       </Routes>
     </BrowserRouter>
   );

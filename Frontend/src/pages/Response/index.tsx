@@ -107,7 +107,7 @@ const Response: React.FC<ResponseProps> = memo(() => {
       <Center h="100vh" flexDirection="column">
         <Text>Formulário não encontrado ou não está mais disponível</Text>
         <Text>
-          <Button colorScheme="blue" onClick={() => navigate(-1)}>
+          <Button colorScheme="blue" onClick={() => navigate("/portal")}>
             Voltar
           </Button>
         </Text>
@@ -121,7 +121,7 @@ const Response: React.FC<ResponseProps> = memo(() => {
         <Box>
           <Text>Formulário sem atividade</Text>
           <Text>
-            <Button colorScheme="blue" onClick={() => navigate(-1)}>
+            <Button colorScheme="blue" onClick={() => navigate("/portal")}>
               Voltar
             </Button>
           </Text>
