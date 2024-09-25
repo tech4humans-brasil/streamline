@@ -18,6 +18,7 @@ import { Outlet } from "react-router-dom";
 import ProfileMenu from "@components/organisms/ProfileMenu";
 import SwitchTheme from "@components/molecules/SwitchTheme";
 import LocaleSwap from "@components/atoms/LocaleSwap";
+import Breadcrumb from "@components/molecules/Breadcrumb";
 
 function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -88,6 +89,7 @@ function Dashboard() {
             </Flex>
           </Flex>
           <Flex minH="100vh" w="100%" ml={12} bg="bg.page">
+            {/* <Breadcrumb /> */}
             <Outlet />
           </Flex>
         </Flex>

@@ -4,14 +4,14 @@ import { getSchedules } from "@apis/schedule";
 import { getStatuses } from "@apis/status";
 import { getWorkflows } from "@apis/workflows";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 export default function useProject() {
   const [searchParams] = useSearchParams();
+  const { project = "" } = useParams<{ project: string }>() || {};
+  const params = searchParams.toString() + "&project=" + project;
 
-  const params = searchParams.toString();
-
-  const hasProject = !!searchParams.get("project");
+  const hasProject = !!project;
 
   const formsQuery = useQuery({
     queryKey: ["forms", params],

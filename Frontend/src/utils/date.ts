@@ -1,15 +1,18 @@
-export function convertDateTime(date?: string | null | Date): string {
+export function convertDateTime(
+  date?: string | null | Date,
+  options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    minute: "2-digit",
+    hour: "2-digit",
+  }
+): string {
   if (!date) return "Sem data";
 
   try {
     const d = new Date(date);
-    return Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      minute: "2-digit",
-      hour: "2-digit",
-    }).format(d);
+    return Intl.DateTimeFormat("pt-BR", options).format(d);
   } catch (error) {
     return date.toLocaleString();
   }

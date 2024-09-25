@@ -23,18 +23,23 @@ const addToHistory = (
   history: string[],
   setHistory: (history: string[]) => void
 ) => {
-  if (path.startsWith("/portal/project?project=")) {
+  if (path.startsWith("/portal/projects/")) {
+    // Reseta o histórico se for um projeto
     setHistory([path]);
   } else if (isValidPath(path)) {
-    const updatedHistory = history.filter(
-      (p: string) =>
-        !p.startsWith("/portal/workflow") &&
-        !p.startsWith("/portal/schedule") &&
-        !p.startsWith("/portal/status") &&
-        !p.startsWith("/portal/form")
-    );
-    updatedHistory.push(path);
-    setHistory(updatedHistory);
+    // Verifica se o caminho não é igual ao último no histórico
+    const lastPath = history[history.length - 1];
+    if (lastPath !== path) {
+      const updatedHistory = history.filter(
+        (p: string) =>
+          !p.startsWith("/portal/workflow") &&
+          !p.startsWith("/portal/schedule") &&
+          !p.startsWith("/portal/status") &&
+          !p.startsWith("/portal/form")
+      );
+      updatedHistory.push(path);
+      setHistory(updatedHistory);
+    }
   }
 };
 
@@ -57,7 +62,8 @@ const useNavigationHistory = () => {
   useEffect(() => {
     // Atualiza o histórico quando a rota mudar
     addToHistory(location.pathname, history, setHistory);
-  }, [location]);
+    // Adiciona 'history' como dependência para garantir que ele seja atualizado corretamente
+  }, [location.pathname, history]);
 
   useEffect(() => {
     // Detecta a navegação "para trás" e ajusta o histórico

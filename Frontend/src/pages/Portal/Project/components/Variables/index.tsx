@@ -24,7 +24,7 @@ import Text from "@components/atoms/Inputs/Text";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
 import { createOrUpdateVariable, getVariables } from "@apis/variables";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { FaLock, FaPlus, FaTrash, FaUnlock } from "react-icons/fa";
 
 const variableSchema = z.object({
@@ -64,9 +64,11 @@ const VariableForm: React.FC<VariableFormProps> = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
+  const params = useParams<{ project: string }>();
 
-  const project = searchParams.get("project");
+  const project = params.project;
+
+  console.log(project);
 
   const {
     data: variables,

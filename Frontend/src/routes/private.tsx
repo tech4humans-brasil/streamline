@@ -170,7 +170,7 @@ const routes: RouteType = [
         permission: "activity.create",
       },
       {
-        path: "/portal/projects/:id?",
+        path: "/portal/projects/:project?",
         element: <Projects />,
         permission: "project.read",
       },

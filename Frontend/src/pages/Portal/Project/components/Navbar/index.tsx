@@ -7,18 +7,18 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import VariableForm from "../Variables";
 import { FaPen } from "react-icons/fa";
 
 const Navbar: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const params = useParams<{ project: string }>();
 
   const methods = useForm({
     defaultValues: {
-      project: searchParams.get("project") ?? "",
+      project: params.project ?? "",
     },
   });
 
@@ -44,12 +44,12 @@ const Navbar: React.FC = () => {
   const handleAlterProject = useCallback(
     (e: { project: string }) => {
       if (e.project) {
-        setSearchParams({ project: e.project });
+        navigate(`/portal/projects/${e.project}`);
       } else {
-        setSearchParams({});
+        navigate(`/portal/projects`);
       }
     },
-    [setSearchParams]
+    [navigate]
   );
 
   const onSubmit = methods.handleSubmit((data) => {

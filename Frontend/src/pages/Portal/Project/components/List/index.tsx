@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { BsFileEarmarkTextFill } from "react-icons/bs";
 import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
 import { GoWorkflow } from "react-icons/go";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import cronstrue from "cronstrue/i18n";
 
 const List: React.FC = () => {
@@ -211,9 +211,9 @@ const Create: React.FC<{
   route: "email" | "workflow" | "status" | "form" | "schedule";
 }> = memo(({ route }) => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const params = useParams<{ project: string }>();
 
-  const project = searchParams.get("project");
+  const project = params.project ?? "";
 
   const handleClick = useCallback(() => {
     navigate(`/portal/${route}`, { state: { project } });
@@ -235,9 +235,9 @@ const Edit: React.FC<{
   id: string;
 }> = memo(({ route, id }) => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const params = useParams<{ project: string }>();
 
-  const project = searchParams.get("project");
+  const project = params.project ?? "";
 
   const handleClick = useCallback(() => {
     navigate(`/portal/${route}/${id}`, { state: { project } });
