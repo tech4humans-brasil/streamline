@@ -5,17 +5,36 @@
       "samplingSettings": {
         "isEnabled": true,
         "excludedTypes": "Request"
-      },
-      "logLevel": {
-        "default": "Information",
-        "Host.Results": "Warning",
-        "Function": "Information",
-        "Host.Aggregator": "Error"
       }
     }
   },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[4.*, 5.0.0)"
+  },
+  "extensions": {
+    "http": {
+      "routePrefix": "/api"
+    },
+    "serviceBus": {
+      "clientRetryOptions": {
+        "mode": "exponential",
+        "tryTimeout": "00:01:00",
+        "delay": "00:00:10.00",
+        "maxDelay": "00:10:00",
+        "maxRetries": 3
+      },
+      "prefetchCount": 0,
+      "transportType": "amqpTcp",
+      "autoCompleteMessages": true,
+      "maxAutoLockRenewalDuration": "00:05:00",
+      "maxConcurrentCalls": 5,
+      "maxConcurrentSessions": 1,
+      "maxMessageBatchSize": 10,
+      "minMessageBatchSize": 1,
+      "maxBatchWaitTime": "00:00:30",
+      "sessionIdleTimeout": "00:01:00",
+      "enableCrossEntityTransactions": false
+    }
   }
 }

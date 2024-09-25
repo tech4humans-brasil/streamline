@@ -146,8 +146,11 @@ const handler: QueueWrapperHandler<TMessage> = async (
       urlReplacedPromise,
     ]);
 
+    console.log("bodyReplaced", bodyReplaced);
+    const bodyParsed = await JSON.parse(bodyReplaced)
+
     const request = {
-      data: await JSON.parse(bodyReplaced),
+      data: bodyParsed,
       headers: headersReplaced.reduce((acc, header) => {
         acc[header.key] = header.value;
         return acc;
