@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+// Verifica se o caminho é válido (projeto ou rotas filhas permitidas)
 const isValidPath = (path: string) => {
   const validChildren = [
     "/portal/workflow",
@@ -16,19 +17,15 @@ const isValidPath = (path: string) => {
   return validChildren.some((childPath) => path.startsWith(childPath));
 };
 
-const initializeHistory = (): string[] => {
-  const sessionHistory = sessionStorage.getItem("navigationHistory");
-  return sessionHistory ? JSON.parse(sessionHistory) : [];
-};
-
-const addToHistory = (path: string, setHistory: (history: string[]) => void) => {
-  let history = initializeHistory();
-
-  
+// Adiciona um caminho ao histórico e atualiza o estado local
+const addToHistory = (
+  path: string,
+  history: string[],
+  setHistory: (history: string[]) => void
+) => {
   if (path.startsWith("/portal/project?project=")) {
-    history = [path];
+    setHistory([path]);
   } else if (isValidPath(path)) {
-
     const updatedHistory = history.filter(
       (p: string) =>
         !p.startsWith("/portal/workflow") &&
@@ -37,45 +34,45 @@ const addToHistory = (path: string, setHistory: (history: string[]) => void) => 
         !p.startsWith("/portal/form")
     );
     updatedHistory.push(path);
-    history = updatedHistory;
+    setHistory(updatedHistory);
   }
-
-  sessionStorage.setItem("navigationHistory", JSON.stringify(history));
-  setHistory(history);
 };
 
-const removeFromHistory = (setHistory: (history: string[]) => void) => {
-  let history = initializeHistory(); 
+// Remove o último item do histórico (usado quando o usuário navega para trás)
+const removeFromHistory = (
+  history: string[],
+  setHistory: (history: string[]) => void
+) => {
   if (history.length > 1) {
-    history.pop(); 
-    sessionStorage.setItem("navigationHistory", JSON.stringify(history));
-    setHistory(history); 
+    const updatedHistory = [...history]; // Cria uma cópia do histórico
+    updatedHistory.pop(); // Remove o último item
+    setHistory(updatedHistory); // Atualiza o estado local
   }
 };
 
 const useNavigationHistory = () => {
   const location = useLocation();
-  const [history, setHistory] = useState<string[]>(initializeHistory); 
+  const [history, setHistory] = useState<string[]>([]); // Inicializa o histórico como array vazio
 
   useEffect(() => {
-  
-    addToHistory(location.pathname, setHistory);
+    // Atualiza o histórico quando a rota mudar
+    addToHistory(location.pathname, history, setHistory);
   }, [location]);
 
   useEffect(() => {
-  
+    // Detecta a navegação "para trás" e ajusta o histórico
     const handlePopState = () => {
-      removeFromHistory(setHistory); 
+      removeFromHistory(history, setHistory); // Remove a última URL quando o usuário navega para trás
     };
 
     window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("popstate", handlePopState); // Limpa o evento quando o componente for desmontado
     };
-  }, []);
+  }, [history]);
 
-  return history;
+  return history; // Retorna o histórico atualizado
 };
 
 export default useNavigationHistory;
