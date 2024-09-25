@@ -88,8 +88,8 @@ function Dashboard() {
               <ProfileMenu />
             </Flex>
           </Flex>
-          <Flex minH="100vh" w="100%" ml={12} bg="bg.page">
-            {/* <Breadcrumb /> */}
+          <Flex minH="100vh" w="100%" ml={12} bg="bg.page" direction="column">
+            <Breadcrumb />
             <Outlet />
           </Flex>
         </Flex>

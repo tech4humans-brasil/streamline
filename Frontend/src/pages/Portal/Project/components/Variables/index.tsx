@@ -68,8 +68,6 @@ const VariableForm: React.FC<VariableFormProps> = () => {
 
   const project = params.project;
 
-  console.log(project);
-
   const {
     data: variables,
     isLoading,

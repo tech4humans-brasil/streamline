@@ -74,8 +74,6 @@ function App() {
       .filter(Boolean);
   }, [permissions]);
 
-  console.log(privateRoutesPermitted);
-
   useEffect(() => {
     ReactGA.send({
       hitType: "pageview",

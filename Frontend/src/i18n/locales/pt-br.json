@@ -247,7 +247,8 @@
     "created": "Template criado com sucesso",
     "edited": "Template editado com sucesso",
     "cancel": "Cancelar",
-    "submit": "Salvar Alterações"
+    "submit": "Salvar Alterações",
+    "title": "Email"
   },
   "users": {
     "title": "Usuários",
@@ -324,6 +325,7 @@
     "error": "Erro ao carregar fluxo"
   },
   "workflow": {
+    "title": "Fluxo",
     "create": "Criar fluxo",
     "edit": "Editar fluxo",
     "created": "Fluxo criado com sucesso",
@@ -356,6 +358,12 @@
         "title": "Alterar status"
       }
     }
+  },
+  "workflow-draft": {
+    "title": "Rascunho"
+  },
+  "form-draft": {
+    "title": "Rascunho"
   },
   "workflowDraft": {
     "title": "Rascunho",

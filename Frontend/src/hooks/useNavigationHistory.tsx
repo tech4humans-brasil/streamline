@@ -1,84 +1,100 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 
-// Verifica se o caminho é válido (projeto ou rotas filhas permitidas)
-const isValidPath = (path: string) => {
-  const validChildren = [
-    "/portal/workflow",
-    "/portal/schedule",
-    "/portal/status",
-    "/portal/form",
-  ];
-
-  if (path.startsWith("/portal/project?project=")) {
-    return true;
-  }
-
-  return validChildren.some((childPath) => path.startsWith(childPath));
-};
-
-// Adiciona um caminho ao histórico e atualiza o estado local
-const addToHistory = (
-  path: string,
-  history: string[],
-  setHistory: (history: string[]) => void
-) => {
-  if (path.startsWith("/portal/projects/")) {
-    // Reseta o histórico se for um projeto
-    setHistory([path]);
-  } else if (isValidPath(path)) {
-    // Verifica se o caminho não é igual ao último no histórico
-    const lastPath = history[history.length - 1];
-    if (lastPath !== path) {
-      const updatedHistory = history.filter(
-        (p: string) =>
-          !p.startsWith("/portal/workflow") &&
-          !p.startsWith("/portal/schedule") &&
-          !p.startsWith("/portal/status") &&
-          !p.startsWith("/portal/form")
-      );
-      updatedHistory.push(path);
-      setHistory(updatedHistory);
-    }
-  }
-};
-
-// Remove o último item do histórico (usado quando o usuário navega para trás)
-const removeFromHistory = (
-  history: string[],
-  setHistory: (history: string[]) => void
-) => {
-  if (history.length > 1) {
-    const updatedHistory = [...history]; // Cria uma cópia do histórico
-    updatedHistory.pop(); // Remove o último item
-    setHistory(updatedHistory); // Atualiza o estado local
-  }
-};
+const validChildren = [
+  "/portal/workflow/",
+  "/portal/schedule/",
+  "/portal/status/",
+  "/portal/form/",
+  "/portal/email/",
+  "portal/form-draft/",
+  "/portal/workflow-draft/",
+  "/portal/projects/",
+];
 
 const useNavigationHistory = () => {
   const location = useLocation();
-  const [history, setHistory] = useState<string[]>([]); // Inicializa o histórico como array vazio
+  const [history, setHistory] = useState<string[]>([]);
+
+  const isValidPath = useCallback((path: string) => {
+    if (path.startsWith("/portal/project")) {
+      return true;
+    }
+
+    return validChildren.some((childPath) => path.startsWith(childPath));
+  }, []);
+
+  const addToHistory = useCallback(
+    (
+      path: string,
+      history: string[],
+      setHistory: (history: string[] | ((prev: string[]) => string[])) => void
+    ) => {
+      if (!validChildren.some((childPath) => path.startsWith(childPath))) {
+        setHistory([]);
+        return;
+      }
+
+      if (path.startsWith("/portal/projects/")) {
+        setHistory([path]);
+      } else if (isValidPath(path) && history.length > 0) {
+        const lastPath = history[history.length - 1];
+        if (lastPath !== path) {
+          if (
+            path.startsWith("/portal/workflow-draft") ||
+            path.startsWith("/portal/form-draft")
+          ) {
+            setHistory((prev) => prev.concat(path));
+          } else {
+            setHistory((prev) =>
+              prev
+                .filter(
+                  (p) =>
+                    !p.startsWith("/portal/workflow") &&
+                    !p.startsWith("/portal/schedule") &&
+                    !p.startsWith("/portal/status") &&
+                    !p.startsWith("/portal/form") &&
+                    !p.startsWith("/portal/email") &&
+                    !p.startsWith("/portal/formDraft") &&
+                    !p.startsWith("/portal/workDraft")
+                )
+                .concat(path)
+            );
+          }
+        }
+      }
+    },
+    [isValidPath]
+  );
+
+  const removeFromHistory = useCallback(
+    (history: string[], setHistory: (history: string[]) => void) => {
+      if (history.length > 1) {
+        const updatedHistory = [...history];
+        updatedHistory.pop();
+        setHistory(updatedHistory);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    // Atualiza o histórico quando a rota mudar
     addToHistory(location.pathname, history, setHistory);
-    // Adiciona 'history' como dependência para garantir que ele seja atualizado corretamente
-  }, [location.pathname, history]);
+  }, [location.pathname]);
 
   useEffect(() => {
-    // Detecta a navegação "para trás" e ajusta o histórico
     const handlePopState = () => {
-      removeFromHistory(history, setHistory); // Remove a última URL quando o usuário navega para trás
+      removeFromHistory(history, setHistory);
     };
 
     window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener("popstate", handlePopState); // Limpa o evento quando o componente for desmontado
+      window.removeEventListener("popstate", handlePopState);
     };
   }, [history]);
 
-  return history; // Retorna o histórico atualizado
+  return history;
 };
 
 export default useNavigationHistory;
