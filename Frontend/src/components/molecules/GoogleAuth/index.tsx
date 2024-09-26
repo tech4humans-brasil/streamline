@@ -11,7 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useCallback } from "react";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -19,6 +19,9 @@ const GoogleAuth = () => {
   const toast = useToast();
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const redirect = searchParams.get("redirect") ?? "/portal";
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: samlGoogle,
@@ -36,7 +39,7 @@ const GoogleAuth = () => {
           user?.roles.includes(IUserRoles.admin) &&
           !user.tutorials.includes("first-page")
             ? "/welcome"
-            : "/portal"
+            : redirect
         }`
       );
     },

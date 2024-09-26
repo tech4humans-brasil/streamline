@@ -44,7 +44,7 @@ const Login: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
-  const redirect = searchParams.get("redirect") ?? "/";
+  const redirect = searchParams.get("redirect") ?? "/portal";
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -58,8 +58,6 @@ const Login: React.FC = () => {
   });
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
-
-  console.log("redirect", redirect);
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: login,

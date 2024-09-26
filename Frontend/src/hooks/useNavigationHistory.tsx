@@ -7,7 +7,7 @@ const validChildren = [
   "/portal/status/",
   "/portal/form/",
   "/portal/email/",
-  "portal/form-draft/",
+  "/portal/form-draft/",
   "/portal/workflow-draft/",
   "/portal/projects/",
 ];
@@ -17,10 +17,6 @@ const useNavigationHistory = () => {
   const [history, setHistory] = useState<string[]>([]);
 
   const isValidPath = useCallback((path: string) => {
-    if (path.startsWith("/portal/project")) {
-      return true;
-    }
-
     return validChildren.some((childPath) => path.startsWith(childPath));
   }, []);
 
