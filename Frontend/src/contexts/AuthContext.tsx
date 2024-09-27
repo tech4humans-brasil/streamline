@@ -11,7 +11,6 @@ import { jwtDecode } from "jwt-decode";
 import api from "@services/api";
 import { useQueryClient } from "@tanstack/react-query";
 import assistant from "@services/assistant";
-import { useLocation, useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   token: JwtData | null;
