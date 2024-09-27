@@ -14,6 +14,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import Accordion from "@components/atoms/Accordion";
 import IForm from "@interfaces/Form";
 import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
@@ -42,10 +43,13 @@ const NewTicket: React.FC = () => {
 
   const filteredForms = useMemo(() => {
     if (!forms) return [];
-    return forms.filter(
-      (form) =>
-        form.name.toLowerCase().includes(search.toLowerCase()) ||
-        form.description.toLowerCase().includes(search.toLowerCase())
+
+    return forms.filter((form) =>
+      form.forms.some(
+        (f) =>
+          f.name.toLowerCase().includes(search.toLowerCase()) ||
+          f.description.toLowerCase().includes(search.toLowerCase())
+      )
     );
   }, [forms, search]);
 
@@ -85,13 +89,26 @@ const NewTicket: React.FC = () => {
         </Center>
       )}
 
-      {filteredForms && (
-        <Flex gap={4} mt={4} width="100%" direction={"column"}>
-          {filteredForms?.map((form) => (
-            <FormItem key={form._id} form={form} />
-          ))}
-        </Flex>
-      )}
+      <Accordion.Container
+        defaultIndex={[0, 1, 2, 3]}
+        allowToggle
+        allowMultiple
+      >
+        {filteredForms?.map((form) => (
+          <Accordion.Item key={form.institute?._id}>
+            <Accordion.Button>
+              {form.institute?.name ?? "Sem Responsável"}
+            </Accordion.Button>
+            <Accordion.Panel>
+              <Flex gap={4} mt={4} width="100%" direction={"column"}>
+                {form.forms?.map((form) => (
+                  <FormItem key={form._id} form={form} />
+                ))}
+              </Flex>
+            </Accordion.Panel>
+          </Accordion.Item>
+        ))}
+      </Accordion.Container>
     </Box>
   );
 };
@@ -99,7 +116,7 @@ const NewTicket: React.FC = () => {
 export default NewTicket;
 
 interface ActivityItemProps {
-  form: IForm;
+  form: Pick<IForm, "name" | "description" | "period" | "slug">;
 }
 
 const FormItem: React.FC<ActivityItemProps> = memo(({ form }) => {

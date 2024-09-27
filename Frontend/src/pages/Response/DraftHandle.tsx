@@ -8,68 +8,71 @@ import { MdCheck, MdError } from "react-icons/md";
 interface DraftHandleProps {
   form_id?: string | null;
   activity_id?: string | null;
+  isSubmitting: boolean;
 }
 
-const DraftHandle: React.FC<DraftHandleProps> = memo(({ form_id, activity_id }) => {
-  const { data: draftAnswer } = useQuery({
-    queryKey: ["form", form_id ?? "", "draft-answer", activity_id ?? ""],
-    queryFn: getDraftAnswer,
-    enabled: !!form_id,
-  });
+const DraftHandle: React.FC<DraftHandleProps> = memo(
+  ({ form_id, activity_id, isSubmitting }) => {
+    const { data: draftAnswer } = useQuery({
+      queryKey: ["form", form_id ?? "", "draft-answer", activity_id ?? ""],
+      queryFn: getDraftAnswer,
+      enabled: !!form_id,
+    });
 
-  const methods = useFormContext();
-  const lastSaveDate = useRef(new Date());
+    const methods = useFormContext();
+    const lastSaveDate = useRef(new Date());
 
-  const {
-    formState: { isDirty },
-    reset,
-  } = methods;
+    const {
+      formState: { isDirty },
+      reset,
+    } = methods;
 
-  const { mutateAsync, isPending, isError, isSuccess } = useMutation({
-    mutationFn: saveDraft,
-  });
+    const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+      mutationFn: saveDraft,
+    });
 
-  useEffect(() => {
-    if (draftAnswer) {
-      reset(draftAnswer.data);
-    }
-  }, [draftAnswer, reset]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isDirty) {
-        mutateAsync({
-          activityId: activity_id ?? "",
-          formId: form_id ?? "",
-          data: methods.getValues(),
-        });
-        lastSaveDate.current = new Date();
+    useEffect(() => {
+      if (draftAnswer) {
+        reset(draftAnswer.data);
       }
-    }, 5000);
+    }, [draftAnswer, reset]);
 
-    return () => clearInterval(interval);
-  }, [isDirty, methods, mutateAsync, form_id]);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        if (isDirty && !isSubmitting) {
+          mutateAsync({
+            activityId: activity_id ?? "",
+            formId: form_id ?? "",
+            data: methods.getValues(),
+          });
+          lastSaveDate.current = new Date();
+        }
+      }, 5000);
 
-  return (
-    <Flex p={0} w="100%" justify={"end"} alignItems={"center"} gap="2" mb="2">
-      {isPending && <Spinner size="sm" color="blue.500" />}
-      {isPending && <Span>Salvando rascunho...</Span>}
-      {isError && (
-        <>
-          <Icon as={MdError} color="red.500" />
-          <Span>Erro ao salvar rascunho</Span>
-        </>
-      )}
+      return () => clearInterval(interval);
+    }, [isDirty, methods, mutateAsync, form_id, isSubmitting, activity_id]);
 
-      {isSuccess && (
-        <>
-          <Icon as={MdCheck} color="green.500" />
-          <Span>Rascunho salvo com sucesso</Span>
-        </>
-      )}
-    </Flex>
-  );
-});
+    return (
+      <Flex p={0} w="100%" justify={"end"} alignItems={"center"} gap="2" mb="2">
+        {isPending && <Spinner size="sm" color="blue.500" />}
+        {isPending && <Span>Salvando rascunho...</Span>}
+        {isError && (
+          <>
+            <Icon as={MdError} color="red.500" />
+            <Span>Erro ao salvar rascunho</Span>
+          </>
+        )}
+
+        {isSuccess && (
+          <>
+            <Icon as={MdCheck} color="green.500" />
+            <Span>Rascunho salvo com sucesso</Span>
+          </>
+        )}
+      </Flex>
+    );
+  }
+);
 
 export default DraftHandle;
 

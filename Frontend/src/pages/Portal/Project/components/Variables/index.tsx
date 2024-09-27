@@ -75,6 +75,7 @@ const VariableForm: React.FC<VariableFormProps> = () => {
   } = useQuery({
     queryKey: ["variables", project ?? ""],
     queryFn: getVariables,
+    enabled: !!project,
   });
 
   const { mutateAsync, isPending } = useMutation({

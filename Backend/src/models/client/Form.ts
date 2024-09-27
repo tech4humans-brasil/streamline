@@ -17,7 +17,7 @@ export type IForm = {
   description: string;
   published: ObjectId | string | null;
   institute: [ObjectId | string] | null;
-  visibilities: [ObjectId | string] | null;
+  visibilities: Array<ObjectId | string> | null;
   workflow: ObjectId | string | null;
   project: ObjectId | string | null;
 } & mongoose.Document;

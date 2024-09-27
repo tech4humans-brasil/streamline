@@ -52,9 +52,7 @@ const Response: React.FC<ResponseProps> = memo(() => {
     resolver: zodResolver(schema),
   });
 
-  const {
-    handleSubmit,
-  } = methods;
+  const { handleSubmit } = methods;
 
   console.log("form", methods.formState.errors);
 
@@ -151,7 +149,11 @@ const Response: React.FC<ResponseProps> = memo(() => {
             <Divider my={4} />
           </Box>
           <FormProvider {...methods}>
-            <DraftHandle form_id={form?._id} activity_id={activity_id} />
+            <DraftHandle
+              form_id={form?._id}
+              activity_id={activity_id}
+              isSubmitting={isSubmitting}
+            />
             <form onSubmit={onSubmit}>
               <Flex direction="column" align="center" justify="center" gap="3">
                 <Inputs fields={form?.published?.fields ?? []} />

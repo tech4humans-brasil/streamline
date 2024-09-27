@@ -44,12 +44,30 @@ export const getMyActivities = async ({
   return res.data.data;
 };
 
+interface IOpenForm {
+  institute: {
+    _id: string;
+    name: string;
+    acronym: string;
+  } | null;
+  forms: Pick<
+    IForm,
+    | "_id"
+    | "name"
+    | "slug"
+    | "description"
+    | "period"
+    | "published"
+    | "visibilities"
+  >[];
+}
+
 export const getOpenForms = async ({
   queryKey: [, page = "1", limit = "10"],
 }: {
   queryKey: string[];
 }) => {
-  const res = await api.get<Response<IForm[]>>("/dashboard/open-forms", {
+  const res = await api.get<Response<IOpenForm[]>>("/dashboard/open-forms", {
     params: { page, limit },
   });
 
@@ -147,9 +165,12 @@ export const getMyActivitiesTracking = async ({
 }: {
   queryKey: string[];
 }) => {
-  const res = await api.get<ReqMyActivities>("/dashboard/my-activity-tracking", {
-    params: { page, limit },
-  });
+  const res = await api.get<ReqMyActivities>(
+    "/dashboard/my-activity-tracking",
+    {
+      params: { page, limit },
+    }
+  );
 
   return res.data.data;
-}
+};

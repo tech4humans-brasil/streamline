@@ -11,6 +11,8 @@ export default function useProject() {
   const { project = "" } = useParams<{ project: string }>() || {};
   const params = searchParams.toString() + "&project=" + project;
 
+  console.log("params", params);
+
   const hasProject = !!project;
 
   const formsQuery = useQuery({
@@ -26,20 +28,21 @@ export default function useProject() {
   });
 
   const statusQuery = useQuery({
-    queryKey: ["statuses", searchParams.toString()],
+    queryKey: ["statuses", params],
     queryFn: getStatuses,
     enabled: !!hasProject,
   });
 
   const emailQuery = useQuery({
-    queryKey: ["emails", searchParams.toString()],
+    queryKey: ["emails", params],
     queryFn: getEmails,
     enabled: !!hasProject,
   });
 
   const scheduleQuery = useQuery({
-    queryKey: ["schedules", searchParams.toString()],
+    queryKey: ["schedules", params],
     queryFn: getSchedules,
+    enabled: !!hasProject,
   });
 
   return {

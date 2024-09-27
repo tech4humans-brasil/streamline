@@ -50,17 +50,16 @@ const Inputs: React.FC<Props> = memo(({ fields }) => {
     const FieldComponent =
       fieldComponents[input.type as keyof typeof fieldComponents];
 
-    console.log(input);
+    if (!FieldComponent) {
+      return null;
+    }
+
     return (
-      <>
-        {FieldComponent && (
-          <FieldComponent
-            // @ts-ignore
-            input={input}
-            isMulti={input.type === "multiselect"}
-          />
-        )}
-      </>
+      <FieldComponent
+        // @ts-ignore
+        input={input}
+        isMulti={input.type === "multiselect"}
+      />
     );
   }, []);
 

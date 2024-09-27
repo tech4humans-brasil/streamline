@@ -75,6 +75,19 @@ const statusSchema = z
       message: "É necessário selecionar um status inicial",
       path: ["initial_status"],
     }
+  )
+  .refine(
+    (data) => {
+      if (data.type !== "interaction") {
+        return !!data.visibilities;
+      }
+      return true;
+    },
+    {
+      message:
+        "É necessário selecionar um grupo que irá visualizar as atividades",
+      path: ["visibilities"],
+    }
   );
 
 type StatusFormSchema = z.infer<typeof statusSchema>;
@@ -256,6 +269,7 @@ export default function Workflow() {
                       id: "visibilities",
                       label: t("common.fields.visibilities"),
                       options: formsData?.institutes ?? [],
+                      required: true,
                     }}
                     isLoading={isLoadingForms}
                     isMulti
