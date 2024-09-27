@@ -9,7 +9,6 @@ import Filter from "@components/organisms/Filter";
 import Text from "@components/atoms/Inputs/Text";
 import { getActivities } from "@apis/activity";
 import IActivity from "@interfaces/Activitiy";
-import Switch from "@components/atoms/Inputs/Switch";
 import { useTranslation } from "react-i18next";
 import Select from "@components/atoms/Inputs/Select";
 
