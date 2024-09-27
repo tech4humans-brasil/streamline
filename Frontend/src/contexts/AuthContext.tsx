@@ -11,6 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import api from "@services/api";
 import { useQueryClient } from "@tanstack/react-query";
 import assistant from "@services/assistant";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   token: JwtData | null;
@@ -35,6 +36,7 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
       setToken(null);
       api.defaults.headers["Authorization"] = "";
       queryClient.clear();
+      window.location.href = `/?redirect=${location.pathname}`;
       return;
     }
 
@@ -54,6 +56,10 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     const token = localStorage.getItem("token");
     if (token) {
       setTokenValue(token);
+    } else {
+      if (location.pathname !== "/") {
+        window.location.href = `/?redirect=${location.pathname}`;
+      }
     }
   }, [setTokenValue]);
 
