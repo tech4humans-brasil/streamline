@@ -32,6 +32,7 @@ const handler: HttpHandler = async (conn, req) => {
       }
       for (const field of answers.data.fields) {
         if (field.type === FieldTypes.File) {
+          if (!field.value) continue;
           await blobUploader.updateSas(field.value);
         }
       }
