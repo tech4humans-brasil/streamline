@@ -75,7 +75,8 @@ export default new Http(handler)
       }),
       description: schema.string().optional().nullable().default(""),
       published: schema.string().optional().nullable().default(null),
-      institute: schema.string().nullable().default(null),
+      institute: schema.array(schema.string()).default([]),
+      visibilities: schema.array(schema.string()).default([]),
     }),
   }))
   .configure({

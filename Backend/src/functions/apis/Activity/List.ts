@@ -5,6 +5,8 @@ import FilterQueryBuilder, {
   WhereEnum,
 } from "../../../utils/filterQueryBuilder";
 import { IUserRoles } from "../../../models/client/User";
+import FormRepository from "../../../repositories/Form";
+import { ObjectId } from "mongoose";
 
 interface Query {
   page?: number;
@@ -13,6 +15,8 @@ interface Query {
   protocol?: string;
   status?: string;
   finished_at?: boolean;
+  user?: string;
+  form?: string;
 }
 
 const filterQueryBuilder = new FilterQueryBuilder(
@@ -24,6 +28,11 @@ const filterQueryBuilder = new FilterQueryBuilder(
     },
     protocol: WhereEnum.ILIKE,
     finished_at: WhereEnum.CUSTOM,
+    user: {
+      type: WhereEnum.EQUAL,
+      alias: "users._id",
+    },
+    form: WhereEnum.ARRAY,
   },
   {
     finished_at: (value) => ({
@@ -37,33 +46,40 @@ const handler: HttpHandler = async (conn, req) => {
   const isAdmin = req.user.roles.includes(IUserRoles.admin);
 
   const activityRepository = new ActivityRepository(conn);
+  const formRepository = new FormRepository(conn);
+
+  if (!isAdmin) {
+    const visibilities = await formRepository.find({
+      select: {
+        _id: 1,
+      },
+      where: {
+        visibilities: {
+          $in: [req.user.institute._id],
+        },
+      },
+    });
+
+    if (visibilities.length > 0) {
+      filters.form = visibilities.map((v) => v._id).join(",");
+    }
+  }
 
   const where = filterQueryBuilder.build(filters);
 
-  console.log("where", where);
-
   const activities = await activityRepository.find({
     skip: (page - 1) * limit,
-    where: isAdmin
-      ? where
-      : {
-          ...where,
-          $and: [
-            {
-              $or: [
-                {
-                  "users._id": req.user.id,
-                },
-              ],
-            },
-          ],
-        },
+    where,
     limit,
     select: {
       name: 1,
       protocol: 1,
       status: 1,
       users: 1,
+      finished_at: 1,
+    },
+    sort: {
+      createdAt: -1,
     },
   });
 

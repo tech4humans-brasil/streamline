@@ -4,6 +4,8 @@ import { IStatus } from "./Status";
 import { IFormDraft, schema as schemaFormDraft } from "./FormDraft";
 import { IWorkflowDraft } from "./WorkflowDraft";
 import { IForm } from "./Form";
+import { finished } from "node:stream";
+import { created } from "../../utils/apiResponse";
 
 export enum IActivityState {
   finished = "finished",
@@ -246,15 +248,17 @@ export const schema: Schema = new Schema<IActivity>(
   {
     timestamps: true,
   }
-).pre<IActivity>("save", function (next) {
-  if (!this.isNew) {
-    return next();
-  }
-  const year = new Date().getFullYear();
-  const timestamp = new Date().getTime().toString().slice(-5);
-  this.protocol = `${year}${timestamp}`;
-  next();
-});
+)
+  .pre<IActivity>("save", function (next) {
+    if (!this.isNew) {
+      return next();
+    }
+    const year = new Date().getFullYear();
+    const timestamp = new Date().getTime().toString().slice(-5);
+    this.protocol = `${year}${timestamp}`;
+    next();
+  })
+  .index({ createdAt: -1 }, { unique: false });
 
 export default class Activity {
   conn: mongoose.Connection;

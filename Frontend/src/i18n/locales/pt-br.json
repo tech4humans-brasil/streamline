@@ -23,6 +23,7 @@
     "create": "Criar",
     "fields": {
       "name": "Nome",
+      "visibilities": "Visualizadores",
       "description": "Descrição",
       "start": "Início",
       "end": "Fim",

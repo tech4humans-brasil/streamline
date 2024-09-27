@@ -33,6 +33,10 @@ const columns = [
     key: "actions",
     label: "common.fields.actions",
   },
+  {
+    key: "finished_at",
+    label: "common.fields.finished",
+  },
 ];
 
 const Action = memo((activity: Pick<IActivity, "_id">) => {
@@ -73,6 +77,9 @@ const Activities: React.FC = () => {
       status: activity.status.name,
       users: activity.users.map((user) => user.name).join(", "),
       actions: <Action {...activity} />,
+      finished_at: activity.finished_at
+        ? new Date(activity.finished_at).toLocaleString()
+        : "-",
     }));
   }, [activities]);
 

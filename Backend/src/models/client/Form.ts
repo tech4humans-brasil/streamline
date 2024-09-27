@@ -16,7 +16,8 @@ export type IForm = {
   active: boolean;
   description: string;
   published: ObjectId | string | null;
-  institute: ObjectId | string | null;
+  institute: [ObjectId | string] | null;
+  visibilities: [ObjectId | string] | null;
   workflow: ObjectId | string | null;
   project: ObjectId | string | null;
 } & mongoose.Document;
@@ -41,7 +42,10 @@ export const schema = new Schema<IForm>(
     workflow: { type: Schema.Types.ObjectId, ref: "Workflow", default: null },
     description: { type: String, required: false, default: "" },
     published: { type: Schema.Types.ObjectId, ref: "FormDraft", default: null },
-    institute: { type: Schema.Types.ObjectId, ref: "Institute", default: null },
+    institute: [
+      { type: Schema.Types.ObjectId, ref: "Institute", default: null },
+    ],
+    visibilities: [{ type: Schema.Types.ObjectId, ref: "Institute", default: null }],
     project: {
       type: Schema.Types.ObjectId,
       ref: "Project",

@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 export enum WhereEnum {
   EQUAL = "equal",
   NUMBER = "number",

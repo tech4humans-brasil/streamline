@@ -10,7 +10,7 @@ type ReqActivities = Response<
   {
     activities: Pick<
       IActivity,
-      "_id" | "name" | "status" | "users" | "protocol"
+      "_id" | "name" | "status" | "users" | "protocol" | "finished_at"
     >[];
   } & IPagination
 >;

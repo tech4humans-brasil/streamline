@@ -16,12 +16,12 @@ const handler: HttpHandler = async (conn, req) => {
             $or: [
               {
                 institute: {
-                  $eq: req.user.institute._id,
+                  $in: [req.user.institute],
                 },
               },
               {
-                institute: {
-                  $eq: null,
+                institutes: {
+                  $eq: [],
                 },
               },
             ],

@@ -49,7 +49,8 @@ const statusSchema = z
       .string()
       .max(512, "O tamanho máximo é 512 caracteres")
       .min(3, "Minimo 3 letras"),
-    institute: z.string().optional().nullable(),
+    institute: z.array(z.string()).optional().nullable(),
+    visibilities: z.array(z.string()).optional().nullable(),
   })
   .refine(
     (data) => {
@@ -177,7 +178,7 @@ export default function Workflow() {
           borderRadius={8}
           h="fit-content"
           w="100%"
-          maxW="600px"
+          maxW="900px"
         >
           <CardHeader>
             <Flex align="center" justify="space-between">
@@ -214,6 +215,23 @@ export default function Workflow() {
               }}
             />
 
+            <Select
+              input={{
+                id: "type",
+                label: t("common.fields.type"),
+                required: true,
+                options: [
+                  { label: t("form.type.created"), value: "created" },
+                  { label: t("form.type.interaction"), value: "interaction" },
+                  {
+                    label: t("form.type.time-trigger"),
+                    value: "time-trigger",
+                  },
+                ],
+                isDisabled: isEditing,
+              }}
+            />
+
             <Text
               input={{
                 id: "slug",
@@ -222,37 +240,31 @@ export default function Workflow() {
               }}
             />
             <Flex gap="4">
-              <Select
-                input={{
-                  id: "type",
-                  label: t("common.fields.type"),
-                  required: true,
-                  options: [
-                    { label: t("form.type.created"), value: "created" },
-                    { label: t("form.type.interaction"), value: "interaction" },
-                    {
-                      label: t("form.type.time-trigger"),
-                      value: "time-trigger",
-                    },
-                  ],
-                  isDisabled: isEditing,
-                }}
-              />
-
               {(isCreated || isTimerTrigger) && (
-                <Select
-                  input={{
-                    id: "initial_status",
-                    label: t("common.fields.initialStatus"),
-                    required: true,
-                    options: formsData?.status ?? [],
-                  }}
-                  isLoading={isLoadingForms}
-                />
+                <>
+                  <Select
+                    input={{
+                      id: "initial_status",
+                      label: t("common.fields.initialStatus"),
+                      required: true,
+                      options: formsData?.status ?? [],
+                    }}
+                    isLoading={isLoadingForms}
+                  />
+                  <Select
+                    input={{
+                      id: "visibilities",
+                      label: t("common.fields.visibilities"),
+                      options: formsData?.institutes ?? [],
+                    }}
+                    isLoading={isLoadingForms}
+                    isMulti
+                  />
+                </>
               )}
             </Flex>
 
-            <Flex gap="4">
+            <Flex gap="4" direction={["column", "row"]}>
               {isCreated && (
                 <>
                   <Select
@@ -271,6 +283,7 @@ export default function Workflow() {
                       options: formsData?.institutes ?? [],
                     }}
                     isLoading={isLoadingForms}
+                    isMulti
                   />
                 </>
               )}

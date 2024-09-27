@@ -6,6 +6,8 @@ type IForm = {
   type: "created" | "interaction" | "time-trigger";
   period: { open?: string | null; close?: string | null };
   description: string;
+  institute: [string] | null;
+  visibilities: [string] | null;
 } & (
   | {
       type: "created";
