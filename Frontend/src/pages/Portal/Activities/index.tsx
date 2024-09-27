@@ -11,6 +11,7 @@ import { getActivities } from "@apis/activity";
 import IActivity from "@interfaces/Activitiy";
 import Switch from "@components/atoms/Inputs/Switch";
 import { useTranslation } from "react-i18next";
+import Select from "@components/atoms/Inputs/Select";
 
 const columns = [
   {
@@ -104,11 +105,14 @@ const Activities: React.FC = () => {
 
         <Text input={{ label: t("common.fields.status"), id: "status" }} />
 
-        <Switch
+        <Select
           input={{
             label: t("common.fields.finished"),
-            id: "finished_at",
-            defaultValue: false,
+            id: "finished",
+            options: [
+              { label: t("common.fields.yes"), value: "true" },
+              { label: t("common.fields.no"), value: "false" },
+            ],
           }}
         />
       </Filter.Container>

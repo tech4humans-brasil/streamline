@@ -23,6 +23,9 @@
     "create": "Criar",
     "fields": {
       "name": "Nome",
+      "yes": "Sim",
+      "no": "Não",
+      "all": "Todos",
       "visibilities": "Visualizadores",
       "description": "Descrição",
       "start": "Início",

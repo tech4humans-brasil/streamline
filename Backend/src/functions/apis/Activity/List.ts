@@ -27,7 +27,7 @@ const filterQueryBuilder = new FilterQueryBuilder(
       alias: "status.name",
     },
     protocol: WhereEnum.ILIKE,
-    finished_at: WhereEnum.CUSTOM,
+    finished: { type: WhereEnum.CUSTOM, alias: "finished_at" },
     user: {
       type: WhereEnum.EQUAL,
       alias: "users._id",
@@ -35,8 +35,9 @@ const filterQueryBuilder = new FilterQueryBuilder(
     form: WhereEnum.ARRAY,
   },
   {
-    finished_at: (value) => ({
-      $ne: value === "true" ? null : undefined,
+    finished: (value: string) => ({
+      ...(value === "true" && { $ne: null }),
+      ...(value === "false" && { $eq: null }),
     }),
   }
 );
