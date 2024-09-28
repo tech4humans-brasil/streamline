@@ -12,7 +12,9 @@ export function convertDateTime(
 
   try {
     const d = new Date(date);
-    return Intl.DateTimeFormat("pt-BR", options).format(d);
+    return Intl.DateTimeFormat("pt-BR", { ...options, timeZone: "UTC" }).format(
+      d
+    );
   } catch (error) {
     return date.toLocaleString();
   }
