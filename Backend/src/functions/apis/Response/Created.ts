@@ -15,6 +15,8 @@ import sendNextQueue from "../../../utils/sendNextQueue";
 import sbusOutputs from "../../../utils/sbusOutputs";
 import WorkflowDraftRepository from "../../../repositories/WorkflowDraft";
 import WorkflowRepository from "../../../repositories/Workflow";
+import { sendEmail } from "../../../services/email";
+import emailTemplate from "../../../utils/emailTemplate";
 
 interface IUser {
   _id: ObjectId;
@@ -142,6 +144,23 @@ export const handler: HttpHandler = async (conn, req, context) => {
   activity.workflows[0].steps[0].status = IActivityStepStatus.finished;
 
   await activity.save();
+
+  const content = `
+    <p>Olá, ${user.name}!</p>
+    <p>Seu ticket foi criada com sucesso.</p>
+    <p>Protocolo: ${activity.protocol}</p>
+    <p>Descrição: ${activity.description}</p>
+    <a href="${process.env.FRONTEND_URL}/portal/activity/${activity._id}">Acessar o painel</a>
+`;
+
+  const { html, css } = emailTemplate(content);
+
+  await sendEmail(
+    user.email,
+    `[${activity.protocol}] - Seu ticket foi criado com sucesso!`,
+    html,
+    css
+  );
 
   await answers;
 

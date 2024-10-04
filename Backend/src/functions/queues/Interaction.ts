@@ -7,6 +7,8 @@ import ActivityRepository from "../../repositories/Activity";
 import FormRepository from "../../repositories/Form";
 import InstituteRepository from "../../repositories/Institute";
 import UserRepository from "../../repositories/User";
+import { sendEmail } from "../../services/email";
+import emailTemplate from "../../utils/emailTemplate";
 import sendNextQueue from "../../utils/sendNextQueue";
 
 interface TMessage extends GenericMessage {}
@@ -126,6 +128,27 @@ const handler: QueueWrapperHandler<TMessage> = async (
     });
 
     await activity.save();
+
+    const content = `
+    <p>Olá, ${users.map((u) => u.name).join(", ")}!</p>
+    <p>O formulário "${form.name}" foi enviado para você.</p>
+    <p>Acesse o painel para responder.</p> 
+    ${
+      waitForOne
+        ? "<p>Este formulário é necessário resposta de pelo menos um usuário.</p>"
+        : "Este formulário é necessário resposta de todos os usuários."
+    }
+    <a href="${process.env.FRONTEND_URL}/portal">Acessar o painel</a>
+`;
+
+    const { html, css } = emailTemplate(content);
+
+    await sendEmail(
+      users.map((u) => u.email),
+      `[${activity.protocol}] - Você possui uma nova pendência!`,
+      html,
+      css
+    );
   } catch (err) {
     console.error(err);
     throw err;

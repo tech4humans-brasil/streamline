@@ -5,6 +5,8 @@ import QueueWrapper, {
 import { IChangeStatus, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
 import StatusRepository from "../../repositories/Status";
+import { sendEmail } from "../../services/email";
+import emailTemplate from "../../utils/emailTemplate";
 import sendNextQueue from "../../utils/sendNextQueue";
 
 interface TMessage extends GenericMessage {}
@@ -71,6 +73,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error("Status not found");
     }
 
+    const lastStatus = activity.status;
     activity.status = status;
 
     await sendNextQueue({
@@ -80,6 +83,25 @@ const handler: QueueWrapperHandler<TMessage> = async (
     });
 
     await activity.save();
+
+    const content = `
+    <p>Olá, ${activity.users.at(0).name}!</p>
+    <p>A atividade "${activity.name}" mudou de status para "${status.name}".</p>
+    <p>Anteriormente, o status era "${lastStatus.name}".</p>
+    <p>Para mais informações, acesse o sistema.</p>
+    <a href="${process.env.FRONTEND_URL}/portal/atividades/${
+      activity._id
+    }">Acessar o painel</a>
+`;
+
+    const { html, css } = emailTemplate(content);
+
+    await sendEmail(
+      activity.users.map((user) => user.email),
+      `[${activity.protocol}] - Sua atividade mudou de status!`,
+      html,
+      css
+    );
   } catch (err) {
     console.error(err);
     throw err;

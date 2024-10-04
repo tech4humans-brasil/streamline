@@ -25,7 +25,7 @@ import { FaPlus, FaShare, FaTrash } from "react-icons/fa";
 import { z } from "zod";
 import Select from "../Inputs/Select";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const schema = z
   .object({
@@ -40,15 +40,22 @@ const schema = z
       })
     ),
   })
-  .refine((data) => {
-    const hasUser = data.permissions.some((p) => (p.type = "user"));
+  .refine(
+    (data) => {
+      const hasUser = data.permissions.some((p) => (p.type = "user"));
+      console.log("hasUser", hasUser);
 
-    if (!hasUser) {
-      return false;
+      if (!hasUser) {
+        return false;
+      }
+
+      return true;
+    },
+    {
+      message: "Selecione pelo menos um usuário",
+      path: ["permissions"],
     }
-
-    return true;
-  });
+  );
 
 type IItem = z.infer<typeof schema>;
 
@@ -58,11 +65,11 @@ interface ShareProjectProps {
 
 const ShareProject: React.FC<ShareProjectProps> = ({ permissions = [] }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [searchParams] = useSearchParams();
+  const params = useParams<{ project: string }>();
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const project = searchParams.get("project");
+  const project = params.project;
 
   const { data: forms } = useQuery({
     queryKey: ["project", "forms"],
@@ -131,7 +138,7 @@ const ShareProject: React.FC<ShareProjectProps> = ({ permissions = [] }) => {
 
   const selected = watch("select-item");
 
-  console.log(methods.formState.errors);
+  console.log("errors", methods.formState.errors);
 
   const handleAppend = useCallback(() => {
     const option = allOptions?.find((form) => form.value === selected);

@@ -1,5 +1,5 @@
 import { getProjects } from "@apis/project";
-import { Box, Button, Card, Flex, Heading } from "@chakra-ui/react";
+import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import Can from "@components/atoms/Can";
 import Select from "@components/atoms/Inputs/Select";
 import ShareProject from "@components/atoms/ShareProject";
@@ -90,18 +90,20 @@ const Navbar: React.FC = () => {
           {t(`projects.title`)}
         </Heading>
 
-        <Flex w="300px" alignItems="center" gap="2">
+        <Flex alignItems="center" gap="2">
           <FormProvider {...methods}>
             <search onSubmit={onSubmit}>
-              <Select
-                input={{
-                  label: "",
-                  id: "project",
-                  placeholder: t("projects.select"),
-                  options: options ?? [],
-                }}
-                isLoading={isFetching}
-              />
+              <Box w={300}>
+                <Select
+                  input={{
+                    label: "",
+                    id: "project",
+                    placeholder: t("projects.select"),
+                    options: options ?? [],
+                  }}
+                  isLoading={isFetching}
+                />
+              </Box>
             </search>
           </FormProvider>
 
@@ -121,12 +123,15 @@ const Navbar: React.FC = () => {
             </Box>
           )}
         </Flex>
-        <Box opacity={0.7}>{projectData?.description}</Box>
+        <Box opacity={0.7}>
+          <Text fontSize="sm" noOfLines={1}>
+            {projectData?.description}
+          </Text>
+        </Box>
       </Flex>
 
       <Flex gap="2" align="center">
         {projectData && <ShareProject permissions={projectData?.permissions} />}
-
         {projectData && (
           <Can permission="project.update">
             <VariableForm />
