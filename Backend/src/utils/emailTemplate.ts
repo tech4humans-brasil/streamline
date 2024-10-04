@@ -1,7 +1,7 @@
 const html = `
 <div class="email-container">
     <div class="header">
-        <img src="https://github.com/user-attachments/assets/f7d60e5e-e784-4d85-9608-65f6425927ae" alt="Streamline" />
+        <img src="https://devforceflowfiles.blob.core.windows.net/email/streamline.png?sp=r&st=2024-10-04T01:17:44Z&se=2031-09-11T09:17:44Z&spr=https&sv=2022-11-02&sr=b&sig=lGg52w4OT2bWpwgxAHa8GmcmWHMGV5Y3dcCOqcz4LNY%3D" alt="Streamline" />
         <h1>Streamline</h1>
     </div>
     <div class="content">

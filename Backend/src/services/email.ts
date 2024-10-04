@@ -20,7 +20,7 @@ export const sendEmail = async (
 
   await sendgrid
     .send({
-      from: sender || process.env.SENDGRID_SENDER,
+      from: sender || process.env.EMAIL_ACCOUNT, 
       to,
       subject,
       html: htmlWithCid,
