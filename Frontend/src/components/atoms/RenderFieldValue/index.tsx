@@ -110,8 +110,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
           {label}:
         </Text>
         {/* @ts-ignore */}
-        {value
-          ?.map(
+        {value?.map(
             // @ts-ignore
             (el) =>
               // @ts-ignore
@@ -130,8 +129,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
         </Text>
         <Text fontSize="sm" fontWeight={"bold"}>
           {/* @ts-ignore */}
-          {convertDateTime(
-            value,
+          {convertDateTime(value,
             {
               day: "2-digit",
               month: "short",
