@@ -24,7 +24,8 @@ import Activities from "@pages/Portal/Activities";
 import FirstPage from "@pages/Welcome/Firstpage";
 import SecondPage from "@pages/Welcome/SecondPage";
 import Welcome from "@pages/Welcome";
-import NewTicket from "@pages/Portal/NewTicket";
+import NewTickets from "@pages/Portal/NewTickets";
+import NewTicket from "@pages/Portal/NewTickets/NewTicket";
 import Projects from "@pages/Portal/Project";
 import Project from "@pages/Portal/Project/Project";
 import Schedules from "@pages/Portal/Schedules";
@@ -165,8 +166,13 @@ const routes: RouteType = [
         permission: "activity.committed",
       },
       {
-        path: "/portal/new",
+        path: "/portal/new/:institute_id",
         element: <NewTicket />,
+        permission: "activity.create",
+      },
+      {
+        path: "/portal/new",
+        element: <NewTickets />,
         permission: "activity.create",
       },
       {
