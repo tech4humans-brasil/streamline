@@ -67,7 +67,7 @@ const ButtonAdd: React.FC<ButtonAddProps> = ({
     insert(
       index + 1,
       {
-        id: `field-${length}`,
+        id: `field${length}`,
         label: "",
         placeholder: "",
         type: FieldTypes.text,

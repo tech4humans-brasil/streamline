@@ -1,6 +1,9 @@
-import { Connection, Types } from "mongoose";
+import { Connection } from "mongoose";
 import Activity, { IActivity } from "../models/client/Activity";
-import { IVariable } from "../models/client/Project";
+import { IField } from "../models/client/FormDraft";
+
+const isOptionField = (field: IField): boolean =>
+  ["select", "radio", "checkbox", "multiselect"].includes(field.type);
 
 const replaceSmartValues = async <T extends string | string[]>({
   conn,
@@ -22,18 +25,11 @@ const replaceSmartValues = async <T extends string | string[]>({
     return replaceValues;
   }
 
-  const customFields = activityBase?.form_draft.fields.reduce((acc, field) => {
-    if (field.system) {
-      return acc;
-    }
-
-    acc[field.id] = field.value;
-    return acc;
-  }, {});
+  const customFields = extractCustomFields(activityBase.form_draft);
 
   const activity = {
-    ...activityBase,
     ...customFields,
+    ...activityBase,
   };
 
   if (Array.isArray(replaceValues)) {
@@ -87,3 +83,36 @@ export function replaceVariables(data, template: string): string {
     return resolvedValue !== undefined ? resolvedValue : "-";
   });
 }
+
+export const extractCustomFields = (form_draft: { fields: IField[] }) => {
+  return form_draft.fields.reduce((acc, field) => {
+    if (field.system) {
+      return acc;
+    }
+
+    if (isOptionField(field)) {
+      if (Array.isArray(field.options)) {
+        if (Array.isArray(field.value)) {
+          acc[field.id] = field.value
+            .map((value) => {
+              const option = field.options.find(
+                (option) => "value" in option && option.value === value
+              );
+              return option?.label || value;
+            })
+            .join(", ");
+        } else {
+          const option = field.options.find(
+            (option) => "value" in option && option.value === field.value
+          );
+          acc[field.id] = option?.label || field.value;
+        }
+      }
+
+      return acc;
+    }
+
+    acc[field.id] = field.value;
+    return acc;
+  }, {});
+};

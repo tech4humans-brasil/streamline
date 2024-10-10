@@ -103,8 +103,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       },
     });
 
-    console.log("project", project);
-
     const { body, field_populate, headers, method, url } = data;
 
     const vars = project.variables.reduce((acc, variable) => {
@@ -146,7 +144,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       urlReplacedPromise,
     ]);
 
-    console.log("bodyReplaced", bodyReplaced);
+    context.log("bodyReplaced", bodyReplaced);
     const bodyParsed = await JSON.parse(bodyReplaced)
 
     const request = {

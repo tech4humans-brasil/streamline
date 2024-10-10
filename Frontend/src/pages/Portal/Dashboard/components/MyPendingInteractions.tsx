@@ -62,7 +62,7 @@ const PendingInteractions: React.FC = () => {
 
   const dataForm = useMemo(() => {
     if (!data || data.length === 0) return null;
-
+    //[Todo] - Verificar se o campo form.period.close é o correto
     return data.map((activity) => ({
       ...activity,
       createdAt: convertDateTime(activity.form.period.close),

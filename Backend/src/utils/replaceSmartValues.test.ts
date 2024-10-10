@@ -1,4 +1,15 @@
-import { replaceVariables } from "./replaceSmartValues";
+import mongoose from "mongoose";
+import replaceSmartValues, {
+  extractCustomFields,
+  replaceVariables,
+} from "./replaceSmartValues";
+import Activity, { IActivity, IActivityState } from "../models/client/Activity";
+import {
+  FieldTypes,
+  IFormDraft,
+  IFormStatus,
+} from "../models/client/FormDraft";
+import { StatusType } from "../models/client/Status";
 
 describe("replaceVariables", () => {
   it("should replace variables in the template with corresponding values from the data object", () => {
@@ -87,5 +98,65 @@ describe("replaceVariables", () => {
     const result = replaceVariables({ activity: data }, template);
 
     expect(result).toBe(expectedOutput);
+  });
+
+  it("should return label of the option of a field", () => {
+    const data = {
+      fields: [
+        {
+          id: "field1",
+          visible: true,
+          label: "Field 1",
+          type: FieldTypes.Select,
+          value: "option1",
+          options: [
+            { label: "Option 1", value: "option1" },
+            { label: "Option 2", value: "option2" },
+          ],
+        },
+        {
+          id: "field2",
+          visible: true,
+          label: "Field 2",
+          type: FieldTypes.Select,
+          value: ["option1", "option2"],
+          options: [
+            { label: "Option 1", value: "option1" },
+            { label: "Option 2", value: "option2" },
+          ],
+        }
+      ],
+    };
+
+    const expectedOutput = {
+      field1: "Option 1",
+      field2: "Option 1, Option 2",
+    }
+
+    const result = extractCustomFields(data);
+
+    expect(result).toEqual(expectedOutput);
+  });
+
+  it("should return label of the option of a field", () => {
+    const data = {
+      fields: [
+        {
+          id: "field1",
+          visible: true,
+          label: "Field 1",
+          type: FieldTypes.Text,
+          value: "Random text",
+        },
+      ],
+    };
+
+    const expectedOutput = {
+      field1: "Random text",
+    }
+
+    const result = extractCustomFields(data);
+
+    expect(result).toEqual(expectedOutput);
   });
 });
