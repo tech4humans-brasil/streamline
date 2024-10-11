@@ -3,11 +3,13 @@ import QueueWrapper, {
   QueueWrapperHandler,
 } from "../../middlewares/queue";
 import { IActivityStepStatus } from "../../models/client/Activity";
+import { FieldTypes } from "../../models/client/FormDraft";
 import { IWebRequest, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
 import ProjectRepository from "../../repositories/Project";
 import WorkflowRepository from "../../repositories/Workflow";
 import WorkflowDraftRepository from "../../repositories/WorkflowDraft";
+import BlobUploader from "../../services/upload";
 import { decrypt } from "../../utils/crypto";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
@@ -110,6 +112,15 @@ const handler: QueueWrapperHandler<TMessage> = async (
         variable.type === "variable" ? variable.value : decrypt(variable.value);
       return acc;
     }, {});
+
+    const blobUploader = new BlobUploader('files');
+
+    for (const field of activity.form_draft.fields) {
+      if (field.type === FieldTypes.File) {
+        if (!field.value) continue;
+        await blobUploader.updateSas(field.value);
+      }
+    }
 
     const bodyReplacedPromise = replaceSmartValues({
       conn,
