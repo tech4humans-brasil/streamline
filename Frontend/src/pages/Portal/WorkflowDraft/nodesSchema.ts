@@ -73,8 +73,8 @@ const schemas: NodeSchemas = {
     visible: z.boolean().default(false),
     field_populate: z.array(
       z.object({
-        id: z.string().min(3, { message: "ID é obrigatório" }),
-        path: z.string().min(3, { message: "Caminho é obrigatório" }),
+        key: z.string().min(3, { message: "ID é obrigatório" }),
+        value: z.string().min(3, { message: "Caminho é obrigatório" }),
       })
     ),
   }),
