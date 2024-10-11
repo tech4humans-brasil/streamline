@@ -30,6 +30,7 @@ export const handler: HttpHandler = async (_, req, context) => {
 
   const user = await userRepository.findOne({
     where: {
+      active: true,
       email,
     },
   });
@@ -41,6 +42,9 @@ export const handler: HttpHandler = async (_, req, context) => {
   if (!(await bcrypt.compare(password, user.password))) {
     return res.unauthorized("User or password not found");
   }
+
+  user.last_login = new Date();
+  user.save();
 
   const permissions = Permissions.getPermissionsByRoles(user.roles);
 

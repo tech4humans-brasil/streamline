@@ -25,6 +25,7 @@ export type IUser = {
   providers: IUserProviders[];
   isExternal: boolean;
   tutorials: string[];
+  last_login: Date | null;
 } & mongoose.Document;
 
 export const instituteSchema = new Schema<IInstitute>({
@@ -65,6 +66,7 @@ export const schema: Schema = new Schema<IUser>(
       },
     ],
     tutorials: [{ type: String }],
+    last_login: { type: Date, default: null },
   },
   {
     timestamps: true,

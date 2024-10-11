@@ -55,6 +55,7 @@ export const handler: HttpHandler = async (_, req, context) => {
   let user = await userRepository.findOne({
     where: {
       email,
+      active: true,
     },
   });
 
@@ -75,6 +76,9 @@ export const handler: HttpHandler = async (_, req, context) => {
       password: await bcrypt.hash(payload.jti, 10),
     });
   }
+
+  user.last_login = new Date();
+  user.save();
 
   const permissions = Permissions.getPermissionsByRoles(user.roles);
 
