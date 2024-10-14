@@ -38,6 +38,7 @@ const PendingInteractions: React.FC = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["my-pending-interactions"],
     queryFn: getMyActivitiesPendingInteractions,
+    refetchInterval: 60000,
   });
 
   const navigate = useNavigate();

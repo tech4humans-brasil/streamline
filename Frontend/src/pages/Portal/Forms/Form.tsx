@@ -25,7 +25,7 @@ import Select from "@components/atoms/Inputs/Select";
 import Can from "@components/atoms/Can";
 import { FaArrowLeft } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import IForm, { IFormType } from "@interfaces/Form";
+import { IFormType } from "@interfaces/Form";
 
 const statusSchema = z
   .object({

@@ -12,6 +12,7 @@ import {
   InputRightAddon,
   Spinner,
   Stack,
+  Tag,
   Text,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
@@ -177,6 +178,11 @@ const FormItem: React.FC<ActivityItemProps> = ({ form }) => {
           <Text fontSize="sm">
             {t("common.fields.closedAt")}: {convertDateTime(form.period.close)}
           </Text>
+        )}
+        {form.type === "external" && (
+          <Tag colorScheme="blue" mt={2} size="sm">
+            {t("common.fields.external")}
+          </Tag>
         )}
       </Stack>
     </Card>
