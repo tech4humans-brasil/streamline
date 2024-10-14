@@ -5,6 +5,7 @@ import QueueWrapper, {
 import { ISendEmail, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
 import EmailRepository from "../../repositories/Email";
+import UserRepository from "../../repositories/User";
 import { sendEmail } from "../../services/email";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
@@ -22,6 +23,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const activityRepository = new ActivityRepository(conn);
     const emailRepository = new EmailRepository(conn);
+    const userRepository = new UserRepository(conn);
 
     const activity = await activityRepository.findById({ id: activity_id });
 
@@ -79,7 +81,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       replaceValues: subject,
     });
 
-    const toReplaced = (
+    const toReplacedSmartValues = (
       await replaceSmartValues({
         conn,
         activity_id,
@@ -87,19 +89,42 @@ const handler: QueueWrapperHandler<TMessage> = async (
       })
     ).flatMap((el) => el.split(", "));
 
+    const userIds = toReplacedSmartValues.filter((el) => !el.includes("@"));
+
+    const toReplaced = toReplacedSmartValues.filter((el) => el.includes("@"));
+
+    const userEmails = await userRepository.find({
+      where: {
+        _id: {
+          $in: userIds,
+        },
+      },
+      select: {
+        email: 1,
+      },
+    });
+
+    const userEmailsValues = userEmails.map((el) => el.email);
+
+    toReplaced.push(...userEmailsValues);
+
     const htmlTemplateReplaced = await replaceSmartValues({
       conn,
       activity_id,
       replaceValues: htmlTemplate,
     });
 
+    context.log(JSON.stringify({ toReplaced, subjectReplaced }));
+
     await sendEmail(
       toReplaced,
       subjectReplaced,
       htmlTemplateReplaced,
       cssTemplate,
-      sender,
-    );
+      sender
+    ).catch((err) => {
+      throw err;
+    });
 
     await sendNextQueue({
       conn,
