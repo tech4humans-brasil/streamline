@@ -8,8 +8,6 @@ import ProjectRepository from "../../../repositories/Project";
 import { IUserRoles } from "../../../models/client/User";
 
 interface Query {
-  page?: number;
-  limit?: number;
   name?: string;
   type?: StatusType;
 }
@@ -20,7 +18,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
 });
 
 const handler: HttpHandler = async (conn, req, context) => {
-  const filter = req.query as Query;
+  const { ...filter } = req.query as Query;
 
   const projectRepository = new ProjectRepository(conn);
 
