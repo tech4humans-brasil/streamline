@@ -60,7 +60,7 @@ export default class QueueWrapper<TMessage> {
     return this;
   };
 
-  private run: AzureFunctionHandler<TMessage & GenericMessage> = async (
+  private readonly run: AzureFunctionHandler<TMessage & GenericMessage> = async (
     message,
     context
   ) => {
@@ -72,15 +72,36 @@ export default class QueueWrapper<TMessage> {
         .model()
         .findById(message.activity_id)
         .then((activity) => {
-          const activityWorkflowIndex = activity.workflows.findIndex(
+          const activityWorkflows = activity.workflows.filter(
             (workflow) =>
               workflow._id.toString() === message.activity_workflow_id
           );
-          const activityStepIndex = activity.workflows[
+
+          if (activityWorkflows.length === 0) {
+            throw new Error("Workflow not found");
+          }
+
+          const activityWorkflowId = activityWorkflows.at(-1)._id.toString();
+
+          const activityWorkflowIndex = activity.workflows.findIndex(
+            (workflow) => workflow._id.toString() === activityWorkflowId
+          );
+
+          const activitySteps = activity.workflows[
             activityWorkflowIndex
-          ].steps.findIndex(
+          ].steps.filter(
             (step) => step._id.toString() === message.activity_step_id
           );
+
+          if (activitySteps.length === 0) {
+            throw new Error("Step not found");
+          }
+
+          const activityStepId = activitySteps.at(-1)._id.toString();
+
+          const activityStepIndex = activity.workflows[
+            activityWorkflowIndex
+          ].steps.findIndex((step) => step._id.toString() === activityStepId);
 
           activity.workflows[activityWorkflowIndex].steps[
             activityStepIndex
@@ -109,15 +130,36 @@ export default class QueueWrapper<TMessage> {
         .model()
         .findById(message.activity_id)
         .then((activity) => {
-          const activityWorkflowIndex = activity.workflows.findIndex(
+          const activityWorkflows = activity.workflows.filter(
             (workflow) =>
               workflow._id.toString() === message.activity_workflow_id
           );
-          const activityStepIndex = activity.workflows[
+
+          if (activityWorkflows.length === 0) {
+            throw new Error("Workflow not found");
+          }
+
+          const activityWorkflowId = activityWorkflows.at(-1)._id.toString();
+
+          const activityWorkflowIndex = activity.workflows.findIndex(
+            (workflow) => workflow._id.toString() === activityWorkflowId
+          );
+
+          const activitySteps = activity.workflows[
             activityWorkflowIndex
-          ].steps.findIndex(
+          ].steps.filter(
             (step) => step._id.toString() === message.activity_step_id
           );
+
+          if (activitySteps.length === 0) {
+            throw new Error("Step not found");
+          }
+
+          const activityStepId = activitySteps.at(-1)._id.toString();
+
+          const activityStepIndex = activity.workflows[
+            activityWorkflowIndex
+          ].steps.findIndex((step) => step._id.toString() === activityStepId);
 
           activity.workflows[activityWorkflowIndex].steps[
             activityStepIndex
