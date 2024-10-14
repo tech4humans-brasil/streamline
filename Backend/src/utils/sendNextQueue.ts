@@ -53,7 +53,7 @@ export default async function sendNextQueue({
       });
 
       const newNextStep = activityWorkflow.steps.find(
-        (step) => step.step.toString() === nextStep._id.toString()
+        (step) => step.status === IActivityStepStatus.inQueue
       );
 
       sendToQueue({

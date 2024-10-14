@@ -72,25 +72,21 @@ export default class QueueWrapper<TMessage> {
         .model()
         .findById(message.activity_id)
         .then((activity) => {
-          const workflowReverse = [].concat(activity.workflows).reverse();
-
-          const activityWorkflowIndex = workflowReverse.findIndex(
+          const activityWorkflowIndex = activity.workflows.findIndex(
             (workflow) =>
               workflow._id.toString() === message.activity_workflow_id
           );
-          const activitySteps =
-            activity.workflows[
-              workflowReverse.length - activityWorkflowIndex - 1
-            ].steps;
 
-          const stepsReverse = [].concat(activitySteps).reverse();
-
-          const activityStepIndex = stepsReverse.findIndex(
+          const activityStepIndex = activity.workflows[
+            activityWorkflowIndex
+          ].steps.findIndex(
             (step) => step._id.toString() === message.activity_step_id
           );
 
+          console.log("activityStepIndex", activityStepIndex, activityWorkflowIndex);
+
           activity.workflows[activityWorkflowIndex].steps[
-            stepsReverse.length - activityStepIndex - 1
+            activityStepIndex
           ].status = IActivityStepStatus.inProgress;
 
           return activity.save();
@@ -116,21 +112,20 @@ export default class QueueWrapper<TMessage> {
         .model()
         .findById(message.activity_id)
         .then((activity) => {
-          const workflowReverse = [].concat(activity.workflows).reverse();
-
-          const activityWorkflowIndex = workflowReverse.findIndex(
+          const activityWorkflowIndex = activity.workflows.findIndex(
             (workflow) =>
               workflow._id.toString() === message.activity_workflow_id
           );
-          const activitySteps =
-            activity.workflows[
-              workflowReverse.length - activityWorkflowIndex - 1
-            ].steps;
-
-          const stepsReverse = [].concat(activitySteps).reverse();
-
-          const activityStepIndex = stepsReverse.findIndex(
+          const activityStepIndex = activity.workflows[
+            activityWorkflowIndex
+          ].steps.findIndex(
             (step) => step._id.toString() === message.activity_step_id
+          );
+
+          console.log(
+            "activityStepIndex",
+            activityStepIndex,
+            activityWorkflowIndex
           );
 
           activity.workflows[activityWorkflowIndex].steps[

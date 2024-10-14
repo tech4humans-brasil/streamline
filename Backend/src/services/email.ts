@@ -25,6 +25,7 @@ export const sendEmail = async (
       subject,
       html: htmlWithCid,
       attachments,
+      cc: sender || undefined,
     })
     .catch((err) => {
       console.log(err);
