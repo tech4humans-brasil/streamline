@@ -36,6 +36,7 @@ const FormTypes = {
   created: "Criação",
   interaction: "Interação",
   "time-trigger": "Tempo",
+  external: "Externo",
 };
 
 const Action = memo((form: Pick<IForm, "_id" | "slug">) => {

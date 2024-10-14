@@ -29,6 +29,7 @@ const NewTicket: React.FC = () => {
   const { data: forms, isLoading } = useQuery({
     queryKey: ["open-forms"],
     queryFn: getOpenForms,
+    staleTime: 1000 * 60 * 5,
   });
 
   const [search, setSearch] = useState<string>(""); // Armazena o valor da pesquisa
@@ -120,6 +121,8 @@ interface ActivityItemProps {
     description: string;
     period?: { open?: string | null; close?: string | null };
     published: boolean;
+    type: "created" | "external" | "interaction" | "time-triggered";
+    url: string | null;
   };
 }
 
@@ -127,9 +130,19 @@ const FormItem: React.FC<ActivityItemProps> = ({ form }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const handleView = () => {
+  const handleView = useCallback(() => {
+    if (form.type === "external") {
+      if (!form.url) {
+        alert(t("dashboard.alerts.invalidForm"));
+        return;
+      }
+
+      window.open(form.url, "_blank");
+      return;
+    }
+
     navigate(`/response/${form.slug}`);
-  };
+  }, [form.slug, navigate]);
 
   return (
     <Card

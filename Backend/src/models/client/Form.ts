@@ -4,16 +4,18 @@ export enum IFormType {
   Created = "created",
   Interaction = "interaction",
   TimeTrigger = "time-trigger",
+  External = "external",
 }
 
 export type IForm = {
   _id: ObjectId | string;
   name: string;
-  slug: string;
+  slug: string | null;
   initial_status: ObjectId | null;
   type: IFormType;
   period?: { open: string | null | Date; close: string | null | Date };
   active: boolean;
+  url: string;
   description: string;
   published: ObjectId | string | null;
   institute: [ObjectId | string] | null;
@@ -30,7 +32,13 @@ export const schema = new Schema<IForm>(
       ref: "Status",
       default: null,
     },
-    slug: { type: String, required: true, unique: true },
+    slug: {
+      type: String,
+      default: null,
+      unique: true,
+      sparse: true,
+    },
+    url: { type: String, required: false, default: null },
     type: {
       type: String,
       required: true,
@@ -45,7 +53,9 @@ export const schema = new Schema<IForm>(
     institute: [
       { type: Schema.Types.ObjectId, ref: "Institute", default: null },
     ],
-    visibilities: [{ type: Schema.Types.ObjectId, ref: "Institute", default: null }],
+    visibilities: [
+      { type: Schema.Types.ObjectId, ref: "Institute", default: null },
+    ],
     project: {
       type: Schema.Types.ObjectId,
       ref: "Project",

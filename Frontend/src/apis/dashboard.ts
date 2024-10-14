@@ -59,6 +59,8 @@ interface IOpenForm {
     | "period"
     | "published"
     | "visibilities"
+    | "url"
+    | "type"
   >[];
 }
 

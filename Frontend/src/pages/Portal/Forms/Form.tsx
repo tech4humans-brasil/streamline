@@ -25,19 +25,15 @@ import Select from "@components/atoms/Inputs/Select";
 import Can from "@components/atoms/Can";
 import { FaArrowLeft } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import IForm, { IFormType } from "@interfaces/Form";
 
 const statusSchema = z
   .object({
     name: z.string().min(3, "Nome precisa ter pelo menos 3 caracteres"),
-    slug: z
-      .string()
-      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-        message: "Slug inválido, utilize apenas letras e números e -",
-      })
-      .min(3, "Slug precisa ter pelo menos 3 caracteres"),
+    slug: z.string().nullable().default(null),
     status: z.enum(["draft", "published"]).default("draft"),
     initial_status: z.string().optional().nullable(),
-    type: z.enum(["created", "interaction", "time-trigger"]),
+    type: z.enum(["created", "external", "interaction", "time-trigger"]),
     workflow: z.string().optional().nullable(),
     period: z.object({
       open: z.string().nullable(),
@@ -45,6 +41,7 @@ const statusSchema = z
     }),
     active: z.boolean().default(true),
     project: z.string().optional().nullable(),
+    url: z.string().optional().nullable().default(null),
     description: z
       .string()
       .max(512, "O tamanho máximo é 512 caracteres")
@@ -52,6 +49,48 @@ const statusSchema = z
     institute: z.array(z.string()).optional().nullable(),
     visibilities: z.array(z.string()).optional().nullable(),
   })
+  .refine(
+    (data) => {
+      if (["external", "time-trigger"].includes(data.type)) {
+        return true;
+      }
+
+      if (!data.slug) return false;
+
+      return data.slug?.length > 3;
+    },
+    {
+      message: "Slug inválido, necessário ter pelo menos 3 caracteres",
+      path: ["slug"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.slug) return true;
+
+      return data.type !== "time-trigger"
+        ? RegExp(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).exec(data.slug)
+        : true;
+    },
+    {
+      message: "Slug inválido, utilize apenas letras e números e -",
+      path: ["slug"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.type === "external") {
+        if (!data.url) return false;
+
+        return RegExp(/^(https?|http):\/\/[^\s$.?#].[^\s]*$/gm).test(data.url);
+      }
+      return true;
+    },
+    {
+      message: "É necessário informar a URL",
+      path: ["url"],
+    }
+  )
   .refine(
     (data) => {
       if (data.type === "created") {
@@ -66,7 +105,7 @@ const statusSchema = z
   )
   .refine(
     (data) => {
-      if (data.type !== "interaction") {
+      if (["created", "time-trigger"].includes(data.type)) {
         return !!data.initial_status;
       }
       return true;
@@ -78,7 +117,7 @@ const statusSchema = z
   )
   .refine(
     (data) => {
-      if (data.type !== "interaction") {
+      if (["created", "time-trigger"].includes(data.type)) {
         return !!data.visibilities;
       }
       return true;
@@ -180,7 +219,9 @@ export default function Workflow() {
 
   const formType = watch("type");
   const isCreated = formType === "created";
+  const isInteraction = formType === "interaction";
   const isTimerTrigger = formType === "time-trigger";
+  const isExternal = formType === "external";
 
   return (
     <Flex w="100%" my="6" mx="auto" px="6" justify="center">
@@ -233,50 +274,60 @@ export default function Workflow() {
                 id: "type",
                 label: t("common.fields.type"),
                 required: true,
-                options: [
-                  { label: t("form.type.created"), value: "created" },
-                  { label: t("form.type.interaction"), value: "interaction" },
-                  {
-                    label: t("form.type.time-trigger"),
-                    value: "time-trigger",
-                  },
-                ],
+                options: Object.values(IFormType).map((type) => ({
+                  label: t(`form.type.${type}`),
+                  value: type,
+                })),
                 isDisabled: isEditing,
               }}
             />
 
-            <Text
-              input={{
-                id: "slug",
-                label: t("common.fields.slug"),
-                required: true,
-              }}
-            />
+            {["created", "interaction"].includes(formType) && (
+              <Text
+                input={{
+                  id: "slug",
+                  label: t("common.fields.slug"),
+                  required: true,
+                }}
+              />
+            )}
+
             <Flex gap="4">
               {(isCreated || isTimerTrigger) && (
-                <>
-                  <Select
-                    input={{
-                      id: "initial_status",
-                      label: t("common.fields.initialStatus"),
-                      required: true,
-                      options: formsData?.status ?? [],
-                    }}
-                    isLoading={isLoadingForms}
-                  />
-                  <Select
-                    input={{
-                      id: "visibilities",
-                      label: t("common.fields.visibilities"),
-                      options: formsData?.institutes ?? [],
-                      required: true,
-                    }}
-                    isLoading={isLoadingForms}
-                    isMulti
-                  />
-                </>
+                <Select
+                  input={{
+                    id: "initial_status",
+                    label: t("common.fields.initialStatus"),
+                    required: true,
+                    options: formsData?.status ?? [],
+                  }}
+                  isLoading={isLoadingForms}
+                />
+              )}
+
+              {!isInteraction && (
+                <Select
+                  input={{
+                    id: "visibilities",
+                    label: t("common.fields.visibilities"),
+                    options: formsData?.institutes ?? [],
+                    required: true,
+                  }}
+                  isLoading={isLoadingForms}
+                  isMulti
+                />
               )}
             </Flex>
+
+            {isExternal && (
+              <Text
+                input={{
+                  id: "url",
+                  label: t("common.fields.url"),
+                  required: true,
+                }}
+              />
+            )}
 
             <Flex gap="4" direction={["column", "row"]}>
               {isCreated && (
@@ -311,27 +362,29 @@ export default function Workflow() {
               }}
             />
 
-            <Flex gap="4" mb="5">
-              <Text
-                input={{
-                  id: "period.open",
-                  label: "Abertura",
-                  placeholder: "Abertura",
-                  type: "date",
-                  describe: "Data de abertura do formulário",
-                }}
-              />
+            {!isTimerTrigger && (
+              <Flex gap="4" mb="5">
+                <Text
+                  input={{
+                    id: "period.open",
+                    label: "Abertura",
+                    placeholder: "Abertura",
+                    type: "date",
+                    describe: "Data de abertura do formulário",
+                  }}
+                />
 
-              <Text
-                input={{
-                  id: "period.close",
-                  label: "Fechamento",
-                  placeholder: "Fechamento",
-                  type: "date",
-                  describe: "Data de fechamento do formulário",
-                }}
-              />
-            </Flex>
+                <Text
+                  input={{
+                    id: "period.close",
+                    label: "Fechamento",
+                    placeholder: "Fechamento",
+                    type: "date",
+                    describe: "Data de fechamento do formulário",
+                  }}
+                />
+              </Flex>
+            )}
 
             <Flex justify="flex-end" gap="4">
               <Button
@@ -356,7 +409,9 @@ export default function Workflow() {
             </Flex>
 
             <Can permission="formDraft.view">
-              {isEditing && <FormVersions id={id} formType={formType} />}
+              {isEditing && !isExternal && (
+                <FormVersions id={id} formType={formType} />
+              )}
             </Can>
           </CardBody>
         </Card>

@@ -1,6 +1,6 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import { IForm } from "../../../models/client/Form";
+import { IForm, IFormType } from "../../../models/client/Form";
 import moment from "moment";
 import FormRepository from "../../../repositories/Form";
 
@@ -33,16 +33,19 @@ export default new Http(handler)
     }),
     body: schema.object().shape({
       name: schema.string().required().min(3).max(255),
-      slug: schema
-        .string()
-        .required()
-        .min(3)
-        .max(30)
-        .matches(/^[a-z0-9-]+$/),
+      slug: schema.string().when("type", ([type], s) => {
+        if (["external", "time-trigger"].includes(type)) {
+          return s.nullable().default(null);
+        }
+        return s
+          .min(3)
+          .max(30)
+          .matches(/^[a-z0-9-]+$/);
+      }),
       type: schema
         .string()
         .required()
-        .oneOf(["created", "interaction", "time-trigger"]),
+        .oneOf(Object.values(IFormType)),
       initial_status: schema.string().when("type", ([type], schema) => {
         if (type === "created") {
           return schema.required();

@@ -22,7 +22,9 @@ const handler: HttpHandler = async (conn, req) => {
 
   const forms = await formRepository.findOpenForms({
     where: {
-      type: IFormType.Created,
+      type: {
+        $in: ["created", "external"],
+      },
       $and: [
         {
           $or: [
@@ -43,6 +45,8 @@ const handler: HttpHandler = async (conn, req) => {
     select: {
       name: 1,
       slug: 1,
+      url: 1,
+      type: 1,
       description: 1,
       period: 1,
       published: 1,

@@ -25,6 +25,7 @@
       "name": "Nome",
       "yes": "Sim",
       "no": "Não",
+      "url": "URL",
       "all": "Todos",
       "visibilities": "Visualizadores",
       "description": "Descrição",
@@ -394,7 +395,8 @@
     "type": {
       "created": "Criação",
       "interaction": "Interação",
-      "time-trigger": "Tempo"
+      "time-trigger": "Tempo",
+      "external": "Externo"
     }
   },
   "form": {
@@ -412,7 +414,8 @@
     "type": {
       "created": "Criação",
       "interaction": "Interação",
-      "time-trigger": "Tempo"
+      "time-trigger": "Tempo",
+      "external": "Externo"
     }
   },
   "formDraft": {

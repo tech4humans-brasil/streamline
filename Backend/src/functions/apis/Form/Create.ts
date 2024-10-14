@@ -13,13 +13,17 @@ const handler: HttpHandler = async (conn, req) => {
 
   const form = await formRepository.create({
     ...formData,
+    slug: !formData.slug ? null : formData.slug,
     period: {
       open: period.open ? moment.utc(period.open).toDate() : null,
       close: period.close ? moment.utc(period.close).toDate() : null,
     },
   });
 
-  if (formData.type === IFormType.TimeTrigger) {
+  if (
+    formData.type === IFormType.TimeTrigger ||
+    formData.type === IFormType.External
+  ) {
     const formDraftRepository = new FormDraftRepository(conn);
 
     const formDraft = await formDraftRepository.create({
@@ -41,42 +45,42 @@ export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
       name: schema.string().required().min(3).max(255),
-      slug: schema
-        .string()
-        .required()
-        .min(3)
-        .max(30)
-        .matches(/^[a-z0-9-]+$/),
-      type: schema
-        .string()
-        .required()
-        .oneOf(["created", "interaction", "time-trigger"]),
-      initial_status: schema.string().when("type", ([type], schema) => {
-        if (type === "created") {
-          return schema.required();
+      slug: schema.string().when("type", ([type], s) => {
+        if (["external", "time-trigger"].includes(type)) {
+          return s.nullable().default(null);
         }
-        return schema.nullable().default(null);
+        return s
+          .min(3)
+          .max(30)
+          .matches(/^[a-z0-9-]+$/);
+      }),
+      type: schema.string().required().oneOf(Object.values(IFormType)),
+      initial_status: schema.string().when("type", ([type], s) => {
+        if (type === "created") {
+          return s.required();
+        }
+        return s.nullable().default(null);
       }),
       active: schema.boolean().default(true),
       period: schema.object().shape({
         open: schema.string().optional().nullable(),
-        close: schema.string().when("period.open", ([open], schema) => {
+        close: schema.string().when("period.open", ([open], s) => {
           if (open) {
-            return schema.required();
+            return s.required();
           }
-          return schema.nullable().default(null);
+          return s.nullable().default(null);
         }),
       }),
-      workflow: schema.string().when("type", ([type], schema) => {
+      workflow: schema.string().when("type", ([type], s) => {
         if (type === "created") {
-          return schema.required();
+          return s.required();
         }
-        return schema.nullable().default(null);
+        return s.nullable().default(null);
       }),
       description: schema.string().optional().nullable().default(""),
       published: schema.string().optional().nullable().default(null),
       institute: schema.array(schema.string()).default([]),
-      visibilities: schema.array(schema.string()).default([]),
+      visibilities: schema.array(schema.string()).default([]).required(),
     }),
   }))
   .configure({
