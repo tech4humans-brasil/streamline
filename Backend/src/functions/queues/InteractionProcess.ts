@@ -57,15 +57,17 @@ const handler: QueueWrapperHandler<TMessage> = async (
     let path;
 
     if (data.conditional) {
-      const interaction = activity.interactions.find(
+      const interactions = activity.interactions.filter(
         (interaction) =>
           interaction.activity_step_id.toString() ===
           activity_step_id.toString()
       );
 
-      if (!interaction) {
+      if (!interactions.length) {
         throw new Error("Interaction not found");
       }
+
+      const interaction = interactions.at(-1);
 
       const conditionals = data.conditional;
       const { answers } = interaction;
