@@ -20,7 +20,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
 });
 
 const handler: HttpHandler = async (conn, req, context) => {
-  const { page = 1, limit = 10, ...filter } = req.query as Query;
+  const filter = req.query as Query;
 
   const projectRepository = new ProjectRepository(conn);
 
@@ -50,20 +50,18 @@ const handler: HttpHandler = async (conn, req, context) => {
       description: 1,
       permissions: 1,
     },
-    skip: (page - 1) * limit,
-    limit,
   });
 
-  const total = await projectRepository.count({ where });
-  const totalPages = Math.ceil(total / limit);
+  const total = projects.length;
+  const page = 1;
 
   return res.success({
     projects,
     pagination: {
       page: Number(page),
       total,
-      totalPages,
-      count: projects.length + (page - 1) * limit,
+      totalPages: 1,
+      count: projects.length,
     },
   });
 };
