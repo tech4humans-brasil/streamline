@@ -1,4 +1,4 @@
-type IScheduled = {
+export type IScheduled = {
   _id: string;
   activity: string;
   scheduled: Date;
@@ -6,6 +6,7 @@ type IScheduled = {
   status: ScheduleStatus;
   retries?: number;
   active: boolean;
+  createdAt: string;
 };
 
 export type ISchedule = {

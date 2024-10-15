@@ -29,6 +29,7 @@ import cronstrue from "cronstrue/i18n";
 import Switch from "@components/atoms/Inputs/Switch";
 import { convertFromCron, convertToCron } from "@utils/convertCronExpression";
 import { FaArrowLeft } from "react-icons/fa";
+import ExecutionList from "./components/ExecutionItem";
 
 const Schema = z
   .object({
@@ -234,7 +235,7 @@ export default function Schedule() {
               <Heading
                 fontSize="2xl"
                 fontWeight="bold"
-                w="100%" 
+                w="100%"
                 textAlign="center"
               >
                 {t(`schedule.${isEditing ? "edit" : "create"}`)}
@@ -428,6 +429,12 @@ export default function Schedule() {
                 </Button>
               </Can>
             </Flex>
+
+            {isEditing && (
+              <Flex mt="4" direction="column">
+                <ExecutionList executions={scheduleData?.scheduled ?? []} />
+              </Flex>
+            )}
           </CardBody>
         </Card>
       </FormProvider>

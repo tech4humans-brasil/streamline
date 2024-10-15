@@ -28,6 +28,7 @@ const handler: HttpHandler = async (conn, req) => {
       form: data.form ?? schedule.form,
       start: data.start ? moment(data.start).toDate() : schedule.start,
       end: data.end ? moment(data.end).toDate() : schedule.end,
+      advanced: data.advanced ?? schedule.advanced,
       expression: data.expression ?? schedule.expression,
       repeat: data.repeat ?? schedule.repeat,
       active: data.active,
@@ -48,7 +49,14 @@ const handler: HttpHandler = async (conn, req) => {
       scheduled.finished = true;
       scheduled.status = ScheduleStatus.CANCELED;
     });
-    await scheduleRepository.schedule(scheduleUpdated);
+    if (scheduleUpdated.active) {
+      await scheduleRepository.schedule(scheduleUpdated);
+    }
+  }
+
+  if(scheduleUpdated.scheduled.length > 10) {
+    //@ts-ignore
+    scheduleUpdated.scheduled = scheduleUpdated.scheduled.slice(-10);
   }
 
   await scheduleUpdated.save();

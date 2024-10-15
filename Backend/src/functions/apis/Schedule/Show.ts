@@ -8,7 +8,14 @@ const handler: HttpHandler = async (conn, req) => {
 
   const scheduleRepository = new ScheduleRepository(conn);
 
-  const schedule = await scheduleRepository.findById({ id });
+  const schedule = await scheduleRepository.findById({
+    id,
+    select: {
+      scheduled: {
+        $slice: -5,
+      },
+    },
+  });
 
   if (!schedule) {
     return res.notFound("Schedule not found");
@@ -16,6 +23,7 @@ const handler: HttpHandler = async (conn, req) => {
 
   return res.success({
     ...schedule.toObject(),
+    scheduled: schedule.scheduled.reverse(),
     start: DateTime.fromISO(schedule.start.toISOString(), { zone: "utc" })
       .setZone(schedule.timezone)
       .toISO(),

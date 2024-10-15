@@ -1,5 +1,4 @@
 import { Connection, ObjectId } from "mongoose";
-import { NodeTypes } from "../models/client/WorkflowDraft";
 import { sendToQueue } from "./sbusOutputs";
 import { InvocationContext } from "@azure/functions";
 import {
