@@ -58,7 +58,10 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     const token = localStorage.getItem("token");
     if (token) {
       setTokenValue(token);
-    } else if (publicPaths.includes(location.pathname)) {
+    } else if (
+      !publicPaths.includes(location.pathname) &&
+      location.pathname !== "/"
+    ) {
       window.location.href = `/?redirect=${location.pathname}`;
     }
   }, [setTokenValue]);
