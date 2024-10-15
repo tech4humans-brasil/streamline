@@ -11,6 +11,9 @@ import { jwtDecode } from "jwt-decode";
 import api from "@services/api";
 import { useQueryClient } from "@tanstack/react-query";
 import assistant from "@services/assistant";
+import publicRoutes from "../routes/public";
+
+const publicPaths = publicRoutes.map((route) => route.path);
 
 interface AuthContextType {
   token: JwtData | null;
@@ -55,10 +58,8 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     const token = localStorage.getItem("token");
     if (token) {
       setTokenValue(token);
-    } else {
-      if (location.pathname !== "/") {
-        window.location.href = `/?redirect=${location.pathname}`;
-      }
+    } else if (publicPaths.includes(location.pathname)) {
+      window.location.href = `/?redirect=${location.pathname}`;
     }
   }, [setTokenValue]);
 
