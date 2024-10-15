@@ -1,4 +1,5 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
+
 export type IScheduled = {
   _id: ObjectId | string;
   activity: ObjectId | string;

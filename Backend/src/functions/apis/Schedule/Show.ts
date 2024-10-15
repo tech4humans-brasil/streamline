@@ -11,6 +11,17 @@ const handler: HttpHandler = async (conn, req) => {
   const schedule = await scheduleRepository.findById({
     id,
     select: {
+      start: 1,
+      end: 1,
+      timezone: 1,
+      name: 1,
+      project: 1,
+      workflow: 1,
+      form: 1,
+      advanced: 1,
+      expression: 1,
+      repeat: 1,
+      active: 1,
       scheduled: {
         $slice: -5,
       },
