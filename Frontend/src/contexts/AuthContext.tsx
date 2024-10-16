@@ -56,7 +56,7 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     if (token) {
       setTokenValue(token);
     } else if (
-      location.pathname.startsWith("/auth") &&
+      !location.pathname.startsWith("/auth") &&
       location.pathname !== "/"
     ) {
       window.location.href = `/?redirect=${location.pathname}`;
