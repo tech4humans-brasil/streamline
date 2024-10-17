@@ -42,13 +42,18 @@ const Item: React.FC<AccordionHeaderProps> = ({ children, ...rest }) => {
 
 interface AccordionButtonProps {
   children: React.ReactNode;
+  fontSize?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
 }
 
-const Button: React.FC<AccordionButtonProps> = ({ children, ...rest }) => {
+const Button: React.FC<AccordionButtonProps> = ({
+  children,
+  fontSize = "md",
+  ...rest
+}) => {
   return (
     <AccordionButton {...rest} _focus={{ boxShadow: "none" }} p={4}>
       <Box as="span" flex="1" textAlign="left">
-        <Heading as="h2" fontSize="md" fontWeight="bold">
+        <Heading as="h2" fontSize={fontSize}>
           {children}
         </Heading>
       </Box>

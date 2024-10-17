@@ -23,6 +23,7 @@ import IFormDraft, { IField } from "@interfaces/FormDraft";
 import ExtraFields from "./ExtraFields";
 import { BsArrowsFullscreen } from "react-icons/bs";
 import { RiWebhookLine } from "react-icons/ri";
+import Accordion from "@components/atoms/Accordion";
 
 const statusMap = {
   idle: "Aguardando Resposta",
@@ -180,28 +181,81 @@ const TimelineStepItem = ({
         <Divider my={2} />
         {interaction && (
           <Box w="100%">
-            {interaction.answers.map((answer) => (
-              <Box key={answer._id}>
-                <Text fontWeight="bold">{answer.user.name}</Text>
-                <Text fontSize={"sm"}>{answer.user.email}</Text>
-                {answer?.data ? (
-                  <Button
-                    size="sm"
-                    mt="1"
-                    onClick={() => handleOpenModalItem(answer.data)}
-                    variant={"outline"}
-                    leftIcon={<BsArrowsFullscreen />}
-                  >
-                    Resposta Enviada
-                  </Button>
-                ) : (
-                  <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-                    {statusMap[answer.status]}
-                  </Tag>
-                )}
-                <Divider my={2} />
-              </Box>
-            ))}
+            {interaction.answers
+              .filter((answer) => answer.data)
+              .map((answer) => (
+                <Box key={answer._id} p={2}>
+                  <Text fontWeight="bold">{answer.user.name}</Text>
+                  <Text fontSize={"sm"}>{answer.user.email}</Text>
+                  {answer?.data ? (
+                    <Button
+                      size="sm"
+                      mt="1"
+                      onClick={() => handleOpenModalItem(answer.data)}
+                      variant={"outline"}
+                      leftIcon={<BsArrowsFullscreen />}
+                    >
+                      Resposta Enviada
+                    </Button>
+                  ) : (
+                    <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
+                      {statusMap[answer.status]}
+                    </Tag>
+                  )}
+                  <Divider my={2} />
+                </Box>
+              ))}
+
+            <Accordion.Container
+              defaultIndex={interaction.finished ? [] : [0]}
+              allowToggle
+              allowMultiple
+            >
+              <Accordion.Item>
+                <Accordion.Button fontSize="sm">
+                  {interaction.finished
+                    ? "Respostas não enviadas"
+                    : "Aguardando Respostas"}
+                </Accordion.Button>
+                <Accordion.Panel>
+                  {interaction.answers
+                    .filter((answer) => !answer.data)
+                    .map((answer) => (
+                      <Box key={answer._id}>
+                        <Text fontWeight="bold">{answer.user.name}</Text>
+                        <Text fontSize={"sm"}>{answer.user.email}</Text>
+                        {answer?.data ? (
+                          <Button
+                            size="sm"
+                            mt="1"
+                            onClick={() => handleOpenModalItem(answer.data)}
+                            variant={"outline"}
+                            leftIcon={<BsArrowsFullscreen />}
+                          >
+                            Resposta Enviada
+                          </Button>
+                        ) : (
+                          <Tag
+                            size="sm"
+                            variant="subtle"
+                            colorScheme="gray"
+                            mt="2"
+                          >
+                            {statusMap[answer.status]}
+                          </Tag>
+                        )}
+                        <Divider my={2} />
+                      </Box>
+                    ))}
+
+                  {interaction.answers.length === 0 && (
+                    <Flex justifyContent="center" alignItems="center" h="100%">
+                      Todos responderam
+                    </Flex>
+                  )}
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion.Container>
           </Box>
         )}
       </Flex>

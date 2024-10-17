@@ -3,6 +3,7 @@ import React from "react";
 import { Flex } from "@chakra-ui/react";
 import RenderFieldValue from "@components/atoms/RenderFieldValue";
 import { IField } from "@interfaces/FormDraft";
+import Accordion from "@components/atoms/Accordion";
 
 interface ExtraFieldsProps {
   fields: IField[];
@@ -11,12 +12,30 @@ interface ExtraFieldsProps {
 const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields }) => {
   return (
     <Flex flexWrap="wrap" gap={4} direction={"column"}>
-      {fields.map((field) => (
-        <RenderFieldValue
-          key={field.id}
-          field={field}
-        />
-      ))}
+      {fields
+        .filter((field) => field.value)
+        .map((field) => (
+          <RenderFieldValue key={field.id} field={field} />
+        ))}
+
+      <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
+        <Accordion.Item>
+          <Accordion.Button fontSize="sm">Campos não preenchidos</Accordion.Button>
+          <Accordion.Panel>
+            {fields
+              .filter((field) => !field.value)
+              .map((field) => (
+                <RenderFieldValue key={field.id} field={field} />
+              ))}
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion.Container>
+
+      {fields.length === 0 && (
+        <Flex justifyContent="center" alignItems="center" h="100%">
+          Nenhum campo extra
+        </Flex>
+      )}
     </Flex>
   );
 };
