@@ -5,7 +5,10 @@ const formsZodSchema = z.object({
   fields: z
     .array(
       z.object({
-        id: z.string().min(3, "ID precisa ter pelo menos 3 caracteres"),
+        id: z
+          .string()
+          .min(3, "ID precisa ter pelo menos 3 caracteres")
+          .regex(/^[a-z0-9]+$/, "ID precisa ser alfanumérico"),
         label: z
           .string()
           .min(3, "Label precisa ter min 3 caracteres")

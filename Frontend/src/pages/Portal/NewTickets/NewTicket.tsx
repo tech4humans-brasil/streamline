@@ -7,6 +7,7 @@ import {
   Divider,
   Flex,
   Heading,
+  IconButton,
   Input,
   InputGroup,
   InputRightAddon,
@@ -20,14 +21,19 @@ import { convertDateTime } from "@utils/date";
 import React, { useMemo, useState, useCallback, useTransition } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft, FaSearch } from "react-icons/fa";
+import { FaArrowLeft, FaSearch, FaSync } from "react-icons/fa";
 
 const NewTicket: React.FC = () => {
   const { institute_id } = useParams<{ institute_id: string }>(); // Pega o ID do instituto da URL
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const { data: forms, isLoading } = useQuery({
+  const {
+    data: forms,
+    isLoading,
+    isPending,
+    refetch,
+  } = useQuery({
     queryKey: ["open-forms"],
     queryFn: getOpenForms,
     staleTime: 1000 * 60 * 5,
@@ -93,6 +99,14 @@ const NewTicket: React.FC = () => {
               <FaSearch />
             </InputRightAddon>
           </InputGroup>
+
+          <IconButton
+            aria-label={t("common.buttons.refresh")}
+            icon={<FaSync />}
+            onClick={() => refetch()}
+            isLoading={isPending}
+            ml={2}
+          />
         </Flex>
       </Flex>
       <Divider my={2} />

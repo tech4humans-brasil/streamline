@@ -173,7 +173,7 @@ export default new Http(handler)
       form_id: schema.string().required(),
     }),
     body: schema.object().shape({
-      description: schema.string().required().min(3).max(255),
+      description: schema.string().required().min(3).max(512),
     }),
   }))
   .configure({

@@ -7,6 +7,7 @@ import {
   Divider,
   Flex,
   Heading,
+  IconButton,
   Input,
   InputGroup,
   InputRightAddon,
@@ -14,7 +15,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import React, { useCallback, useMemo, useTransition } from "react";
-import { FaArrowLeft, FaSearch } from "react-icons/fa";
+import { FaArrowLeft, FaSearch, FaSync } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -25,7 +26,12 @@ const InstitutesPage: React.FC = () => {
   const [_, startTransition] = useTransition();
   const [search, setSearch] = React.useState<string>("");
 
-  const { data: forms, isLoading } = useQuery({
+  const {
+    data: forms,
+    isLoading,
+    refetch,
+    isPending,
+  } = useQuery({
     queryKey: ["open-forms"],
     queryFn: getOpenForms,
     staleTime: 1000 * 60 * 5,
@@ -79,6 +85,14 @@ const InstitutesPage: React.FC = () => {
               <FaSearch />
             </InputRightAddon>
           </InputGroup>
+
+          <IconButton
+            aria-label={t("common.actions.refresh")}
+            icon={<FaSync />}
+            isLoading={isPending}
+            onClick={() => refetch()}
+            ml={2}
+          />
         </Flex>
       </Flex>
       <Divider my={2} />

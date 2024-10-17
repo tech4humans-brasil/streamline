@@ -35,7 +35,6 @@ export default function convertToZodSchema(fields: IField[]): z.ZodObject<any> {
         break;
       case "select":
       case "radio":
-      case "multiselect":
         if (field.options) {
           fieldSchema = z.enum([
             "",
@@ -43,12 +42,28 @@ export default function convertToZodSchema(fields: IField[]): z.ZodObject<any> {
               "options" in option
                 ? option.options.map((o) => o.value)
                 : option.value
-            ),
-          ]);
-        } else {
-          fieldSchema = z.string(); // Fallback to string if options are not provided
-        }
-        break;
+              ),
+            ]);
+          } else {
+            fieldSchema = z.string();
+          }
+          break;
+      case "multiselect":
+        if (field.options) {
+          fieldSchema = z.array(
+            z.enum([
+              "",
+              ...field.options.flatMap((option) =>
+                "options" in option
+                  ? option.options.map((o) => o.value)
+                  : option.value
+                ),
+              ])
+          );
+          } else {
+            fieldSchema = z.array(z.string());
+          }
+          break;
       case "date":
         fieldSchema = z.string();
         break;

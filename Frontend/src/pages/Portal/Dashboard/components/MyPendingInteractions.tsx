@@ -1,11 +1,19 @@
 import { getMyActivitiesPendingInteractions } from "@apis/dashboard";
-import { Box, Button, Divider, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Heading,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
 import Table from "@components/organisms/Table";
 import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { FaEye, FaPen } from "react-icons/fa";
+import { FaEye, FaPen, FaSync } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const columns = [
@@ -35,7 +43,7 @@ type IItem = Awaited<ReturnType<typeof getMyActivitiesPendingInteractions>>[0];
 
 const PendingInteractions: React.FC = () => {
   const [t] = useTranslation();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["my-pending-interactions"],
     queryFn: getMyActivitiesPendingInteractions,
     refetchInterval: 60000,
@@ -82,10 +90,21 @@ const PendingInteractions: React.FC = () => {
 
   return (
     <Box p={4} bg="bg.card" borderRadius="md" id="pending-interactions">
-      <Heading size="md">{t("dashboard.title.interactionPending")}</Heading>
-      <Text size="sm" color={"text.secondary"}>
-        {t("dashboard.description.interactionPending")}
-      </Text>
+      <Flex>
+        <div>
+          <Heading size="md">{t("dashboard.title.interactionPending")}</Heading>
+          <Text size="sm" color={"text.secondary"}>
+            {t("dashboard.description.interactionPending")}
+          </Text>
+        </div>
+        <IconButton
+          ml="auto"
+          aria-label={t("common.refresh")}
+          icon={<FaSync />}
+          onClick={() => refetch()}
+          isLoading={isLoading}
+        />
+      </Flex>
 
       <Divider my={2} />
 
