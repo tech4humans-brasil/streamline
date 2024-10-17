@@ -56,13 +56,16 @@ export default function convertToZodSchema(fields: IField[]): z.ZodObject<any> {
         fieldSchema = z.coerce.number();
         break;
       case "file":
-        fieldSchema = z.object({
-          containerName: z.string(),
-          name: z.string(),
-          url: z.string(),
-          mimeType: z.string(),
-          size: z.string(),
-        });
+        fieldSchema = z.union([
+          z.string(),
+          z.object({
+            containerName: z.string(),
+            name: z.string(),
+            url: z.string(),
+            mimeType: z.string(),
+            size: z.string(),
+          }),
+        ]);
         break;
       case "teacher":
         fieldSchema = z

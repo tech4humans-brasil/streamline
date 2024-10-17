@@ -5,6 +5,7 @@ import QueueWrapper, {
 import { IFormDraft } from "../../models/client/FormDraft";
 import { IConditional, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
+import ConditionalEvaluator from "../../utils/conditionalEvaluator";
 import sendNextQueue from "../../utils/sendNextQueue";
 
 interface TMessage extends GenericMessage {}
@@ -74,37 +75,9 @@ const handler: QueueWrapperHandler<TMessage> = async (
     if (data.conditional && answers.length) {
       const conditionals = data.conditional;
 
-      const evaluated = answers
-        .filter((el) => !!el.data)
-        .some((answer) => {
-          return conditionals.every((conditional) => {
-            const answerValue = answer.data.fields.find(
-              (field) => field.id === conditional.field
-            ).value;
-            const value = conditional.value;
+      const evaluated = ConditionalEvaluator.evaluate(answers, conditionals);
 
-            switch (conditional.operator) {
-              case "eq":
-                console.log("eq", answerValue, value, answerValue === value);
-                return answerValue === value;
-              case "ne":
-                return answerValue !== value;
-              case "gt":
-                return answerValue > value;
-              case "lt":
-                return answerValue < value;
-              case "gte":
-                return answerValue >= value;
-              case "lte":
-                return answerValue <= value;
-              case "in":
-                return value.includes(answerValue);
-              default:
-                console.log("default", conditional.operator);
-                return false;
-            }
-          });
-        });
+      context.log("evaluated", evaluated);
 
       if (!evaluated) {
         path = "alternative-source";

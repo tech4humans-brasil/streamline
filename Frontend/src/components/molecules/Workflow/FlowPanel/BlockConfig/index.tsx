@@ -55,7 +55,19 @@ const conditionalOperators = [
   },
   {
     label: "Contém",
-    value: "contains",
+    value: "in",
+  },
+  {
+    label: "Não Contém",
+    value: "notIn",
+  },
+  {
+    label: "Nulo",
+    value: "isNull",
+  },
+  {
+    label: "Não Nulo",
+    value: "isNotNull",
   },
 ];
 
@@ -443,6 +455,7 @@ const ConditionalRender = memo(({ form_id }: ConditionalProps) => {
 
   const haveOptions = useCallback(
     (id: string) => {
+      
       return ["select", "multiselect", "radio"].includes(
         getField(id)?.type ?? ""
       );
@@ -504,14 +517,20 @@ const ConditionalRender = memo(({ form_id }: ConditionalProps) => {
                       }}
                     />
                   ) : (
-                    <Text
-                      input={{
-                        label: "Valor",
-                        id: `conditional[${index}].value`,
-                        placeholder: "Digite",
-                        required: true,
-                      }}
-                    />
+                    <>
+                      {["isNull", "isNotNull"].includes(
+                        watch(`conditional[${index}].operator`)
+                      ) ? null : (
+                        <Text
+                          input={{
+                            label: "Valor",
+                            id: `conditional[${index}].value`,
+                            placeholder: "Digite",
+                            required: true,
+                          }}
+                        />
+                      )}
+                    </>
                   )}
                 </Flex>
                 <Button

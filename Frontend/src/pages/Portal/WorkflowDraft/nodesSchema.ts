@@ -36,15 +36,35 @@ const schemas: NodeSchemas = {
     form_id: z.string().min(1, { message: "Selecione um formulário" }),
     visible: z.boolean().default(true),
     waitForOne: z.boolean().default(false),
-    conditional: z
-      .array(
-        z.object({
+    conditional: z.array(
+      z
+        .object({
           field: z.string().min(1, { message: "Selecione um campo" }),
-          value: z.string().min(1, { message: "Valor é obrigatório" }),
-          operator: z.enum(["eq", "ne", "gt", "lt", "gte", "lte", "in"]),
+          value: z.string(),
+          operator: z.enum([
+            "eq",
+            "ne",
+            "gt",
+            "lt",
+            "gte",
+            "lte",
+            "in",
+            "notIn",
+            "isNull",
+            "isNotNull",
+          ]),
         })
-      )
-      .optional(),
+        .refine(
+          (data) => {
+            if (data.operator === "isNull" || data.operator === "isNotNull") {
+              return true;
+            }
+
+            return !!data.value && data.value?.length > 1;
+          },
+          { message: "Valor é obrigatório", path: ["value"] }
+        )
+    ),
   }),
   [NodeTypes.WebRequest]: z.object({
     name: z.string().min(3, { message: "Nome é obrigatório" }),
@@ -83,17 +103,37 @@ const schemas: NodeSchemas = {
     form_id: z.string().min(3, { message: "Selecione um formulário" }),
     conditional: z
       .array(
-        z.object({
-          field: z.string().min(1, { message: "Selecione um campo" }),
-          value: z.string().min(1, { message: "Valor é obrigatório" }),
-          operator: z.enum(["eq", "ne", "gt", "lt", "gte", "lte", "in"]),
-        })
+        z
+          .object({
+            field: z.string().min(1, { message: "Selecione um campo" }),
+            value: z.string(),
+            operator: z.enum([
+              "eq",
+              "ne",
+              "gt",
+              "lt",
+              "gte",
+              "lte",
+              "in",
+              "notIn",
+              "isNull",
+              "isNotNull",
+            ]),
+          })
+          .refine(
+            (data) => {
+              if (data.operator === "isNull" || data.operator === "isNotNull") {
+                return true;
+              }
+
+              return !!data.value && data.value?.length > 1;
+            },
+            { message: "Valor é obrigatório", path: ["value"] }
+          )
       )
       .length(1, { message: "Adicione pelo menos uma condição" }),
     visible: z.boolean().default(true),
-    ifNotExists: z
-      .string()
-      .optional()
+    ifNotExists: z.string().optional(),
   }),
 };
 

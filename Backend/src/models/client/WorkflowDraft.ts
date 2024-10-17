@@ -35,6 +35,19 @@ export interface ISwapWorkflow {
   visible: false;
 }
 
+enum IOperator {
+  Eq = "eq",
+  Ne = "ne",
+  Gt = "gt",
+  Lt = "lt",
+  Gte = "gte",
+  Lte = "lte",
+  In = "in",
+  NotIn = "notIn",
+  IsNull = "isNull",
+  IsNotNull = "isNotNull",
+}
+
 export interface IInteraction {
   name: string;
   form_id: string;
@@ -45,7 +58,7 @@ export interface IInteraction {
     {
       field: string;
       value: string;
-      operator: "eq" | "ne" | "gt" | "lt" | "gte" | "lte" | "in";
+      operator: IOperator;
     }
   ];
 }
@@ -57,7 +70,7 @@ export type IConditional = {
   conditional: Array<{
     field: string;
     value: string;
-    operator: "eq" | "ne" | "gt" | "lt" | "gte" | "lte" | "in";
+    operator: IOperator;
   }>;
   ifNotExists: string | null;
 };
