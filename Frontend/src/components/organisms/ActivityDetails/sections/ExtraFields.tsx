@@ -18,9 +18,11 @@ const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields }) => {
           <RenderFieldValue key={field.id} field={field} />
         ))}
 
-      <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
+      <Accordion.Container allowToggle allowMultiple defaultIndex={[]}>
         <Accordion.Item>
-          <Accordion.Button fontSize="sm">Campos não preenchidos</Accordion.Button>
+          <Accordion.Button fontSize="sm">
+            Campos não preenchidos
+          </Accordion.Button>
           <Accordion.Panel>
             {fields
               .filter((field) => !field.value)
