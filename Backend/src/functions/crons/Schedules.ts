@@ -195,7 +195,7 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
 export default new CronWrapper(handler).configure({
   name: "CronSchedule",
   options: {
-    schedule: "* * * * *",
+    schedule: "*/15 * * * *",
     retry: {
       maxRetryCount: 3,
       strategy: "exponentialBackoff",
