@@ -5,7 +5,7 @@ import moment from "moment";
 const response = (
   status: StatusCodes,
   data: any,
-  err = null,
+  err = null
 ): HttpResponseInit => ({
   status,
   body: JSON.stringify(
@@ -16,7 +16,7 @@ const response = (
       timestamp: moment.utc().toISOString(),
     },
     null,
-    2,
+    2
   ),
   headers: {
     "Content-Type": "application/json",
@@ -44,10 +44,13 @@ export const notFound = (message: string): HttpResponseInit =>
 export const internalServerError = (): HttpResponseInit =>
   response(StatusCodes.INTERNAL_SERVER_ERROR, null, "Internal server error");
 
+export const custom = (data: HttpResponseInit): HttpResponseInit =>
+  data;
+
 export const error = (
   status: number,
   body: any,
-  message: any,
+  message: any
 ): HttpResponseInit => response(status, null, message);
 
 export default {
@@ -59,4 +62,5 @@ export default {
   internalServerError,
   error,
   created,
+  custom,
 };

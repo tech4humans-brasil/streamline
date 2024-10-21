@@ -19,6 +19,7 @@
     "@azure/storage-blob": "^12.23.0",
     "@sendgrid/mail": "^8.1.3",
     "@sentry/node": "^8.12.0",
+    "archiver": "^7.0.1",
     "axios": "^1.7.5",
     "bcrypt": "^5.1.1",
     "cheerio": "1.0.0-rc.12",
@@ -29,9 +30,11 @@
     "luxon": "^3.5.0",
     "moment": "^2.30.1",
     "mongoose": "^8.4.1",
+    "pdfkit": "^0.15.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.2",
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.12.8",

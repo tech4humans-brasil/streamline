@@ -86,3 +86,11 @@ export const acceptActivity = async (data: {
 
   return res.data.data;
 };
+
+export const exportActivity = async (id: string) => {
+  const res = await api.get<Response<{ url: string }>>(
+    `/activity/${id}/export`
+  );
+
+  return res.data.data;
+};

@@ -28,6 +28,32 @@ class BlobUploader {
     this.containerName = containerName;
   }
 
+  async uploadBufferToBlob(
+    blobName: string,
+    contentType: string,
+    content: Buffer
+  ): Promise<FileUploaded> {
+    blobName = `${Date.now()}@${blobName}`;
+
+    const containerClient = this.blobServiceClient.getContainerClient(
+      this.containerName
+    );
+    await containerClient.createIfNotExists();
+    const blobClient = containerClient.getBlockBlobClient(blobName);
+
+    await blobClient.uploadData(content, {
+      blobHTTPHeaders: { blobContentType: contentType },
+    });
+
+    return {
+      name: blobName,
+      url: blobClient.url,
+      mimeType: contentType,
+      size: content.byteLength.toString(),
+      containerName: this.containerName,
+    };
+  }
+
   async uploadFileToBlob(
     name: string,
     mimeType: string,
