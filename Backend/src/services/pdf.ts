@@ -187,7 +187,7 @@ class PdfGenerator {
                   doc.font("Helvetica-Bold");
 
                   if (type === "file") {
-                    doc.text("Em anexo");
+                    doc.text(field.value.name);
                   } else if (
                     [FieldTypes.Radio, FieldTypes.Select].includes(type)
                   ) {
