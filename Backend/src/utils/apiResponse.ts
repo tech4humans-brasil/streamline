@@ -41,6 +41,9 @@ export const forbidden = (message: string): HttpResponseInit =>
 export const notFound = (message: string): HttpResponseInit =>
   response(StatusCodes.NOT_FOUND, null, message);
 
+export const conflict = (message: string): HttpResponseInit =>
+  response(StatusCodes.CONFLICT, null, message);
+
 export const internalServerError = (): HttpResponseInit =>
   response(StatusCodes.INTERNAL_SERVER_ERROR, null, "Internal server error");
 
@@ -59,6 +62,7 @@ export default {
   unauthorized,
   forbidden,
   notFound,
+  conflict,
   internalServerError,
   error,
   created,
