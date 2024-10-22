@@ -35,6 +35,12 @@ export const getActivity = async ({
   return res.data.data;
 };
 
+export const deleteActivity = async (id: string) => {
+  const res = await api.delete<Response<IActivity>>(`/activity/${id}`);
+
+  return res.data.data;
+};
+
 type ReqFormForms = Response<{
   teachers: Pick<IUser, "_id" | "name" | "email" | "matriculation">[];
   students: { label: string; value: string }[];

@@ -1,16 +1,18 @@
-import { exportActivity, getActivity } from "@apis/activity";
+import { deleteActivity, exportActivity, getActivity } from "@apis/activity";
 import { Box, Button, Center, IconButton, useToast } from "@chakra-ui/react";
+import Can from "@components/atoms/Can";
 import ActivityDetails from "@components/organisms/ActivityDetails";
 import ActivityProvider from "@contexts/ActivityContext";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import {
   FaArrowLeft,
   FaCheckCircle,
   FaDownload,
   FaExclamationCircle,
   FaSync,
+  FaTrash,
 } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -96,9 +98,60 @@ const Activity: React.FC = () => {
         >
           <FaDownload />
         </IconButton>
+
+        <Can permission="activity.delete">
+          <DeleteButton id={id} />
+        </Can>
       </Box>
     </Center>
   );
 };
 
 export default Activity;
+
+const DeleteButton = memo(({ id }: { id: string }) => {
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const { mutateAsync: mutateDelete, isPending: isPendingDelete } = useMutation(
+    {
+      mutationKey: ["activity", id],
+      mutationFn: deleteActivity,
+      onSuccess: () => {
+        toast({
+          title: "Ticket excluído com sucesso",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          icon: <FaCheckCircle />,
+        });
+        navigate(-1);
+      },
+      onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
+        toast({
+          title: "Erro ao excluir ticket",
+          description: error.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          icon: <FaExclamationCircle />,
+        });
+      },
+    }
+  );
+
+  const handleDelete = useCallback(() => {
+    mutateDelete(id);
+  }, [mutateDelete, id]);
+
+  return (
+    <IconButton
+      aria-label="delete"
+      colorScheme="red"
+      onClick={handleDelete}
+      isLoading={isPendingDelete}
+    >
+      <FaTrash />
+    </IconButton>
+  );
+});
