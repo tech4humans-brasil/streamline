@@ -4,6 +4,7 @@ import path from "path";
 import {
   IActivity,
   IActivityInteractions,
+  IActivityStepStatus,
   IUserChild,
 } from "../models/client/Activity";
 import { FieldTypes } from "../models/client/FormDraft";
@@ -147,79 +148,93 @@ class PdfGenerator {
       doc.font("Helvetica-Bold").fontSize(14).text("Interações:");
       doc.moveDown(0.5);
 
-      activity.interactions.forEach(
-        (interaction: IActivityInteractions, index: number) => {
-          doc
-            .font("Helvetica-Bold")
-            .fontSize(12)
-            .text(`Interação ${index + 1}:`);
+      activity.interactions.forEach((interaction: IActivityInteractions) => {
+        doc
+          .moveTo(doc.x, doc.y)
+          .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+          .stroke();
+        doc.moveDown(0.5);
+        doc
+          .font("Helvetica-Bold")
+          .fontSize(12)
+          .text(`${interaction.form.name}:`);
+        doc.moveDown(0.5);
+
+        // Respostas
+        if (interaction.answers && interaction.answers.length > 0) {
+          doc.font("Helvetica-Bold").text("Respostas:");
           doc.moveDown(0.5);
 
-          doc.font("Helvetica").fontSize(12);
-          doc.font("Helvetica").text(`- Formulário: `, { continued: true });
-          doc.font("Helvetica-Bold").text(`${interaction.form.name}`);
-          doc.moveDown(0.5);
+          interaction.answers.forEach((answer) => {
+            if (!answer.data) return;
 
-          // Respostas
-          if (interaction.answers && interaction.answers.length > 0) {
-            doc.font("Helvetica-Bold").text("Respostas:");
+            doc.font("Helvetica").text(`Usuário: `, { continued: true });
+            doc
+              .font("Helvetica-Bold")
+              .text(`${answer.user.name}`, { continued: true });
+            doc.font("Helvetica").text(`, Status: `, { continued: true });
+            doc
+              .font("Helvetica-Bold")
+              .text(
+                `${
+                  answer.status === IActivityStepStatus.finished
+                    ? "Finalizado"
+                    : "Pendente"
+                }`
+              );
             doc.moveDown(0.5);
 
-            interaction.answers.forEach((answer) => {
-              if (!answer.data) return;
+            if (answer.data) {
+              answer.data.fields.forEach((field) => {
+                const { label, value, type } = field;
 
-              doc.font("Helvetica").text(`Usuário: `, { continued: true });
-              doc
-                .font("Helvetica-Bold")
-                .text(`${answer.user.name}`, { continued: true });
-              doc.font("Helvetica").text(`, Status: `, { continued: true });
-              doc.moveDown(0.5);
+                if (!value) {
+                  return;
+                }
 
-              if (answer.data) {
-                answer.data.fields.forEach((field) => {
-                  const { label, value, type } = field;
+                doc
+                  .font("Helvetica")
+                  .text(` - ${label}: `, { continued: true });
+                doc.font("Helvetica-Bold");
 
-                  if (!value) {
-                    return;
-                  }
-
-                  doc.font("Helvetica").text(`${label}: `, { continued: true });
-                  doc.font("Helvetica-Bold");
-
-                  if (type === "file") {
-                    doc.text(field.value.name);
-                  } else if (
-                    [FieldTypes.Radio, FieldTypes.Select].includes(type)
-                  ) {
-                    const selectedOption = field.options.find(
-                      (o) => "value" in o && o.value === value
-                    )?.label;
-                    doc.text(selectedOption || "");
-                  } else if (
-                    type === FieldTypes.Checkbox ||
-                    type === FieldTypes.MultiSelect
-                  ) {
-                    const selectedOptions = value
-                      .split(",")
-                      .map((optionValue) => {
-                        const option = field.options.find(
-                          (o) => "value" in o && o.value === optionValue
-                        );
-                        return option ? option.label : optionValue;
-                      })
-                      .join(", ");
-                    doc.text(selectedOptions);
-                  } else {
-                    doc.text(value);
-                  }
-                  doc.moveDown();
-                });
-              }
-            });
-          }
-          doc.moveDown();
+                if (type === "file") {
+                  doc.text(field.value.name);
+                } else if (
+                  [FieldTypes.Radio, FieldTypes.Select].includes(type)
+                ) {
+                  const selectedOption = field.options.find(
+                    (o) => "value" in o && o.value === value
+                  )?.label;
+                  doc.text(selectedOption || "");
+                } else if (
+                  type === FieldTypes.Checkbox ||
+                  type === FieldTypes.MultiSelect
+                ) {
+                  const selectedOptions = value
+                    .split(",")
+                    .map((optionValue) => {
+                      const option = field.options.find(
+                        (o) => "value" in o && o.value === optionValue
+                      );
+                      return option ? option.label : optionValue;
+                    })
+                    .join(", ");
+                  doc.text(selectedOptions);
+                } else {
+                  doc.text(value);
+                }
+                doc.moveDown();
+              });
+            }
+          });
         }
-      );
+        doc
+          .moveTo(doc.x, doc.y)
+          .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+          .stroke();
+
+        doc.moveDown();
+      });
     }
   }
 }

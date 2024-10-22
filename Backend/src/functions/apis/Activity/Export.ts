@@ -19,7 +19,7 @@ const handler: HttpHandler = async (conn, req) => {
     return res.notFound("Activity not found");
   }
 
-  const blobUploader = new BlobUploader(req.user.id);
+  const blobUploader = new BlobUploader("exports");
   const files: FileUploaded[] = [];
 
   for (const field of activity.form_draft.fields) {

@@ -2,11 +2,13 @@ import QueueWrapper, {
   GenericMessage,
   QueueWrapperHandler,
 } from "../../middlewares/queue";
+import { FieldTypes } from "../../models/client/FormDraft";
 import { ISendEmail, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
 import EmailRepository from "../../repositories/Email";
 import UserRepository from "../../repositories/User";
 import { sendEmail } from "../../services/email";
+import BlobUploader from "../../services/upload";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
 
@@ -75,16 +77,36 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const { subject, htmlTemplate, cssTemplate } = email;
 
+    const blobUploader = new BlobUploader("");
+
+    for (const field of activity.form_draft.fields) {
+      if (field.type === FieldTypes.File) {
+        if (!field.value) continue;
+        await blobUploader.updateSas(field.value);
+      }
+    }
+
+    for (const interaction of activity.interactions) {
+      for (const answer of interaction.answers) {
+        if (!answer.data) continue;
+        for (const field of answer.data.fields) {
+          if (field.type === FieldTypes.File && field.value) {
+            await blobUploader.updateSas(field.value);
+          }
+        }
+      }
+    }
+
     const subjectReplaced = await replaceSmartValues({
       conn,
-      activity_id,
+      activity_id: activity,
       replaceValues: subject,
     });
 
     const toReplacedSmartValues = (
       await replaceSmartValues({
         conn,
-        activity_id,
+        activity_id: activity,
         replaceValues: to,
       })
     ).flatMap((el) => el.split(", "));
@@ -110,7 +132,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const htmlTemplateReplaced = await replaceSmartValues({
       conn,
-      activity_id,
+      activity_id: activity,
       replaceValues: htmlTemplate,
     });
 

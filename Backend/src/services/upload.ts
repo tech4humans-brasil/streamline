@@ -38,7 +38,9 @@ class BlobUploader {
     const containerClient = this.blobServiceClient.getContainerClient(
       this.containerName
     );
-    await containerClient.createIfNotExists();
+    await containerClient.createIfNotExists({
+      access: "blob",
+    });
     const blobClient = containerClient.getBlockBlobClient(blobName);
 
     await blobClient.uploadData(content, {
