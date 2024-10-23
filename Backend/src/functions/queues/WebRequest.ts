@@ -3,9 +3,11 @@ import QueueWrapper, {
   QueueWrapperHandler,
 } from "../../middlewares/queue";
 import { IActivityStepStatus } from "../../models/client/Activity";
+import { CallbackStatus } from "../../models/client/Callback";
 import { FieldTypes } from "../../models/client/FormDraft";
 import { IWebRequest, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
+import CallbackRepository from "../../repositories/Callback";
 import ProjectRepository from "../../repositories/Project";
 import WorkflowRepository from "../../repositories/Workflow";
 import WorkflowDraftRepository from "../../repositories/WorkflowDraft";
@@ -96,8 +98,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error("Workflow not found");
     }
 
-    console.log("workflow", workflow);
-
     const project = await projectRepository.findById({
       id: workflow.project,
       select: {
@@ -105,7 +105,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       },
     });
 
-    const { body, field_populate, headers, method, url } = data;
+    const { body, field_populate, is_async, headers, method, url } = data;
 
     const vars = project.variables.reduce((acc, variable) => {
       acc[variable.name] =
@@ -113,7 +113,30 @@ const handler: QueueWrapperHandler<TMessage> = async (
       return acc;
     }, {});
 
-    const blobUploader = new BlobUploader('files');
+    if (is_async) {
+      const callbackRepository = new CallbackRepository(conn);
+
+      let callback = await callbackRepository.findOne({
+        where: {
+          activity: activity_id,
+          workflow: activity_workflow_id,
+          step: activity_step_id,
+          status: CallbackStatus.IDLE,
+        },
+      });
+
+      if (!callback) {
+        callback = await callbackRepository.create({
+          activity: activity_id,
+          workflow: activityWorkflow._id,
+          step: activity_step_id,
+        });
+      }
+
+      vars["callback_id"] = callback._id.toString();
+    }
+
+    const blobUploader = new BlobUploader("files");
 
     for (const field of activity.form_draft.fields) {
       if (field.type === FieldTypes.File) {
@@ -155,8 +178,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       urlReplacedPromise,
     ]);
 
-    context.log("bodyReplaced", bodyReplaced);
-    const bodyParsed = await JSON.parse(bodyReplaced)
+    const bodyParsed = await JSON.parse(bodyReplaced);
 
     const request = {
       data: bodyParsed,
@@ -176,37 +198,41 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error(`Request failed with status code ${response.status}`);
     }
 
-    function getValueByKey(data, key) {
-      return key
-        .split(".")
-        .reduce(
-          (obj, k) => (obj && obj[k] !== undefined ? obj[k] : undefined),
-          data
-        );
-    }
-
-    if (field_populate?.length) {
-      for (const field of field_populate) {
-        const fieldIndex = activity.form_draft.fields.findIndex(
-          (form) => form.id.toString() === field.key
-        );
-
-        if (fieldIndex === -1) continue;
-
-        activity.form_draft.fields[fieldIndex].value = getValueByKey(
-          response.data,
-          field.value
-        );
+    if (!is_async) {
+      function getValueByKey(data, key) {
+        return key
+          .split(".")
+          .reduce(
+            (obj, k) => (obj && obj[k] !== undefined ? obj[k] : undefined),
+            data
+          );
       }
+
+      if (field_populate?.length) {
+        for (const field of field_populate) {
+          const fieldIndex = activity.form_draft.fields.findIndex(
+            (form) => form.id.toString() === field.key
+          );
+
+          if (fieldIndex === -1) continue;
+
+          activity.form_draft.fields[fieldIndex].value = getValueByKey(
+            response.data,
+            field.value
+          );
+        }
+      }
+
+      await sendNextQueue({
+        conn,
+        activity,
+        context,
+      });
+
+      activityStep.status = IActivityStepStatus.finished;
+    } else {
+      activityStep.status = IActivityStepStatus.idle;
     }
-
-    await sendNextQueue({
-      conn,
-      activity,
-      context,
-    });
-
-    activity.workflows.at(-1).steps[0].status = IActivityStepStatus.finished;
 
     await activity.save();
   } catch (err) {

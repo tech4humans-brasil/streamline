@@ -55,6 +55,11 @@ export async function disconnect(conn: Connection): Promise<void> {
 }
 
 export async function connectAdmin(): Promise<Connection> {
+
+  if (connectionMap.has(MONGO_ADMIN_DB)) {
+    return connectionMap.get(MONGO_ADMIN_DB);
+  }
+
   const conn = handleConnect(MONGO_ADMIN_DB);
   const newConn = conn.useDb(MONGO_ADMIN_DB);
   newConn.once("open", () => {

@@ -327,6 +327,13 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
                 required: true,
               }}
             />
+            <Switch
+              input={{
+                label: "Assincrono",
+                id: "is_async",
+                required: true,
+              }}
+            />
             <Text
               input={{
                 label: "URL",

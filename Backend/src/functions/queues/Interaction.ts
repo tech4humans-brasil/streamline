@@ -2,6 +2,7 @@ import QueueWrapper, {
   GenericMessage,
   QueueWrapperHandler,
 } from "../../middlewares/queue";
+import { IActivityStepStatus } from "../../models/client/Activity";
 import { IInteraction, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
 import FormRepository from "../../repositories/Form";
@@ -149,6 +150,10 @@ const handler: QueueWrapperHandler<TMessage> = async (
       html,
       css
     );
+
+    activityStep.status = IActivityStepStatus.idle;
+
+    await activity.save();
   } catch (err) {
     console.error(err);
     throw err;
