@@ -9,6 +9,7 @@ import * as yup from "yup";
 import Activity, { IActivityStepStatus } from "../models/client/Activity";
 import sbusOutputs from "../utils/sbusOutputs";
 import { NodeTypes } from "../models/client/WorkflowDraft";
+import { sendDiscordBlockError } from "../services/discord";
 
 const IS_IDLE_BLOCK = [NodeTypes.Interaction, NodeTypes.WebRequest];
 
@@ -68,6 +69,7 @@ export default class QueueWrapper<TMessage> {
 
     try {
       conn = mongo.connect(message.client);
+      throw new Error("Test error");
       await new Activity(conn)
         .model()
         .findById(message.activity_id)
@@ -137,8 +139,9 @@ export default class QueueWrapper<TMessage> {
 
       return Promise.resolve();
     } catch (error) {
+      let activity = null;
       if (conn) {
-        await new Activity(conn)
+        activity = await new Activity(conn)
           .model()
           .findById(message.activity_id)
           .then((activity) => {
@@ -159,6 +162,13 @@ export default class QueueWrapper<TMessage> {
             return activity.save();
           });
       }
+
+      sendDiscordBlockError({
+        error,
+        name: this.name,
+        activity,
+        client: message.client,
+      });
 
       return Promise.reject(error);
     }
