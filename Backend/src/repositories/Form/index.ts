@@ -59,6 +59,18 @@ export default class FormRepository extends BaseRepository<IForm> {
                   },
                 ],
               },
+              {
+                $and: [
+                  {
+                    "period.open": {
+                      $lte: moment.utc().toDate(),
+                    },
+                  },
+                  {
+                    "period.close": null,
+                  },
+                ],
+              },
             ],
           },
         ],
