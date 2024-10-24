@@ -69,7 +69,6 @@ export default class QueueWrapper<TMessage> {
 
     try {
       conn = mongo.connect(message.client);
-      throw new Error("Test error");
       await new Activity(conn)
         .model()
         .findById(message.activity_id)
