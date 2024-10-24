@@ -127,7 +127,6 @@ class PdfGenerator {
         type === FieldTypes.MultiSelect
       ) {
         const selectedOptions = value
-          .split(",")
           .map((optionValue) => {
             const option = field.options.find(
               (o) => "value" in o && o.value === optionValue
@@ -210,8 +209,8 @@ class PdfGenerator {
                   type === FieldTypes.Checkbox ||
                   type === FieldTypes.MultiSelect
                 ) {
+                  console.log(value);
                   const selectedOptions = value
-                    .split(",")
                     .map((optionValue) => {
                       const option = field.options.find(
                         (o) => "value" in o && o.value === optionValue
