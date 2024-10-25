@@ -42,6 +42,11 @@ resource "azurerm_static_web_app" "static" {
   sku_size            = "Free"
 }
 
+resource "azurerm_static_site_custom_domain" "custom_domain" {
+  static_site_id = azurerm_static_web_app.static.id
+  domain_name    = vars.FRONTEND_URL
+}
+
 resource "azurerm_cosmosdb_account" "cosmosdb" {
 name                      = "prod-streamline-cosmosdb"
   location                  = azurerm_resource_group.rg.location
