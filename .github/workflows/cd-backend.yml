@@ -131,7 +131,7 @@ jobs:
     outputs:
       url: ${{ steps.deployFunctionApp.outputs.app-url }}
     environment: 
-        name: Production
+        name: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
         url: ${{ steps.deployFunctionApp.outputs.app-url }}
     steps:
       - name: "Download Artifact"
