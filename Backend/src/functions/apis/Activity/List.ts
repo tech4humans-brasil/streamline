@@ -6,7 +6,6 @@ import FilterQueryBuilder, {
 } from "../../../utils/filterQueryBuilder";
 import { IUserRoles } from "../../../models/client/User";
 import FormRepository from "../../../repositories/Form";
-import { ObjectId } from "mongoose";
 
 interface Query {
   page?: number;
@@ -61,8 +60,18 @@ const handler: HttpHandler = async (conn, req) => {
       },
     });
 
-    if (visibilities.length > 0) {
+    if (visibilities.length) {
       filters.form = visibilities.map((v) => v._id).join(",");
+    } else {
+      return res.success({
+        activities: [],
+        pagination: {
+          page: Number(page),
+          total: 0,
+          totalPages: 0,
+          count: 0,
+        },
+      });
     }
   }
 

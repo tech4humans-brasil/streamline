@@ -15,7 +15,6 @@ export const StudentRole: Role = {
         "create",
         "update",
         "read",
-        "delete",
         "board-definition",
         "committed",
         "accept",

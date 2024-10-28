@@ -85,6 +85,7 @@ export interface IWebRequest {
   }>;
   body: string;
   visible: false;
+  is_async: boolean;
   field_populate?: [
     {
       key: string;

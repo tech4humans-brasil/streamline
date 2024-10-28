@@ -57,7 +57,7 @@ const handler: HttpHandler = async (conn, req) => {
   if (!fs.existsSync(path.join(tempDir, "files")) && files.length > 0) {
     fs.mkdirSync(path.join(tempDir, "files"));
   }
-
+  
   for (const fileUrl of files) {
     const fileName = path.basename(fileUrl.url.split("?")[0]); // Remove query params
     const filePath = path.join(tempDir, "files", fileName);

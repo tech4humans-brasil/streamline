@@ -99,14 +99,14 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const subjectReplaced = await replaceSmartValues({
       conn,
-      activity_id: activity,
+      activity_id: activity.toObject(),
       replaceValues: subject,
     });
 
     const toReplacedSmartValues = (
       await replaceSmartValues({
         conn,
-        activity_id: activity,
+        activity_id: activity.toObject(),
         replaceValues: to,
       })
     ).flatMap((el) => el.split(", "));
@@ -132,7 +132,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const htmlTemplateReplaced = await replaceSmartValues({
       conn,
-      activity_id: activity,
+      activity_id: activity.toObject(),
       replaceValues: htmlTemplate,
     });
 

@@ -197,7 +197,7 @@
   "role": {
     "admin": "Administrador(a)",
     "teacher": "Professor(a)",
-    "user": "Usuário(a)"
+    "student": "Usuário(a)"
   },
   "state": {
     "active": "Ativo",

@@ -44,6 +44,7 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
         .matches(/^((http|https):\/\/[^ "]+|\$\{\{vars\.[^}]+\}\})/),
       method: schema.string().required(),
       active: schema.boolean().default(true),
+      is_async: schema.boolean().default(false),
       headers: schema
         .array()
         .of(

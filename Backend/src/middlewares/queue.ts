@@ -9,8 +9,9 @@ import * as yup from "yup";
 import Activity, { IActivityStepStatus } from "../models/client/Activity";
 import sbusOutputs from "../utils/sbusOutputs";
 import { NodeTypes } from "../models/client/WorkflowDraft";
+import { sendDiscordBlockError } from "../services/discord";
 
-const IS_IDLE_BLOCK = [NodeTypes.Interaction];
+const IS_IDLE_BLOCK = [NodeTypes.Interaction, NodeTypes.WebRequest];
 
 export interface GenericMessage {
   activity_id: string;
@@ -83,7 +84,11 @@ export default class QueueWrapper<TMessage> {
             (step) => step._id.toString() === message.activity_step_id
           );
 
-          console.log("activityStepIndex", activityStepIndex, activityWorkflowIndex);
+          console.log(
+            "activityStepIndex",
+            activityStepIndex,
+            activityWorkflowIndex
+          );
 
           activity.workflows[activityWorkflowIndex].steps[
             activityStepIndex
@@ -122,25 +127,20 @@ export default class QueueWrapper<TMessage> {
             (step) => step._id.toString() === message.activity_step_id
           );
 
-          console.log(
-            "activityStepIndex",
-            activityStepIndex,
-            activityWorkflowIndex
-          );
-
-          activity.workflows[activityWorkflowIndex].steps[
-            activityStepIndex
-          ].status = IS_IDLE_BLOCK.includes(this.name as NodeTypes)
-            ? IActivityStepStatus.idle
-            : IActivityStepStatus.finished;
+          if (!IS_IDLE_BLOCK.includes(this.name as NodeTypes)) {
+            activity.workflows[activityWorkflowIndex].steps[
+              activityStepIndex
+            ].status = IActivityStepStatus.finished;
+          }
 
           return activity.save();
         });
 
       return Promise.resolve();
     } catch (error) {
+      let activity = null;
       if (conn) {
-        await new Activity(conn)
+        activity = await new Activity(conn)
           .model()
           .findById(message.activity_id)
           .then((activity) => {
@@ -161,6 +161,13 @@ export default class QueueWrapper<TMessage> {
             return activity.save();
           });
       }
+
+      sendDiscordBlockError({
+        error,
+        name: this.name,
+        activity,
+        client: message.client,
+      });
 
       return Promise.reject(error);
     }

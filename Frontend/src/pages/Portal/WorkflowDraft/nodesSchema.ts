@@ -76,6 +76,7 @@ const schemas: NodeSchemas = {
         value: z.string().min(3, { message: "Valor é obrigatório" }),
       })
     ),
+    is_async: z.boolean().default(false),
     body: z
       .string()
       .default("{}")
