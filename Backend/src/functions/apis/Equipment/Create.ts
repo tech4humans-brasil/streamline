@@ -38,6 +38,7 @@ export default new Http(handler)
   }))
   .configure({
     name: "EquipmentCreate",
+    permission: "equipment.create",
     options: {
       methods: ["POST"],
       route: "equipment",

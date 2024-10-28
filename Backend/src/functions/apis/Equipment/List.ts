@@ -1,6 +1,5 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import { IEquipment } from "../../../models/client/Equipment";
 import EquipmentRepository from "../../../repositories/Equipment";
 
 interface Query {
