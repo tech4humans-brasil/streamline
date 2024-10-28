@@ -26,7 +26,6 @@ const handler: HttpHandler = async (conn, req) => {
 }
 
 export default new Http(handler)
-  .setPublic()
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
       inventoryNumber: schema

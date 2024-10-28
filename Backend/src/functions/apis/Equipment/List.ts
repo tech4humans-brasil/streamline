@@ -13,13 +13,16 @@ const handler: HttpHandler = async (conn, req) => {
 
   const equipmentRepository = new EquipmentRepository(conn);
 
-  const equipments = await equipmentRepository.find({
-    where: {
-      equipmentType: type
-    },
+  const queryOptions: any = {
     skip: (page - 1) * limit,
     limit,
-  });
+  }
+
+  if (type) {
+    queryOptions.where = { equipmentType: type }
+  }
+
+  const equipments = await equipmentRepository.find(queryOptions);
 
   const total = await equipmentRepository.count({
     where: {
