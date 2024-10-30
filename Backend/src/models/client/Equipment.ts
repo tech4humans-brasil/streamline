@@ -1,4 +1,5 @@
 import mongoose, { Connection, Mongoose, Schema } from "mongoose";
+import { IAllocation } from "./Allocation";
 
 export enum IEquipmentStatus {
   allocated = "allocated",
@@ -27,6 +28,7 @@ export interface IEquipment extends mongoose.Document {
   modelDescription?: string;
   serialNumber?: string;
   additionalNotes?: string;
+  currentAllocation: IAllocation | null;
 };
 
 export const schema: Schema = new Schema<IEquipment>(
@@ -48,6 +50,7 @@ export const schema: Schema = new Schema<IEquipment>(
     modelDescription: { type: String, required: false },
     serialNumber: { type: String, required: false },
     additionalNotes: { type: String, required: false },
+    currentAllocation: { type: Object, default: null, required: false },
   },
   { timestamps: true }
 );

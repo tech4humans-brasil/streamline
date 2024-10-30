@@ -1,34 +1,43 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import EquipmentRepository from "../../../repositories/Equipment";
+import FilterQueryBuilder, { WhereEnum } from "../../../utils/filterQueryBuilder";
 
 interface Query {
   page?: number;
   limit?: number;
-  type?: string;
+  equipmentType?: string;
 }
 
+const filterQueryBuilder = new FilterQueryBuilder(
+  {
+    equipmentType: WhereEnum.ILIKE
+  },
+)
+
 const handler: HttpHandler = async (conn, req) => {
-  const { page = 1, limit = 10, type } = req.query as Query;
+  const { page = 1, limit = 10, ...filters } = req.query as Query;
 
   const equipmentRepository = new EquipmentRepository(conn);
 
+  const where = filterQueryBuilder.build(filters);
+
+  /*
   const queryOptions: any = {
     skip: (page - 1) * limit,
     limit,
-  }
+  }*/
 
-  if (type) {
-    queryOptions.where = { equipmentType: type }
-  }
-
-  const equipments = await equipmentRepository.find(queryOptions);
-
-  const total = await equipmentRepository.count({
-    where: {
-      equipmentType: type
+  const equipments = await equipmentRepository.find({
+    skip: (page - 1) * limit,
+    where,
+    limit,
+    sort: {
+      createdAt: -1,
     }
   });
+
+  const total = await equipmentRepository.count({ where });
   const totalPages = Math.ceil(total / limit);
 
   return res.success({
