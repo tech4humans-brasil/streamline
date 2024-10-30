@@ -17,7 +17,14 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
-      user: schema.string().required(),
+      user: schema.object().shape({
+        _id: schema.string().required(),
+        name: schema.string().required().min(3).max(255),
+        email: schema.string().required().email(),
+        roles: schema
+        .array(schema.mixed().oneOf(["admin", "student", "teacher"]))
+        .required(),
+      }),
       equipments: schema.array().required(),
       startDate: schema.date().required(),
       endDate: schema.date().optional().nullable(),
