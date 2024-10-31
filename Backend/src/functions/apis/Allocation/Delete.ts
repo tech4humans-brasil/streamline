@@ -6,31 +6,26 @@ const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params;
   const allocationRepository = new AllocationRepository(conn);
 
-  const allocation = await allocationRepository.findById({
-    id,
-    select: {
-        __v: 0,
-    },
-  });
+  const allocation = await allocationRepository.findById({ id });
 
   if (!allocation) {
     return res.notFound("Allocation not found");
   }
 
-  return res.success(allocation);
-};
+  await allocationRepository.delete({ where: { _id: id } });
+}
 
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     params: schema.object({
-      id: schema.string().matches(/^[0-9a-fA-F]{24}$/).required(),
+      id: schema.string().required(),
     }),
   }))
   .configure({
-    name: "AllocationShow",
-    permission: "allocation.read",
+    name: "AllocationDelete",
+    permission: "allocation.delete",
     options: {
-      methods: ["GET"],
+      methods: ["DELETE"],
       route: "allocation/{id}",
     },
-  })
+  });
