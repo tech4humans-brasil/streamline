@@ -1,15 +1,36 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import { IAllocation } from "../../../models/client/Allocation";
+import { IEquipment } from "../../../models/client/Equipment";
 import AllocationRepository from "../../../repositories/Allocation";
+import EquipmentRepository from "../../../repositories/Equipment";
 
 const handler: HttpHandler = async (conn, req) => {
-  const data = req.body as IAllocation;
+  const allocationData = req.body as IAllocation;
   const allocationRepository = new AllocationRepository(conn);
+  const equipmentRepository = new EquipmentRepository(conn);
 
-  const allocation = await allocationRepository.create(data);
+  const allocation = await allocationRepository.create(allocationData);
 
   allocation.save();
+
+  // Updating information of the allocation in the equipment as well
+  for (const equipmentId of allocationData.equipments) {
+    const equipment = await equipmentRepository.findById({
+      id: equipmentId
+    })
+
+    if (!equipment) {
+      return res.notFound("Equipment not found");
+    }
+
+    await equipmentRepository.findByIdAndUpdate({
+      id: equipmentId,
+      data: {
+        currentAllocation: allocationData
+      }
+    })
+  }
 
   return res.created(allocation);
 };
