@@ -36,14 +36,16 @@ const Schema = z
     email: z.string().email({ message: "Email inválido" }),
     roles: z.array(z.nativeEnum(IUserRoles)),
     isExternal: z.boolean().optional().default(false),
-    institute: z.union([
-      z.string(),
-      z.object({
-        _id: z.string(),
-        acronym: z.string(),
-        name: z.string(),
-        active: z.boolean(),
-      }),
+    institutes: z.union([
+      z.array(z.string()),
+      z.array(
+        z.object({
+          _id: z.string(),
+          acronym: z.string(),
+          name: z.string(),
+          active: z.boolean(),
+        })
+      ),
     ]),
     active: z.boolean(),
     password: z.string().optional(),
@@ -178,7 +180,7 @@ export default function User() {
       reset({
         ...user,
         // @ts-ignore
-        institute: user.institute._id,
+        institutes: user.institutes.map((institute) => institute._id),
       });
     }
   }, [user, reset]);
@@ -238,12 +240,13 @@ export default function User() {
               />
               <Select
                 input={{
-                  id: "institute",
+                  id: "institutes",
                   label: t("common.fields.institute"),
                   placeholder: t("common.fields.institute"),
                   required: true,
                   options: formsData?.institutes ?? [],
                 }}
+                isMulti
                 isLoading={isLoadingForms}
               />
             </Flex>

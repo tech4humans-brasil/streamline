@@ -13,7 +13,7 @@ type IUser = {
   isExternal: boolean;
   password: string;
   matriculation?: string;
-  institute: IInstitute;
+  institutes: Array<IInstitute>;
   active: boolean;
   roles: IUserRoles[];
 };

@@ -12,9 +12,11 @@ const handler: HttpHandler = async (conn, req, context) => {
 
   const instituteRepository = new InstituteRepository(conn);
 
-  const hasInstitute = await instituteRepository.findOne({
+  const hasInstitute = await instituteRepository.find({
     where: {
-      _id: data.institute?._id ?? data.institute,
+      _id: {
+        $in: data.institutes.map((institute) => institute?._id ?? institute),
+      },
       active: true,
     },
   });
@@ -38,7 +40,7 @@ const handler: HttpHandler = async (conn, req, context) => {
   const user: IUser = await new User(conn).model().create({
     ...data,
     password: hashedPassword,
-    institute: hasInstitute,
+    institutes: hasInstitute.map((institute) => institute.toObject()),
   });
 
   const token = await jwt.signResetPassword({

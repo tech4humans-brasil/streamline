@@ -31,7 +31,6 @@ export default class FormRepository extends BaseRepository<IForm> {
         published: {
           $ne: null,
         },
-        ...options.where,
         $and: [
           {
             $or: [
@@ -74,6 +73,7 @@ export default class FormRepository extends BaseRepository<IForm> {
             ],
           },
         ],
+        ...options.where,
       },
       select: options.select,
       sort: options.sort,

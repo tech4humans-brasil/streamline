@@ -11,7 +11,7 @@ type User = Pick<
   | "email"
   | "password"
   | "matriculation"
-  | "institute"
+  | "institutes"
   | "roles"
   | "active"
   | "isExternal"
@@ -59,7 +59,7 @@ export const createOrUpdateUser = async (
   data: Omit<User, "_id" | "password" | "institute"> & {
     _id?: string;
     password?: string;
-    institute: IInstitute | string;
+    institutes: string[];
   }
 ) => {
   if (data?._id) {

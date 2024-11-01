@@ -30,16 +30,12 @@ const handler: HttpHandler = async (conn, req) => {
           $or: [
             {
               institute: {
-                $elemMatch: {
-                  _id: {
-                    $in: req.user.institute._id,
-                  },
-                },
+                $in: req.user.institutes.map((institute) => institute._id),
               },
             },
             {
               institute: {
-                $eq: null,
+                $size: 0,
               },
             },
           ],
