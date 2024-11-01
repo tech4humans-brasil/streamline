@@ -30,11 +30,11 @@ const data = [
     description: "Matrícula do Usuário",
   },
   {
-    field: "activity.#users.institute.name",
+    field: "activity.#users.#institutes.name",
     description: "Nome do Instituto",
   },
   {
-    field: "activity.#users.institute.acronym",
+    field: "activity.#users.#institutes.acronym",
     description: "Sigla do Instituto",
   },
   { field: "activity.status.name", description: "Nome do Status" },
