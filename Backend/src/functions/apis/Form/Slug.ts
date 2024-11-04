@@ -16,7 +16,7 @@ const handler: HttpHandler = async (conn, req) => {
             $or: [
               {
                 institute: {
-                  $in: [req.user.institute],
+                  $in: req.user.institutes.map((institute) => institute._id),
                 },
               },
               {

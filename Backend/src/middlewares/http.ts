@@ -37,7 +37,7 @@ interface User {
   matriculation: string;
   email: string;
   roles: IUserRoles;
-  institute: IInstitute;
+  institutes: IInstitute[];
   slug: string;
   permissions: Array<string>;
 }

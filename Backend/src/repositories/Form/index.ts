@@ -27,11 +27,11 @@ export default class FormRepository extends BaseRepository<IForm> {
   }): Promise<IForm[]> {
     return this.find({
       where: {
+        ...options.where,
         active: true,
         published: {
           $ne: null,
         },
-        ...options.where,
         $and: [
           {
             $or: [
@@ -73,7 +73,7 @@ export default class FormRepository extends BaseRepository<IForm> {
               },
             ],
           },
-        ],
+        ]
       },
       select: options.select,
       sort: options.sort,
