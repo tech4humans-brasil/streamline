@@ -344,7 +344,7 @@ export default function Workflow() {
                   <Select
                     input={{
                       id: "institute",
-                      label: t("common.fields.institute"),
+                      label: t("common.fields.whocansee"),
                       options: formsData?.institutes ?? [],
                     }}
                     isLoading={isLoadingForms}

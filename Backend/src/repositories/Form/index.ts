@@ -27,6 +27,7 @@ export default class FormRepository extends BaseRepository<IForm> {
   }): Promise<IForm[]> {
     return this.find({
       where: {
+        ...options.where,
         active: true,
         published: {
           $ne: null,
@@ -72,8 +73,7 @@ export default class FormRepository extends BaseRepository<IForm> {
               },
             ],
           },
-        ],
-        ...options.where,
+        ]
       },
       select: options.select,
       sort: options.sort,
