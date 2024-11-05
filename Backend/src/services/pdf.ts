@@ -209,7 +209,6 @@ class PdfGenerator {
                   type === FieldTypes.Checkbox ||
                   type === FieldTypes.MultiSelect
                 ) {
-                  console.log(value);
                   const selectedOptions = value
                     .map((optionValue) => {
                       const option = field.options.find(

@@ -64,8 +64,6 @@ const handler: HttpHandler = async (conn, req, context) => {
     };
   }, {});
 
-  console.log(answer);
-
   const answerRepository = new AnswerRepository(conn);
 
   const existDraft = await answerRepository.findOne({

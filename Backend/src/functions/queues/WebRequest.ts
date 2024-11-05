@@ -190,8 +190,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       url: urlReplaced,
     };
 
-    console.log(request);
-
     const response = await axios.request(request);
 
     if (response.status >= 400) {
