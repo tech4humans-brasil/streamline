@@ -25,23 +25,8 @@ const handler: HttpHandler = async (conn, req) => {
       type: {
         $in: ["created", "external"],
       },
-      $and: [
-        {
-          $or: [
-            {
-              institute: {
-                $in: req.user.institutes.map((institute) => institute._id),
-              },
-            },
-            {
-              institute: {
-                $size: 0,
-              },
-            },
-          ],
-        },
-      ],
     },
+    institutes: req.user.institutes.map((institute) => institute._id),
     select: {
       name: 1,
       slug: 1,

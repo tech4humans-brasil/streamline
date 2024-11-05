@@ -47,6 +47,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
         _id: req.params.form_id,
         type: IFormType.Created,
       },
+      institutes: req.user.institutes.map((institute) => institute._id),
     })
   )[0];
 
