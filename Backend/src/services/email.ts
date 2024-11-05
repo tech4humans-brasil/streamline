@@ -28,8 +28,6 @@ export const sendEmail = async (
       cc: sender || undefined,
     })
     .catch((err) => {
-      console.log(err);
-      console.log(err?.response?.body);
       throw err;
     });
 };

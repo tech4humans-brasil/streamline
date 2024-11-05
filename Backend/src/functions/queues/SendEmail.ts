@@ -136,8 +136,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       replaceValues: htmlTemplate,
     });
 
-    context.log(JSON.stringify({ toReplaced, subjectReplaced }));
-
     await sendEmail(
       toReplaced,
       subjectReplaced,

@@ -75,14 +75,10 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
       const evaluated = ConditionalEvaluator.evaluate(answers, conditionals);
 
-      context.log("evaluated", evaluated);
-
       if (!evaluated) {
         path = "alternative-source";
       }
     }
-
-    console.log("path", path);
 
     await sendNextQueue({
       conn,

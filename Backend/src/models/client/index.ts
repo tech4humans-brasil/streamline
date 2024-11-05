@@ -9,7 +9,6 @@ fs.readdirSync(__dirname)
     return !file.startsWith(".") && file !== basename && file.endsWith(".js");
   })
   .forEach((file) => {
-    console.log(`Loading model file ${file}`);
     const model = require(path.join(__dirname, file));
     models[file.split(".")[0]] = model.schema;
   });

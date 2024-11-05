@@ -45,8 +45,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       workflow_draft: { steps },
     } = activityWorkflow;
 
-    context.log("activityWorkflow", activityWorkflow);
-
     const activityStep = activityWorkflow.steps.find(
       (step) => step._id.toString() === activity_step_id
     );
@@ -79,14 +77,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       return t;
     });
 
-    console.log("destination", destination);
-
-    const institutes = await new InstituteRepository(conn).find({
-      where: {
-        _id: { $in: destination },
-      },
-    });
-
     const users = await userRepository.find({
       where: {
         $or: [
@@ -94,7 +84,9 @@ const handler: QueueWrapperHandler<TMessage> = async (
             _id: { $in: destination },
           },
           {
-            "institute._id": { $in: institutes.map((i) => i._id) },
+            "institutes._id": {
+              $in: destination,
+            },
           },
         ],
       },
@@ -106,8 +98,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
         institute: 1,
       },
     });
-
-    console.log("users", users);
 
     if (!users.length) {
       throw new Error("Users not found");
