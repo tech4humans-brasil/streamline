@@ -97,11 +97,13 @@ const handler: HttpHandler = async (conn, req, context) => {
   interaction.answers[myAnswer].data = formDraft.toObject();
   interaction.answers[myAnswer].status = IActivityStepStatus.finished;
 
-  const isAllAnswered = interaction.answers.every(
+  const answeredCount = interaction.answers.filter(
     (answer) => answer.status === IActivityStepStatus.finished
-  );
+  ).length;
 
-  if (interaction.waitForOne || isAllAnswered) {
+  const shouldProceed = interaction.waitFor >= answeredCount;
+
+  if (shouldProceed) {
     interaction.finished = true;
     interaction.answers.forEach((answer) => {
       if (answer.status === IActivityStepStatus.idle) {

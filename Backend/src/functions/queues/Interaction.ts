@@ -6,11 +6,9 @@ import { IActivityStepStatus } from "../../models/client/Activity";
 import { IInteraction, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
 import FormRepository from "../../repositories/Form";
-import InstituteRepository from "../../repositories/Institute";
 import UserRepository from "../../repositories/User";
 import { sendEmail } from "../../services/email";
 import emailTemplate from "../../utils/emailTemplate";
-import sendNextQueue from "../../utils/sendNextQueue";
 
 interface TMessage extends GenericMessage {}
 
@@ -67,7 +65,13 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error("Data not found");
     }
 
-    const { form_id, to, waitForOne } = data;
+    const {
+      form_id,
+      to,
+      waitForOne = null,
+      waitType = null,
+      waitValue = null,
+    } = data;
 
     let destination: string[] = to.flatMap((t) => {
       if (t.includes("users")) {
@@ -105,11 +109,27 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const form = await formRepository.findById({ id: form_id });
 
+    const waitFor = (() => {
+      if (waitForOne) {
+        return 1;
+      }
+
+      if (waitType === "any") {
+        return 1;
+      }
+
+      if (waitType === "custom") {
+        return waitValue;
+      }
+
+      return users.length;
+    })();
+
     activity.interactions.push({
       activity_workflow_id,
       activity_step_id,
       form: form.toObject(),
-      waitForOne: !!waitForOne,
+      waitFor,
       answers: users.map((u) => ({
         status: "idle",
         user: u,

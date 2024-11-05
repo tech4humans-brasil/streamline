@@ -66,7 +66,8 @@ export type IActivityInteractions = {
   activity_workflow_id: ObjectId;
   activity_step_id: ObjectId;
   form: IForm;
-  waitForOne: boolean;
+  waitFor: number;
+  waitForOne?: boolean;
   answers: mongoose.Types.DocumentArray<{
     _id: ObjectId;
     status: IActivityStepStatus;
@@ -131,7 +132,8 @@ const interactionSchema = new Schema<IActivityInteractions>({
   activity_workflow_id: { type: Schema.Types.ObjectId, required: true },
   activity_step_id: { type: Schema.Types.ObjectId, required: true },
   form: { type: Object, required: true },
-  waitForOne: { type: Boolean, default: false },
+  waitFor: { type: Number, default: 1 },
+  waitForOne: { type: Boolean, required: false },
   answers: [
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
