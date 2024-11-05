@@ -101,7 +101,9 @@ const handler: HttpHandler = async (conn, req, context) => {
     (answer) => answer.status === IActivityStepStatus.finished
   ).length;
 
-  const shouldProceed = interaction.waitFor >= answeredCount;
+  const shouldProceed = answeredCount >= interaction.waitFor;
+
+  console.log("shouldProceed", shouldProceed, answeredCount, interaction.waitFor);
 
   if (shouldProceed) {
     interaction.finished = true;

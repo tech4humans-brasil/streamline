@@ -266,6 +266,7 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
             <Select
               input={{
                 id: "waitType",
+                required: true,
                 label: "Esperar por",
                 options: [{
                   label: "Todos",

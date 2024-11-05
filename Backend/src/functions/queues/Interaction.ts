@@ -110,20 +110,30 @@ const handler: QueueWrapperHandler<TMessage> = async (
     const form = await formRepository.findById({ id: form_id });
 
     const waitFor = (() => {
-      if (waitForOne) {
-        return 1;
-      }
-
       if (waitType === "any") {
         return 1;
       }
 
       if (waitType === "custom") {
+        if (waitValue > users.length) {
+          return users.length;
+        }
+
         return waitValue;
+      }
+
+      if (waitType === "all") {
+        return users.length;
+      }
+
+      if (waitForOne) {
+        return 1;
       }
 
       return users.length;
     })();
+
+    console.log("waitFor", waitFor, waitType, waitValue);
 
     activity.interactions.push({
       activity_workflow_id,
