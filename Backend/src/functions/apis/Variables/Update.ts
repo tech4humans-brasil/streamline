@@ -21,10 +21,6 @@ const handler: HttpHandler = async (conn, req) => {
     return res.notFound("Project not found");
   }
 
-  console.log(project.variables);
-
-  console.log(variables);
-
   for (const variable of variables) {
     const exist = project.variables.id(variable._id);
 

@@ -27,7 +27,8 @@
       "no": "Não",
       "url": "URL",
       "all": "Todos",
-      "visibilities": "Visualizadores",
+      "visibilities": "Responsáveis",
+      "whocansee": "Quem pode ver",
       "description": "Descrição",
       "start": "Início",
       "end": "Fim",
@@ -298,6 +299,7 @@
     "error": "Erro ao carregar os status"
   },
   "status": {
+    "title": "Status",
     "create": "Criar status",
     "edit": "Editar status",
     "created": "Status criado com sucesso",

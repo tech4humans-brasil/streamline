@@ -54,7 +54,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     matriculation: user.matriculation,
     email: user.email,
     roles: user.roles,
-    institute: user.institute,
+    institutes: user.institutes,
     slug: acronym,
     client: conn.name,
     tutorials: user.tutorials,

@@ -41,7 +41,6 @@ const handler: HttpHandler = async (conn, req) => {
     scheduleUpdated.end !== schedule.end ||
     scheduleUpdated.expression !== schedule.expression
   ) {
-    console.log("start or end changed");
     scheduleUpdated.scheduled.forEach((scheduled) => {
       if (scheduled.finished) {
         return;

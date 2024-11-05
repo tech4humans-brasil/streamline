@@ -41,8 +41,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       workflow_draft: { steps },
     } = activityWorkflow;
 
-    context.log("activityWorkflow", activityWorkflow);
-
     const activityStep = activityWorkflow.steps.find(
       (step) => step._id.toString() === activity_step_id
     );

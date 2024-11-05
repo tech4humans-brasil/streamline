@@ -15,15 +15,14 @@ const handler: HttpHandler = async (conn, req, context) => {
     return res.notFound("User not found");
   }
 
-  const hasInstitute = data.institute
-    ? (
-        await new Institute(conn).model().findOne({
-          _id: data.institute?._id ?? data.institute,
-        })
-      ).toObject()
-    : existingUser.institute;
+  const hasInstitute = await new Institute(conn).model().find({
+    _id: {
+      $in: data.institutes.map((institute) => institute?._id ?? institute),
+    },
+    active: true,
+  });
 
-  if (!hasInstitute) {
+  if (!hasInstitute?.length) {
     return res.badRequest("Institute not found");
   }
 
@@ -37,7 +36,7 @@ const handler: HttpHandler = async (conn, req, context) => {
       ...existingUser.toObject(),
       ...data,
       password: data.password ? hashedPassword : existingUser.password,
-      institute: data.institute ? hasInstitute : existingUser.institute,
+      institutes: hasInstitute.map((institute) => institute.toObject()),
     },
     { new: true }
   );

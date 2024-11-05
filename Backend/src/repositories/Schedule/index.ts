@@ -17,19 +17,16 @@ export default class ScheduleRepository extends BaseRepository<ISchedule> {
     const start = schedule.start > now ? schedule.start : now;
 
     if (schedule.end && start > schedule.end) {
-      console.log("start > end");
       schedule.active = false;
       return null;
     }
 
     if (schedule.repeat) {
-      console.log("no repeat");
       const countRepeatSuccess = schedule.scheduled.filter(
         (s) => s.status === ScheduleStatus.COMPLETED
       ).length;
 
       if (countRepeatSuccess < schedule.repeat) {
-        console.log("countRepeatSuccess < repeat");
         schedule.active = false;
         return null;
       }
@@ -42,10 +39,7 @@ export default class ScheduleRepository extends BaseRepository<ISchedule> {
 
     const next = expression.next().toDate();
 
-    console.log("next", next);
-
     if (schedule.end && next > schedule.end) {
-      console.log("next > end");
       schedule.active = false;
       return null;
     }

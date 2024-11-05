@@ -18,9 +18,8 @@ export type IUser = {
   email: string;
   password: string;
   matriculation?: string;
-  activities: ObjectId[];
   roles: IUserRoles[];
-  institute: IInstitute;
+  institutes: mongoose.Types.DocumentArray<IInstitute>;
   active: boolean;
   providers: IUserProviders[];
   isExternal: boolean;
@@ -44,7 +43,6 @@ export const schema: Schema = new Schema<IUser>(
     matriculation: {
       type: String,
     },
-    activities: [{ type: Schema.Types.ObjectId, ref: "Activity" }],
     roles: [
       {
         type: String,
@@ -53,10 +51,12 @@ export const schema: Schema = new Schema<IUser>(
         index: true,
       },
     ],
-    institute: {
-      type: instituteSchema,
-      required: true,
-    },
+    institutes: [
+      {
+        type: instituteSchema,
+        required: true,
+      },
+    ],
     providers: [
       {
         type: String,

@@ -35,7 +35,7 @@ export type IComment = {
 
 export type IUserChild = Pick<
   IUser,
-  "_id" | "name" | "email" | "matriculation" | "institute" | "isExternal"
+  "_id" | "name" | "email" | "matriculation" | "institutes" | "isExternal"
 >;
 
 export enum IActivityStepStatus {
@@ -123,7 +123,7 @@ const userSchema = new Schema<IUserChild>({
   name: { type: String, required: true },
   email: { type: String, required: true },
   matriculation: { type: String },
-  institute: { type: Object, required: true },
+  institutes: [{ type: Object, required: true }],
 });
 
 const interactionSchema = new Schema<IActivityInteractions>({

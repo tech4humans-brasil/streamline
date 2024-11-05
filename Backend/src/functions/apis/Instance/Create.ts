@@ -51,8 +51,9 @@ export const handler: HttpHandler = async (_, req, context) => {
     email: email || "admin@eduflow.tech",
     password,
     roles: [IUserRoles.admin],
-    institute: institute,
   });
+
+  user.institutes.push(institute);
 
   await conn.model("Status").insertMany([
     {

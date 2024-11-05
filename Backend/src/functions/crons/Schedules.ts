@@ -34,8 +34,6 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
       },
     });
 
-    console.log(`Found ${schedules.length} schedules to process ${conn.name}`);
-
     if (schedules.length === 0) {
       return;
     }
@@ -59,8 +57,6 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
 
       const scheduled = schedule.scheduled.id(scheduledId);
 
-      console.log(`Processing schedule ${schedule._id} ${conn.name}`);
-
       try {
         const form = (
           await formRepository.findOpenForms({
@@ -72,7 +68,6 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
         )[0];
 
         if (!form) {
-          console.log(`Form ${schedule.form} not found ${conn.name}`);
           continue;
         }
 
@@ -82,12 +77,10 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
         ]);
 
         if (!workflow) {
-          console.log(`Workflow ${schedule.workflow} not found ${conn.name}`);
           continue;
         }
 
         if (!formDraft) {
-          console.log(`Form draft ${form.published} not found ${conn.name}`);
           continue;
         }
 
@@ -117,7 +110,6 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
         });
 
         if (!status) {
-          console.log(`Status ${form.initial_status} not found ${conn.name}`);
           continue;
         }
 
@@ -141,7 +133,6 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
         );
 
         if (!firstStep) {
-          console.log(`First step not found ${conn.name}`);
           continue;
         }
 
@@ -157,10 +148,6 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
 
         await activity.save();
         scheduled.activity = activity._id;
-
-        console.log(
-          `Finished processing schedule ${schedule._id} ${conn.name}`
-        );
 
         await sendNextQueue({
           conn,

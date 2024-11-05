@@ -3,7 +3,7 @@ import React from "react";
 import { Box, Text } from "@chakra-ui/react";
 
 interface UserDetailsProps {
-  user: { name: string; email: string; matriculation?: string };
+  user: { name: string; email: string; institutes?: { name: string }[] };
   accepted?: "accepted" | "rejected" | "pending";
 }
 
@@ -25,8 +25,12 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, accepted }) => {
       <Text fontSize="sm" noOfLines={1}>
         {user.email}
       </Text>
-      <Text fontSize="sm" noOfLines={1}>
-        {user?.matriculation ?? null}
+      <Text
+        fontSize="sm"
+        noOfLines={1}
+        title={user?.institutes?.map((institute) => institute.name).join(", ")}
+      >
+        {user?.institutes?.map((institute) => institute.name).join(", ")}
       </Text>
 
       {accepted === "rejected" && (
