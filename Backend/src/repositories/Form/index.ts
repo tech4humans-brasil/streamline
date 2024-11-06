@@ -30,8 +30,8 @@ export default class FormRepository extends BaseRepository<IForm> {
 
     return this.find({
       where: {
-        ...options.where,
         $and: [
+          options.where || {},
           { active: true },
           {
             published: {
@@ -56,6 +56,11 @@ export default class FormRepository extends BaseRepository<IForm> {
               {
                 institute: {
                   $in: options.institutes,
+                },
+              },
+              {
+                institute: {
+                  $eq: null,
                 },
               },
               {
