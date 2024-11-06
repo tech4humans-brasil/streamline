@@ -31,7 +31,11 @@ const handler: HttpHandler = async (conn, req, context) => {
           {
             $or: [
               { "permissions.user": req.user.id },
-              { "permissions.institute": req.user.institute._id },
+              {
+                "permissions.institute": {
+                  $in: req.user.institutes.map((institute) => institute._id),
+                },
+              },
             ],
           },
         ],

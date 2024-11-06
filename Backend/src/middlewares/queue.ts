@@ -84,12 +84,6 @@ export default class QueueWrapper<TMessage> {
             (step) => step._id.toString() === message.activity_step_id
           );
 
-          console.log(
-            "activityStepIndex",
-            activityStepIndex,
-            activityWorkflowIndex
-          );
-
           activity.workflows[activityWorkflowIndex].steps[
             activityStepIndex
           ].status = IActivityStepStatus.inProgress;

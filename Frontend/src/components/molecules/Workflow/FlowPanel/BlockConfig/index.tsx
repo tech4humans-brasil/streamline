@@ -21,6 +21,7 @@ import { FaTrash } from "react-icons/fa";
 import TextArea from "@components/atoms/Inputs/TextArea";
 import { useParams } from "react-router-dom";
 import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
+import NumberInput from "@components/atoms/Inputs/NumberInput";
 
 interface BlockConfigProps {
   type: NodeTypes;
@@ -262,13 +263,37 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
               isMulti
             />
 
-            <Switch
+            <Select
               input={{
-                label: "Aguardar apenas uma resposta",
-                id: "waitForOne",
+                id: "waitType",
                 required: true,
+                label: "Esperar por",
+                options: [{
+                  label: "Todos",
+                  value: "all"
+                },
+                {
+                  label: "Qualquer um",
+                  value: "any"
+                },
+                {
+                  label: "Customizado",
+                  value: "custom"
+                }],	
               }}
             />
+
+            {watch("waitType") === "custom" && (
+              <NumberInput
+                input={{
+                  id: "waitValue",
+                  label: "Quantidade de respostas",
+                  placeholder: "Quantidade de respostas",
+                  type: "number",
+                }}
+                min={2}
+              />
+            )}
 
             {watch("form_id") && (
               <ConditionalRender form_id={watch("form_id")} />

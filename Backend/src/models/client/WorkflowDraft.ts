@@ -53,7 +53,7 @@ export interface IInteraction {
   form_id: string;
   to: string[];
   visible: boolean;
-  waitForOne: boolean;
+  waitForOne?: boolean;
   conditional: [
     {
       field: string;
@@ -61,6 +61,8 @@ export interface IInteraction {
       operator: IOperator;
     }
   ];
+  waitType: "all" | "any" | "custom";
+  waitValue: number | null;
 }
 
 export type IConditional = {

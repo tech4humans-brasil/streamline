@@ -71,10 +71,11 @@ export const handler: HttpHandler = async (_, req, context) => {
       name: payload.name,
       roles: [IUserRoles.student],
       active: true,
-      institute: institute.toObject(),
       providers: [IUserProviders.google],
       password: await bcrypt.hash(payload.jti, 10),
     });
+
+    user.institutes.push(institute);
   }
 
   user.last_login = new Date();
@@ -88,7 +89,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     matriculation: user.matriculation,
     email: user.email,
     roles: user.roles,
-    institute: user.institute,
+    institutes: user.institutes,
     slug: acronym,
     client: conn.name,
     tutorials: user.tutorials,

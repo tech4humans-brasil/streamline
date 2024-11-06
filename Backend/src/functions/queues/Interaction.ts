@@ -6,11 +6,9 @@ import { IActivityStepStatus } from "../../models/client/Activity";
 import { IInteraction, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
 import FormRepository from "../../repositories/Form";
-import InstituteRepository from "../../repositories/Institute";
 import UserRepository from "../../repositories/User";
 import { sendEmail } from "../../services/email";
 import emailTemplate from "../../utils/emailTemplate";
-import sendNextQueue from "../../utils/sendNextQueue";
 
 interface TMessage extends GenericMessage {}
 
@@ -45,8 +43,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       workflow_draft: { steps },
     } = activityWorkflow;
 
-    context.log("activityWorkflow", activityWorkflow);
-
     const activityStep = activityWorkflow.steps.find(
       (step) => step._id.toString() === activity_step_id
     );
@@ -69,7 +65,13 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error("Data not found");
     }
 
-    const { form_id, to, waitForOne } = data;
+    const {
+      form_id,
+      to,
+      waitForOne = null,
+      waitType = null,
+      waitValue = null,
+    } = data;
 
     let destination: string[] = to.flatMap((t) => {
       if (t.includes("users")) {
@@ -79,14 +81,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
       return t;
     });
 
-    console.log("destination", destination);
-
-    const institutes = await new InstituteRepository(conn).find({
-      where: {
-        _id: { $in: destination },
-      },
-    });
-
     const users = await userRepository.find({
       where: {
         $or: [
@@ -94,7 +88,9 @@ const handler: QueueWrapperHandler<TMessage> = async (
             _id: { $in: destination },
           },
           {
-            "institute._id": { $in: institutes.map((i) => i._id) },
+            "institutes._id": {
+              $in: destination,
+            },
           },
         ],
       },
@@ -107,19 +103,43 @@ const handler: QueueWrapperHandler<TMessage> = async (
       },
     });
 
-    console.log("users", users);
-
     if (!users.length) {
       throw new Error("Users not found");
     }
 
     const form = await formRepository.findById({ id: form_id });
 
+    const waitFor = (() => {
+      if (waitType === "any") {
+        return 1;
+      }
+
+      if (waitType === "custom") {
+        if (waitValue > users.length) {
+          return users.length;
+        }
+
+        return waitValue;
+      }
+
+      if (waitType === "all") {
+        return users.length;
+      }
+
+      if (waitForOne) {
+        return 1;
+      }
+
+      return users.length;
+    })();
+
+    console.log("waitFor", waitFor, waitType, waitValue);
+
     activity.interactions.push({
       activity_workflow_id,
       activity_step_id,
       form: form.toObject(),
-      waitForOne: !!waitForOne,
+      waitFor,
       answers: users.map((u) => ({
         status: "idle",
         user: u,

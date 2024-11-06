@@ -42,12 +42,8 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
       });
     });
 
-    console.log(`Found ${emailsToNotified.size} emails to notify`);
-
     for (const email of emailsToNotified) {
       const [emailAddress, name] = email.split(":");
-
-      console.log(`Sending email to ${emailAddress}`);
 
       const content = `
         <p>Olá, ${name}!</p>

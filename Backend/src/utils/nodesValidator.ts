@@ -32,7 +32,14 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
       to: schema.array().of(schema.string()).required(),
       sender: schema.string().email().optional().nullable(),
       visible: schema.boolean().default(true),
-      waitForOne: schema.boolean().required(),
+      waitForOne: schema.boolean().optional(),
+      waitType: schema.mixed().oneOf(["all", "any", "custom"]).required(),
+      waitValue: schema.number().when("waitType", {
+        is: "custom",
+        then: (schema) =>
+          schema.required('waitValue is required when waitType is "custom"'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     });
   }
 

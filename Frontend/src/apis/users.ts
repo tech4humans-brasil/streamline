@@ -11,7 +11,7 @@ type User = Pick<
   | "email"
   | "password"
   | "matriculation"
-  | "institute"
+  | "institutes"
   | "roles"
   | "active"
   | "isExternal"
@@ -42,7 +42,7 @@ export const getUser = async ({ queryKey: [, id] }: { queryKey: string[] }) => {
 };
 
 export const createUser = async (
-  data: Omit<User, "_id" | "password" | "institute">
+  data: Omit<User, "_id" | "password" | "institutes">
 ) => {
   const res = await api.post<ReqUser>("/user", data);
 
@@ -56,10 +56,10 @@ export const updateUser = async (data: User) => {
 };
 
 export const createOrUpdateUser = async (
-  data: Omit<User, "_id" | "password" | "institute"> & {
+  data: Omit<User, "_id" | "password" | "institutes"> & {
     _id?: string;
     password?: string;
-    institute: IInstitute | string;
+    institutes: string[] | IInstitute[];
   }
 ) => {
   if (data?._id) {
