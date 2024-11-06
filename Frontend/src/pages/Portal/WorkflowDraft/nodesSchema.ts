@@ -28,44 +28,58 @@ const schemas: NodeSchemas = {
     workflow_id: z.string().min(3, { message: "Selecione um workflow" }),
     visible: z.boolean().default(false),
   }),
-  [NodeTypes.Interaction]: z.object({
-    name: z.string().min(3, { message: "Nome é obrigatório" }),
-    to: z
-      .array(z.string())
-      .min(1, { message: "Selecione pelo menos 1 destinatario" }),
-    form_id: z.string().min(1, { message: "Selecione um formulário" }),
-    visible: z.boolean().default(true),
-    waitForOne: z.boolean().default(false),
-    conditional: z.array(
-      z
-        .object({
-          field: z.string().min(1, { message: "Selecione um campo" }),
-          value: z.string(),
-          operator: z.enum([
-            "eq",
-            "ne",
-            "gt",
-            "lt",
-            "gte",
-            "lte",
-            "in",
-            "notIn",
-            "isNull",
-            "isNotNull",
-          ]),
-        })
-        .refine(
-          (data) => {
-            if (data.operator === "isNull" || data.operator === "isNotNull") {
-              return true;
-            }
+  [NodeTypes.Interaction]: z
+    .object({
+      name: z.string().min(3, { message: "Nome é obrigatório" }),
+      to: z
+        .array(z.string())
+        .min(1, { message: "Selecione pelo menos 1 destinatario" }),
+      form_id: z.string().min(1, { message: "Selecione um formulário" }),
+      visible: z.boolean().default(true),
+      waitType: z.enum(["all", "any", "custom"]),
+      waitValue: z.number().optional().nullable(),
+      conditional: z.array(
+        z
+          .object({
+            field: z.string().min(1, { message: "Selecione um campo" }),
+            value: z.string(),
+            operator: z.enum([
+              "eq",
+              "ne",
+              "gt",
+              "lt",
+              "gte",
+              "lte",
+              "in",
+              "notIn",
+              "isNull",
+              "isNotNull",
+            ]),
+          })
+          .refine(
+            (data) => {
+              if (data.operator === "isNull" || data.operator === "isNotNull") {
+                return true;
+              }
 
-            return !!data.value && data.value?.length > 1;
-          },
-          { message: "Valor é obrigatório", path: ["value"] }
-        )
+              return !!data.value && data.value?.length > 1;
+            },
+            { message: "Valor é obrigatório", path: ["value"] }
+          )
+      ),
+    })
+    .refine(
+      (data) => {
+        if (data.waitType === "custom") {
+          return !!data.waitValue;
+        }
+        return true;
+      },
+      {
+        message: "Valor é obrigatório",
+        path: ["waitValue"],
+      }
     ),
-  }),
   [NodeTypes.WebRequest]: z.object({
     name: z.string().min(3, { message: "Nome é obrigatório" }),
     url: z.string().min(3, { message: "URL é obrigatório" }),
