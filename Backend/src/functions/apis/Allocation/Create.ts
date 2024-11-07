@@ -18,7 +18,7 @@ const handler: HttpHandler = async (conn, req) => {
   for (const equipmentId of allocationData.equipments) {
     const equipment = await equipmentRepository.findById({
       id: equipmentId
-    })
+    });
 
     if (!equipment) {
       return res.notFound("Equipment not found");
@@ -29,7 +29,7 @@ const handler: HttpHandler = async (conn, req) => {
       data: {
         currentAllocation: allocationData
       }
-    })
+    });
   }
 
   return res.created(allocation);
