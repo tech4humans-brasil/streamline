@@ -5,6 +5,7 @@ import SendEmail from "./SendEmail";
 import SwapWorkflow from "./SwapWorkflow";
 import Conditional from "./Conditional";
 import WebRequest from "./WebRequest";
+import Script from "./Script";
 
 export default {
   circle: CircleNode,
@@ -14,4 +15,5 @@ export default {
   interaction: Interaction,
   conditional: Conditional,
   web_request: WebRequest,
+  script: Script,
 };

@@ -22,6 +22,7 @@ import TextArea from "@components/atoms/Inputs/TextArea";
 import { useParams } from "react-router-dom";
 import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 import NumberInput from "@components/atoms/Inputs/NumberInput";
+import CodeEditor from "@components/atoms/Inputs/CodeEditor";
 
 interface BlockConfigProps {
   type: NodeTypes;
@@ -268,18 +269,20 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
                 id: "waitType",
                 required: true,
                 label: "Esperar por",
-                options: [{
-                  label: "Todos",
-                  value: "all"
-                },
-                {
-                  label: "Qualquer um",
-                  value: "any"
-                },
-                {
-                  label: "Customizado",
-                  value: "custom"
-                }],	
+                options: [
+                  {
+                    label: "Todos",
+                    value: "all",
+                  },
+                  {
+                    label: "Qualquer um",
+                    value: "any",
+                  },
+                  {
+                    label: "Customizado",
+                    value: "custom",
+                  },
+                ],
               }}
             />
 
@@ -409,6 +412,35 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
             />
           </>
         );
+      case NodeTypes.Script:
+        return (
+          <>
+            <Text
+              input={{
+                label: "Nome",
+                id: "name",
+                placeholder: "Nome do bloco",
+                required: true,
+              }}
+            />
+            <CodeEditor
+              input={{
+                label: "Script",
+                id: "script",
+                placeholder: "Digite o script",
+                required: true,
+              }}
+            />
+
+            <Switch
+              input={{
+                label: "Visivel",
+                id: "visible",
+                required: true,
+              }}
+            />
+          </>
+        );
       default:
         return <h1>Default</h1>;
     }
@@ -487,7 +519,6 @@ const ConditionalRender = memo(({ form_id }: ConditionalProps) => {
 
   const haveOptions = useCallback(
     (id: string) => {
-      
       return ["select", "multiselect", "radio"].includes(
         getField(id)?.type ?? ""
       );
