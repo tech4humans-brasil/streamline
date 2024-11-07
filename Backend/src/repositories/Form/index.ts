@@ -1,4 +1,4 @@
-import { Connection } from "mongoose";
+import { Connection, ObjectId } from "mongoose";
 import Form, { IForm } from "../../models/client/Form";
 import BaseRepository from "../base";
 import moment from "moment";
@@ -24,52 +24,44 @@ export default class FormRepository extends BaseRepository<IForm> {
     limit?: Parameters<BaseRepository<IForm>["find"]>[0]["limit"];
     skip?: Parameters<BaseRepository<IForm>["find"]>[0]["skip"];
     populate?: Parameters<BaseRepository<IForm>["find"]>[0]["populate"];
+    institutes?: string[] | ObjectId[];
   }): Promise<IForm[]> {
+    const now = moment().toDate();
+
     return this.find({
       where: {
         ...options.where,
-        active: true,
-        published: {
-          $ne: null,
-        },
         $and: [
+          { active: true },
+          {
+            published: {
+              $ne: null,
+            },
+          },
+          {
+            $or: [
+              { "period.open": null, "period.close": null },
+              {
+                "period.open": { $lte: now },
+                "period.close": { $gte: now },
+              },
+              {
+                "period.open": { $lte: now },
+                "period.close": null,
+              },
+            ],
+          },
           {
             $or: [
               {
-                $and: [
-                  {
-                    "period.open": null,
-                  },
-                  {
-                    "period.close": null,
-                  },
-                ],
+                institute: {
+                  $in: options.institutes,
+                },
               },
               {
-                $and: [
-                  {
-                    "period.open": {
-                      $lte: moment.utc().toDate(),
-                    },
-                  },
-                  {
-                    "period.close": {
-                      $gte: moment.utc().toDate(),
-                    },
-                  },
-                ],
-              },
-              {
-                $and: [
-                  {
-                    "period.open": {
-                      $lte: moment.utc().toDate(),
-                    },
-                  },
-                  {
-                    "period.close": null,
-                  },
-                ],
+                institute: {
+                  $size: 0,
+                },
               },
             ],
           },
