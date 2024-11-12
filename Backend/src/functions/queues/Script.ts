@@ -2,19 +2,14 @@ import QueueWrapper, {
   GenericMessage,
   QueueWrapperHandler,
 } from "../../middlewares/queue";
-import { IActivityStepStatus } from "../../models/client/Activity";
-import { CallbackStatus } from "../../models/client/Callback";
 import { FieldTypes } from "../../models/client/FormDraft";
 import { IScript, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
-import CallbackRepository from "../../repositories/Callback";
 import ProjectRepository from "../../repositories/Project";
 import WorkflowRepository from "../../repositories/Workflow";
 import WorkflowDraftRepository from "../../repositories/WorkflowDraft";
 import BlobUploader from "../../services/upload";
 import { decrypt } from "../../utils/crypto";
-import { stringify } from "safe-stable-stringify";
-import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
 import axios from "axios";
 import runJavaScriptCode from "../../services/vm";
@@ -114,6 +109,15 @@ const handler: QueueWrapperHandler<TMessage> = async (
         variable.type === "variable" ? variable.value : decrypt(variable.value);
       return acc;
     }, {});
+
+    const blobUploader = new BlobUploader("files");
+
+    for (const field of activity.form_draft.fields) {
+      if (field.type === FieldTypes.File) {
+        if (!field.value) continue;
+        await blobUploader.updateSas(field.value);
+      }
+    }
 
     const { result, error } = await (async () => {
       try {
