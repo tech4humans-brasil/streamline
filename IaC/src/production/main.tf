@@ -28,7 +28,7 @@ resource "azurerm_servicebus_namespace" "sbus" {
 
 resource "azurerm_servicebus_queue" "queues" {
   count               = 7
-  name                = element(["send_email", "change_status", "swap_workflow", "interaction", "interaction_process", "web_request", "conditional"], count.index)
+  name                = element(["send_email", "change_status", "swap_workflow", "interaction", "interaction_process", "web_request", "conditional", "script"], count.index)
   namespace_id        = azurerm_servicebus_namespace.sbus.id
   max_delivery_count  = 2
   lock_duration       = "PT5M"

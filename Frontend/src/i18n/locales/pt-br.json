@@ -363,6 +363,9 @@
       },
       "change_status": {
         "title": "Alterar status"
+      },
+      "script": {
+        "title": "Script"
       }
     }
   },

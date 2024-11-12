@@ -8,6 +8,7 @@ export enum NodeTypes {
   Interaction = "interaction",
   Conditional = "conditional",
   WebRequest = "web_request",
+  Script = "script",
 }
 
 export interface ISendEmail {
@@ -15,6 +16,12 @@ export interface ISendEmail {
   email_id: string;
   to: string[];
   sender: string;
+  visible: boolean;
+}
+
+export interface IScript {
+  name: string;
+  script: string;
   visible: boolean;
 }
 
@@ -118,6 +125,10 @@ export type IStep = {
   | {
       type: NodeTypes.WebRequest;
       data: IWebRequest;
+    }
+  | {
+      type: NodeTypes.Script;
+      data: IScript;
     }
 );
 

@@ -65,6 +65,13 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
       body: schema.string(),
     });
   }
+
+  if (type === NodeTypes.Script) {
+    return schema.object().shape({
+      name: schema.string().required(),
+      script: schema.string().required(),
+    });
+  }
 };
 
 export default nodeValidator;
