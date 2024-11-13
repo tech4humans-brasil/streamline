@@ -10,6 +10,20 @@ const handler: HttpHandler = async (conn, req) => {
   const allocationRepository = new AllocationRepository(conn);
   const equipmentRepository = new EquipmentRepository(conn);
 
+  // Check if any equipment 
+  const existingAllocations = await allocationRepository.find({
+    where: {
+      equipments: { $in: allocationData.equipments },
+      endDate: { $exists: false },
+    }
+  })
+
+  console.log(existingAllocations);
+
+  if (existingAllocations.length > 0) {
+    return res.conflict("One or more equipments are already allocated");
+  }
+
   const allocation = await allocationRepository.create(allocationData);
   allocation.save();
 
