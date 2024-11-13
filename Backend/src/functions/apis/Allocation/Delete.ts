@@ -1,5 +1,6 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
+import { IEquipmentStatus } from "../../../models/client/Equipment";
 import AllocationRepository from "../../../repositories/Allocation";
 import EquipmentRepository from "../../../repositories/Equipment";
 
@@ -16,7 +17,10 @@ const handler: HttpHandler = async (conn, req) => {
 
   const updatedResult = await equipmentRepository.updateMany({
     where: { _id: { $in: allocation.equipments } },
-    data: { currentAllocation: null } 
+    data: {
+      situation: IEquipmentStatus.available, 
+      currentAllocation: null 
+    } 
   });
 
   await allocationRepository.delete({ where: { _id: id } });

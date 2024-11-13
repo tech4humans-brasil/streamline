@@ -42,14 +42,8 @@ export default new Http(handler)
       inventoryNumber: schema.string().optional().min(3).max(255),
       equipmentType: schema.string().optional().min(3).max(255),
       brandName: schema.string().optional().min(3).max(255),
-      status: schema.object().shape({
-        name: schema.string().optional().min(3).max(255),
-        type: schema.string().optional().oneOf(["allocated", "available", "discarded", "office"]),
-      }),
-      situation: schema.object().shape({
-        name: schema.string().optional().min(3).max(255),
-        type: schema.string().optional().oneOf(["new", "used", "broken", "damaged", "lost", "discarded"]),
-      }),
+      status: schema.string().optional().oneOf(["allocated", "available", "discarded", "office"]),
+      situation: schema.string().optional().oneOf(["new", "used", "broken", "damaged", "lost", "discarded"]),
       modelDescription: schema.string().optional().max(255),
       serialNumber: schema.string().optional().min(3).max(255),
       additionalNotes: schema.string().optional().max(255),
@@ -65,4 +59,4 @@ export default new Http(handler)
       methods: ["PUT"],
       route: "equipment/{id}",
     },
-  })
+  });

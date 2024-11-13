@@ -1,7 +1,7 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import { IAllocation } from "../../../models/client/Allocation";
-import { IEquipment } from "../../../models/client/Equipment";
+import { IEquipmentStatus } from "../../../models/client/Equipment";
 import AllocationRepository from "../../../repositories/Allocation";
 import EquipmentRepository from "../../../repositories/Equipment";
 
@@ -10,7 +10,7 @@ const handler: HttpHandler = async (conn, req) => {
   const allocationRepository = new AllocationRepository(conn);
   const equipmentRepository = new EquipmentRepository(conn);
 
-  // Check if any equipment 
+  // Check if any equipment of the list is not in any active allocation
   const existingAllocations = await allocationRepository.find({
     where: {
       equipments: { $in: allocationData.equipments },
@@ -29,7 +29,10 @@ const handler: HttpHandler = async (conn, req) => {
 
   const updatedResult = await equipmentRepository.updateMany({
     where: { _id: { $in: allocationData.equipments } },
-    data: { currentAllocation: allocation } 
+    data: { 
+      status: IEquipmentStatus.allocated,
+      currentAllocation: allocation 
+    } 
   });
 
   if (updatedResult.modifiedCount !== allocationData.equipments.length) {
