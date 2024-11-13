@@ -55,10 +55,10 @@ export default new Http(handler)
       }),
       equipments: schema.array().required(),
       startDate: schema.date().required(),
-      endDate: schema.date().optional().nullable(),
-      loanTermUrl: schema.string().optional().nullable(),
-      returnNotes: schema.string().optional().nullable(),
-      additionalNotes: schema.string().optional().nullable(),
+      endDate: schema.date().optional().default(null).nullable(),
+      loanTermUrl: schema.string().optional().default(null).nullable(),
+      returnNotes: schema.string().optional().default(null).nullable(),
+      additionalNotes: schema.string().optional().default(null).nullable(),
     })
   }))
   .configure({

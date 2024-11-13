@@ -15,7 +15,7 @@ const handler: HttpHandler = async (conn, req) => {
     return res.notFound("Allocation not found");
   }
 
-  const updatedResult = await equipmentRepository.updateMany({
+  await equipmentRepository.updateMany({
     where: { _id: { $in: allocation.equipments } },
     data: {
       status: IEquipmentStatus.available, 
@@ -24,8 +24,6 @@ const handler: HttpHandler = async (conn, req) => {
   });
 
   await allocationRepository.delete({ where: { _id: id } });
-
-  
 }
 
 export default new Http(handler)

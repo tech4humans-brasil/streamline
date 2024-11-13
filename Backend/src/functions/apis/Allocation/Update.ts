@@ -1,7 +1,9 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
+import { IEquipmentStatus } from "../../../models/client/Equipment";
 import { IUser } from "../../../models/client/User";
 import AllocationRepository from "../../../repositories/Allocation";
+import EquipmentRepository from "../../../repositories/Equipment";
 
 interface DtoAllocation {
   user?: IUser;
@@ -18,6 +20,23 @@ const handler: HttpHandler = async (conn, req) => {
   const { ...allocationData } = req.body as DtoAllocation;
 
   const allocationRepository = new AllocationRepository(conn);
+  const equipmentRepository = new EquipmentRepository(conn);
+
+  const existingAllocation = await allocationRepository.findById({ id });
+
+  if (!existingAllocation) {
+    return res.notFound("Allocation not found");
+  }
+
+  if (!existingAllocation.endDate && allocationData.endDate != null) {
+    await equipmentRepository.updateMany({
+      where: { _id: { $in: existingAllocation.equipments } },
+      data: {
+        status: IEquipmentStatus.available, 
+        currentAllocation: null 
+      } 
+    });
+  }
 
   const updatedAllocation = await allocationRepository.findByIdAndUpdate({
     id,

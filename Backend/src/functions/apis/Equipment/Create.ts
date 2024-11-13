@@ -33,6 +33,12 @@ export default new Http(handler)
         .matches(/^TECH-\d{2}$/)
         .required(),
       equipmentType: schema.string().required(),
+      brandName: schema.string().optional().default(null).nullable(),
+      status: schema.string().optional().default("available").oneOf(["allocated", "available", "discarded", "office"]),
+      situation: schema.string().optional().default("new").oneOf(["new", "used", "broken", "damaged", "lost", "discarded"]),
+      modelDescription: schema.string().optional().default(null).nullable(),
+      serialNumber: schema.string().optional().default(null).nullable(),
+      additionalNotes: schema.string().optional().default(null).nullable(),
     }),
   }))
   .configure({
