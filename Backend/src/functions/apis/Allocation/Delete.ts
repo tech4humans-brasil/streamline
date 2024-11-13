@@ -18,7 +18,7 @@ const handler: HttpHandler = async (conn, req) => {
   const updatedResult = await equipmentRepository.updateMany({
     where: { _id: { $in: allocation.equipments } },
     data: {
-      situation: IEquipmentStatus.available, 
+      status: IEquipmentStatus.available, 
       currentAllocation: null 
     } 
   });
