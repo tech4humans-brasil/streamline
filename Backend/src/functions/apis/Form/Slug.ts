@@ -11,23 +11,8 @@ const handler: HttpHandler = async (conn, req) => {
     await formRepository.findOpenForms({
       where: {
         slug,
-        $and: [
-          {
-            $or: [
-              {
-                institute: {
-                  $in: req.user.institutes.map((institute) => institute._id),
-                },
-              },
-              {
-                institutes: {
-                  $eq: [],
-                },
-              },
-            ],
-          },
-        ],
       },
+      institutes: req.user.institutes.map((institute) => institute._id),
       populate: [
         {
           path: "published",

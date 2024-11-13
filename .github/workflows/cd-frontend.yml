@@ -54,7 +54,7 @@ jobs:
     name: Build
     needs: [install]
     environment: 
-        name: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+        name: ${{ github.ref == 'refs/heads/develop' && 'Development' || 'Production' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -138,7 +138,7 @@ jobs:
     outputs:
       url: ${{ steps.builddeploy.outputs.static_web_app_url }}
     environment: 
-        name: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+        name: ${{ github.ref == 'refs/heads/develop' && 'Development' || 'Production' }}
     steps:
       - name: "Download Artifact"
         uses: actions/download-artifact@v4
