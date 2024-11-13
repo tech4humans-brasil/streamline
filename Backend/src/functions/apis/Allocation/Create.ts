@@ -39,6 +39,9 @@ export default new Http(handler)
       equipments: schema.array().required(),
       startDate: schema.date().required(),
       endDate: schema.date().optional().nullable(),
+      loanTermUrl: schema.string().optional().nullable(),
+      returnNotes: schema.string().optional().nullable(),
+      additionalNotes: schema.string().optional().nullable(),
     })
   }))
   .configure({

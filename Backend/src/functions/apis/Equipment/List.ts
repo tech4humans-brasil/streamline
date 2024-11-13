@@ -21,13 +21,7 @@ const handler: HttpHandler = async (conn, req) => {
   const equipmentRepository = new EquipmentRepository(conn);
 
   const where = filterQueryBuilder.build(filters);
-
-  /*
-  const queryOptions: any = {
-    skip: (page - 1) * limit,
-    limit,
-  }*/
-
+  
   const equipments = await equipmentRepository.find({
     skip: (page - 1) * limit,
     where,

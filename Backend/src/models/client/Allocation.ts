@@ -8,6 +8,8 @@ export interface IAllocation extends mongoose.Document {
   startDate: Date;
   endDate?: Date;
   loanTermUrl?: string;
+  returnNotes?: string;
+  additionalNotes?: string;
 };
 
 export const schema: Schema = new Schema<IAllocation>(
@@ -21,6 +23,8 @@ export const schema: Schema = new Schema<IAllocation>(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: false },
     loanTermUrl: { type: String, required: false },
+    returnNotes: { type: String, required: false },
+    additionalNotes: { type: String, required: false },
   },
   {
     timestamps: true,
