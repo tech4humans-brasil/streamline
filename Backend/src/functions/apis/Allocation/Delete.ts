@@ -10,27 +10,18 @@ const handler: HttpHandler = async (conn, req) => {
 
   const allocation = await allocationRepository.findById({ id });
 
-  // Updating information of the allocation in the equipments
-  for (const equipmentId of allocation.equipments) {
-    const equipment = await equipmentRepository.findById({
-      id: equipmentId
-    });
-
-    if (equipment) {
-      await equipmentRepository.findByIdAndUpdate({
-        id: equipmentId,
-        data: {
-          currentAllocation: null
-        }
-      });
-    }
-  }
-
   if (!allocation) {
     return res.notFound("Allocation not found");
   }
 
+  const updatedResult = await equipmentRepository.updateMany({
+    where: { _id: { $in: allocation.equipments } },
+    data: { currentAllocation: null } 
+  });
+
   await allocationRepository.delete({ where: { _id: id } });
+
+  
 }
 
 export default new Http(handler)

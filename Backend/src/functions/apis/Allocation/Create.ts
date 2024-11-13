@@ -11,25 +11,15 @@ const handler: HttpHandler = async (conn, req) => {
   const equipmentRepository = new EquipmentRepository(conn);
 
   const allocation = await allocationRepository.create(allocationData);
-
   allocation.save();
 
-  // Updating information of the allocation in the equipment as well
-  for (const equipmentId of allocationData.equipments) {
-    const equipment = await equipmentRepository.findById({
-      id: equipmentId
-    });
+  const updatedResult = await equipmentRepository.updateMany({
+    where: { _id: { $in: allocationData.equipments } },
+    data: { currentAllocation: allocation } 
+  });
 
-    if (!equipment) {
-      return res.notFound("Equipment not found");
-    }
-
-    await equipmentRepository.findByIdAndUpdate({
-      id: equipmentId,
-      data: {
-        currentAllocation: allocationData
-      }
-    });
+  if (updatedResult.modifiedCount !== allocationData.equipments.length) {
+    return res.notFound("One or more equipments could not be found");
   }
 
   return res.created(allocation);
