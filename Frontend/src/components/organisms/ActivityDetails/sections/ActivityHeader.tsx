@@ -53,6 +53,7 @@ const ActivityHeader: React.FC<ActivityHeaderProps> = ({
         </Heading>
         <Text fontSize="xl">#{protocol}</Text>
       </Flex>
+
       <Flex gap={2} alignItems={"center"}>
         <Badge
           p={2}

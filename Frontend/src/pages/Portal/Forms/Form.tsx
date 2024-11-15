@@ -26,6 +26,7 @@ import Can from "@components/atoms/Can";
 import { FaArrowLeft } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { IFormType } from "@interfaces/Form";
+import NumberInput from "@components/atoms/Inputs/NumberInput";
 
 const statusSchema = z
   .object({
@@ -39,6 +40,7 @@ const statusSchema = z
       open: z.string().nullable(),
       close: z.string().nullable(),
     }),
+    sla: z.coerce.number().optional().nullable(),
     active: z.boolean().default(true),
     project: z.string().optional().nullable(),
     url: z.string().optional().nullable().default(null),
@@ -349,6 +351,13 @@ export default function Workflow() {
                     }}
                     isLoading={isLoadingForms}
                     isMulti
+                  />
+
+                  <NumberInput
+                    input={{
+                      id: "sla",
+                      label: t("common.fields.sla"),
+                    }}
                   />
                 </>
               )}

@@ -138,6 +138,7 @@ interface ActivityItemProps {
     published: boolean;
     type: "created" | "external" | "interaction" | "time-triggered";
     url: string | null;
+    sla: number | null;
   };
 }
 
@@ -196,6 +197,12 @@ const FormItem: React.FC<ActivityItemProps> = ({ form }) => {
         {form.type === "external" && (
           <Tag colorScheme="blue" mt={2} size="sm">
             {t("common.fields.external")}
+          </Tag>
+        )}
+
+        {form.sla && (
+          <Tag colorScheme="orange" mt={2} size="sm">
+            {t("common.fields.sla")}: {form.sla} {t("common.fields.days")}
           </Tag>
         )}
       </Stack>

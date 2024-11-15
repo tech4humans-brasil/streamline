@@ -26,6 +26,8 @@
       "yes": "Sim",
       "no": "Não",
       "url": "URL",
+      "sla": "SLA",
+      "due_date": "Prazo",
       "all": "Todos",
       "visibilities": "Responsáveis",
       "whocansee": "Quem pode ver",

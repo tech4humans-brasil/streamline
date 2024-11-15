@@ -75,6 +75,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
           </Text>
           <Text>{convertDateTime(activity.createdAt)}</Text>
           <Divider />
+
           {activity.finished_at && (
             <>
               <Text fontWeight={"bold"} fontSize="md">
@@ -84,6 +85,17 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
               <Divider />
             </>
           )}
+
+          {activity.due_date && (
+            <>
+              <Text fontWeight={"bold"} fontSize="md">
+                Prazo
+              </Text>
+              <Text>{convertDateTime(activity.due_date)}</Text>
+              <Divider />
+            </>
+          )}
+
           <Text fontWeight={"bold"} fontSize="md">
             Solicitante
           </Text>

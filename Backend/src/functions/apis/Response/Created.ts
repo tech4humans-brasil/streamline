@@ -17,6 +17,7 @@ import WorkflowDraftRepository from "../../../repositories/WorkflowDraft";
 import WorkflowRepository from "../../../repositories/Workflow";
 import { sendEmail } from "../../../services/email";
 import emailTemplate from "../../../utils/emailTemplate";
+import Holiday from "../../../services/holliday";
 
 interface IUser {
   _id: ObjectId;
@@ -76,9 +77,11 @@ export const handler: HttpHandler = async (conn, req, context) => {
 
   await responseUseCases.processFormFields(rest);
 
-  const status = await new Status(conn).model().findById(form.initial_status);
+  const statusPromise = await new Status(conn)
+    .model()
+    .findById(form.initial_status);
 
-  const user = await userRepository.findById({
+  const userPromise = await userRepository.findById({
     id: req.user.id,
     select: {
       _id: 1,
@@ -89,6 +92,13 @@ export const handler: HttpHandler = async (conn, req, context) => {
     },
   });
 
+  const [status, user] = await Promise.all([statusPromise, userPromise]).catch(
+    (error) => {
+      console.error("Error creating response", error);
+      throw new Error(error);
+    }
+  );
+
   const activity = await activityRepository.create({
     name: form.name,
     description,
@@ -97,6 +107,17 @@ export const handler: HttpHandler = async (conn, req, context) => {
     users: [user.toObject()],
     form_draft: formDraft.toObject(),
   });
+
+  console.log("form.sla", form.sla);
+
+  if (form.sla) {
+    const slaCalculator = new Holiday();
+
+    const dueDate = await slaCalculator.calculateDueDate(new Date(), form.sla);
+
+    console.log("dueDate", dueDate);
+    activity.due_date = dueDate;
+  }
 
   const answerRepository = new AnswerRepository(conn);
 
