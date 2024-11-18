@@ -11,7 +11,6 @@ import {
 import DueDateIndicator from "@components/atoms/DueDateIndicatior";
 import Table from "@components/organisms/Table";
 import { useQuery } from "@tanstack/react-query";
-import { convertDateTime } from "@utils/date";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaPen, FaSync } from "react-icons/fa";
@@ -75,7 +74,7 @@ const PendingInteractions: React.FC = () => {
     //[Todo] - Verificar se o campo form.period.close é o correto
     return data.map((activity) => ({
       ...activity,
-      user: activity?.users.at(0)?.name || "-",
+      user: activity?.users[0]?.name || "-",
       due_date: activity.due_date ? (
         <DueDateIndicator dueDate={activity.due_date} />
       ) : (
