@@ -39,7 +39,7 @@ export const AdminRole: Role = {
     },
     {
       name: "workflow",
-      permissions: ["view", "read", "create", "update", "delete"],
+      permissions: ["view", "read", "create", "update", "delete", "script"],
     },
     {
       name: "workflowDraft",

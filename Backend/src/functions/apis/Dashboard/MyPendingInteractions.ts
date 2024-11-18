@@ -27,9 +27,13 @@ export const handler: HttpHandler = async (conn, req, context) => {
       name: 1,
       description: 1,
       protocol: 1,
+      due_date: 1,
       users: 1,
       "interactions.form": 1,
       "interactions.answers": 1,
+    },
+    sort: {
+      due_date: 1,
     },
   });
 
