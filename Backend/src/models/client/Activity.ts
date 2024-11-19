@@ -103,6 +103,7 @@ export type IActivity = {
   form: mongoose.Types.ObjectId | string;
   form_draft: IFormDraft;
   finished_at: Date | null;
+  due_date: Date | null;
   automatic: boolean;
   status: IStatus;
   comments: IComment[];
@@ -232,6 +233,7 @@ export const schema: Schema = new Schema<IActivity>(
       enum: Object.values(IActivityState),
       default: IActivityState.processing,
     },
+    due_date: { type: Date, required: false, default: null, index: true },
     users: [{ type: userSchema, required: true }],
     finished_at: { type: Date, required: false, default: null },
     status: { type: statusSchema, required: true },

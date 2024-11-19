@@ -1,7 +1,11 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import { IComment } from "../../../models/client/Activity";
 import ActivityRepository from "../../../repositories/Activity";
+import FormRepository from "../../../repositories/Form";
+import UserRepository from "../../../repositories/User";
+import { sendEmail } from "../../../services/email";
 import res from "../../../utils/apiResponse";
+import emailTemplate from "../../../utils/emailTemplate";
 
 const handler: HttpHandler = async (conn, req) => {
   const data = req.body as Pick<IComment, "content">;
@@ -29,6 +33,46 @@ const handler: HttpHandler = async (conn, req) => {
   comment.save();
 
   const newComment = comment.comments[comment.comments.length - 1];
+
+  const content = `
+  <p>Olá!</p>
+  <p>${newComment.user.name} comentou em sua atividade.</p>
+  <p>Comentário: ${newComment.content}</p>
+  <p>Para visualizar a atividade, acesse: 
+    <a href="${process.env.FRONTEND_URL}/activity/${comment._id}">
+      Visualizar atividade
+    </a>
+  </p>
+`;
+
+  const userRepository = new UserRepository(conn);
+  const formRepository = new FormRepository(conn);
+
+  const form = await formRepository.findById({
+    id: comment.form.toString(),
+  });
+
+  const users = await userRepository.find({
+    where: {
+      institutes: {
+        $in: form.visibilities,
+      },
+    },
+    select: {
+      email: 1,
+      name: 1,
+      matriculation: 1,
+    },
+  });
+
+  const { html, css } = emailTemplate(content);
+
+  await sendEmail(
+    users.map((user) => user.email).concat(req.user.email),
+    `[${comment.protocol}] | ${req.user.name} adicionou um comentário em seu ticket`,
+    html,
+    css
+  );
 
   return res.created(newComment);
 };

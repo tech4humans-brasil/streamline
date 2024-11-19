@@ -33,6 +33,7 @@ const handler: HttpHandler = async (conn, req) => {
       url: 1,
       type: 1,
       description: 1,
+      sla: 1,
       period: 1,
       published: 1,
       institute: 1,

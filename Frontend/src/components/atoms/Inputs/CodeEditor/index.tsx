@@ -19,6 +19,8 @@ import ErrorMessage from "../ErrorMessage";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
+import { useTranslation } from "react-i18next";
+import Can from "@components/atoms/Can";
 
 interface CodeEditorProps {
   input: {
@@ -41,51 +43,183 @@ const activityCompletions = (context: CompletionContext) => {
 
   const suggestions = [
     // Propriedades gerais
-    { label: "activity", type: "variable", info: "Objeto global de atividade." },
+    {
+      label: "activity",
+      type: "variable",
+      info: "Objeto global de atividade.",
+    },
     { label: "activity._id", type: "property", info: "ID único da atividade." },
     { label: "activity.name", type: "property", info: "Nome da atividade." },
-    { label: "activity.protocol", type: "property", info: "Protocolo da atividade." },
-    { label: "activity.state", type: "enum", info: "Estado atual da atividade." },
-    { label: "activity.description", type: "property", info: "Descrição da atividade." },
-    { label: "activity.createdAt", type: "property", info: "Data de criação da atividade." },
-    { label: "activity.updatedAt", type: "property", info: "Data da última atualização da atividade." },
-    { label: "activity.finished_at", type: "property", info: "Data de finalização da atividade." },
+    {
+      label: "activity.protocol",
+      type: "property",
+      info: "Protocolo da atividade.",
+    },
+    {
+      label: "activity.state",
+      type: "enum",
+      info: "Estado atual da atividade.",
+    },
+    {
+      label: "activity.description",
+      type: "property",
+      info: "Descrição da atividade.",
+    },
+    {
+      label: "activity.createdAt",
+      type: "property",
+      info: "Data de criação da atividade.",
+    },
+    {
+      label: "activity.updatedAt",
+      type: "property",
+      info: "Data da última atualização da atividade.",
+    },
+    {
+      label: "activity.finished_at",
+      type: "property",
+      info: "Data de finalização da atividade.",
+    },
 
     // Propriedades relacionadas a usuários
-    { label: "activity.users", type: "property", info: "Lista de usuários associados à atividade." },
-    { label: "activity.users[].name", type: "property", info: "Nome do usuário." },
-    { label: "activity.users[].email", type: "property", info: "E-mail do usuário." },
+    {
+      label: "activity.users",
+      type: "property",
+      info: "Lista de usuários associados à atividade.",
+    },
+    {
+      label: "activity.users[].name",
+      type: "property",
+      info: "Nome do usuário.",
+    },
+    {
+      label: "activity.users[].email",
+      type: "property",
+      info: "E-mail do usuário.",
+    },
 
     // Propriedades relacionadas ao formulário
-    { label: "activity.form", type: "property", info: "Formulário associado à atividade." },
-    { label: "activity.form_draft", type: "property", info: "Rascunho do formulário associado à atividade." },
+    {
+      label: "activity.form",
+      type: "property",
+      info: "Formulário associado à atividade.",
+    },
+    {
+      label: "activity.form_draft",
+      type: "property",
+      info: "Rascunho do formulário associado à atividade.",
+    },
 
     // Propriedades relacionadas ao status
-    { label: "activity.status", type: "property", info: "Status da atividade." },
+    {
+      label: "activity.status",
+      type: "property",
+      info: "Status da atividade.",
+    },
 
     // Propriedades relacionadas a interações
-    { label: "activity.interactions", type: "array", info: "Interações associadas à atividade." },
-    { label: "activity.interactions[]._id", type: "property", info: "ID único da interação." },
-    { label: "activity.interactions[].activity_workflow_id", type: "property", info: "ID do fluxo de trabalho associado." },
-    { label: "activity.interactions[].activity_step_id", type: "property", info: "ID do passo associado à interação." },
-    { label: "activity.interactions[].form", type: "property", info: "Formulário usado na interação." },
-    { label: "activity.interactions[].answers", type: "property", info: "Respostas da interação." },
-    { label: "activity.interactions[].answers[]._id", type: "property", info: "ID único da resposta." },
-    { label: "activity.interactions[].answers[].status", type: "property", info: "Status da resposta." },
-    { label: "activity.interactions[].answers[].user", type: "property", info: "Usuário que respondeu." },
-    { label: "activity.interactions[].answers[].data", type: "property", info: "Dados da resposta." },
-    { label: "activity.interactions[].finished", type: "property", info: "Indica se a interação foi finalizada." },
+    {
+      label: "activity.interactions",
+      type: "array",
+      info: "Interações associadas à atividade.",
+    },
+    {
+      label: "activity.interactions[]._id",
+      type: "property",
+      info: "ID único da interação.",
+    },
+    {
+      label: "activity.interactions[].activity_workflow_id",
+      type: "property",
+      info: "ID do fluxo de trabalho associado.",
+    },
+    {
+      label: "activity.interactions[].activity_step_id",
+      type: "property",
+      info: "ID do passo associado à interação.",
+    },
+    {
+      label: "activity.interactions[].form",
+      type: "property",
+      info: "Formulário usado na interação.",
+    },
+    {
+      label: "activity.interactions[].answers",
+      type: "property",
+      info: "Respostas da interação.",
+    },
+    {
+      label: "activity.interactions[].answers[]._id",
+      type: "property",
+      info: "ID único da resposta.",
+    },
+    {
+      label: "activity.interactions[].answers[].status",
+      type: "property",
+      info: "Status da resposta.",
+    },
+    {
+      label: "activity.interactions[].answers[].user",
+      type: "property",
+      info: "Usuário que respondeu.",
+    },
+    {
+      label: "activity.interactions[].answers[].data",
+      type: "property",
+      info: "Dados da resposta.",
+    },
+    {
+      label: "activity.interactions[].finished",
+      type: "property",
+      info: "Indica se a interação foi finalizada.",
+    },
 
     // Propriedades relacionadas aos fluxos de trabalho
-    { label: "activity.workflows", type: "property", info: "Fluxos de trabalho associados à atividade." },
-    { label: "activity.workflows[]._id", type: "property", info: "ID único do fluxo de trabalho." },
-    { label: "activity.workflows[].workflow_draft", type: "property", info: "Rascunho do fluxo de trabalho." },
-    { label: "activity.workflows[].steps", type: "property", info: "Passos no fluxo de trabalho." },
-    { label: "activity.workflows[].steps[]._id", type: "property", info: "ID único do passo." },
-    { label: "activity.workflows[].steps[].step", type: "property", info: "Nome do passo." },
-    { label: "activity.workflows[].steps[].status", type: "property", info: "Status do passo." },
-    { label: "activity.workflows[].steps[].data", type: "property", info: "Dados associados ao passo." },
-    { label: "activity.workflows[].finished", type: "property", info: "Indica se o fluxo de trabalho foi finalizado." },
+    {
+      label: "activity.workflows",
+      type: "property",
+      info: "Fluxos de trabalho associados à atividade.",
+    },
+    {
+      label: "activity.workflows[]._id",
+      type: "property",
+      info: "ID único do fluxo de trabalho.",
+    },
+    {
+      label: "activity.workflows[].workflow_draft",
+      type: "property",
+      info: "Rascunho do fluxo de trabalho.",
+    },
+    {
+      label: "activity.workflows[].steps",
+      type: "property",
+      info: "Passos no fluxo de trabalho.",
+    },
+    {
+      label: "activity.workflows[].steps[]._id",
+      type: "property",
+      info: "ID único do passo.",
+    },
+    {
+      label: "activity.workflows[].steps[].step",
+      type: "property",
+      info: "Nome do passo.",
+    },
+    {
+      label: "activity.workflows[].steps[].status",
+      type: "property",
+      info: "Status do passo.",
+    },
+    {
+      label: "activity.workflows[].steps[].data",
+      type: "property",
+      info: "Dados associados ao passo.",
+    },
+    {
+      label: "activity.workflows[].finished",
+      type: "property",
+      info: "Indica se o fluxo de trabalho foi finalizado.",
+    },
   ];
 
   return {
@@ -101,6 +235,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ input }) => {
   } = useFormContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editorValue, setEditorValue] = useState("");
+  const { t } = useTranslation();
 
   const mode = useColorMode();
 
@@ -146,17 +281,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ input }) => {
                   />
                 </ModalBody>
                 <ModalFooter>
-                  <Button
-                    onClick={() => {
-                      field.onChange(editorValue); // Atualiza o valor do formulário
-                      onClose();
-                    }}
-                  >
-                    Save
+                  <Button onClick={onClose} mr={3}>
+                    {t("common.cancel")}
                   </Button>
-                  <Button onClick={onClose} ml={3}>
-                    Cancel
-                  </Button>
+                  <Can permission="workflow.script">
+                    <Button
+                      onClick={() => {
+                        field.onChange(editorValue); // Atualiza o valor do formulário
+                        onClose();
+                      }}
+                      colorScheme="blue"
+                    >
+                      {t("common.save")}
+                    </Button>
+                  </Can>
                 </ModalFooter>
               </ModalContent>
             </Modal>

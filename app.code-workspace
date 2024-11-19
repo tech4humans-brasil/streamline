@@ -18,5 +18,7 @@
     }
 
   ],
-  "settings": {},
+  "settings": {
+    "atlascode.bitbucket.enabled": false
+  },
 }

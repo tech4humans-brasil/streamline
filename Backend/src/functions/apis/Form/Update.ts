@@ -46,6 +46,7 @@ export default new Http(handler)
         .string()
         .required()
         .oneOf(Object.values(IFormType)),
+      sla: schema.number().nullable().default(null),
       initial_status: schema.string().when("type", ([type], schema) => {
         if (type === "created") {
           return schema.required();

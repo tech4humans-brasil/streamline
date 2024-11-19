@@ -87,6 +87,7 @@ export type IActivity = {
   form: IForm;
   form_draft: IFormDraft;
   status: IStatus;
+  due_date: Date | string | null;
   comments: IComment[];
   interactions: IActivityInteractions[];
   evaluations: IActivityEvaluations[];
