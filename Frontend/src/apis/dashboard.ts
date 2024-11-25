@@ -61,6 +61,7 @@ interface IOpenForm {
     | "visibilities"
     | "url"
     | "type"
+    | "sla"
   >[];
 }
 
@@ -104,7 +105,7 @@ export const getMyActivitiesPendingAcceptance = async ({
 };
 
 type ReqMyActivitiesPendingInteractions = Response<
-  (Pick<IActivity, "_id" | "name" | "description" | "protocol" | "users"> & {
+  (Pick<IActivity, "_id" | "name" | "description" | "protocol" | "users" | "due_date"> & {
     form: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
     status: "idle" | "pending" | "approved" | "rejected";
   })[]

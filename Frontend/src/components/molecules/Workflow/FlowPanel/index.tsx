@@ -9,6 +9,8 @@ import { SwapWorkflowIcon } from "@components/atoms/Workflow/Nodes/SwapWorkflow"
 import { InteractionIcon } from "@components/atoms/Workflow/Nodes/Interaction";
 import { ConditionalIcon } from "@components/atoms/Workflow/Nodes/Conditional";
 import { WebRequestIcon } from "@components/atoms/Workflow/Nodes/WebRequest";
+import { ScriptIcon } from "@components/atoms/Workflow/Nodes/Script";
+import Can from "@components/atoms/Can";
 
 const FlowPanel: React.FC = () => {
   return (
@@ -45,6 +47,11 @@ const FlowPanel: React.FC = () => {
         <PanelItem nodeType={NodeTypes.WebRequest}>
           <WebRequestIcon />
         </PanelItem>
+        <Can permission="workflow.script">
+          <PanelItem nodeType={NodeTypes.Script}>
+            <ScriptIcon />
+          </PanelItem>
+        </Can>
       </Flex>
     </Panel>
   );

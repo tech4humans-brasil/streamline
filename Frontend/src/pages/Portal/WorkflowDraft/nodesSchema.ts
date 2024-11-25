@@ -150,6 +150,12 @@ const schemas: NodeSchemas = {
     visible: z.boolean().default(true),
     ifNotExists: z.string().optional(),
   }),
+
+  [NodeTypes.Script]: z.object({
+    name: z.string().min(3, { message: "Nome é obrigatório" }),
+    script: z.string().min(3, { message: "Script é obrigatório" }),
+    visible: z.boolean().default(false),
+  }),
 };
 
 export type SchemaTypes = keyof typeof schemas;
@@ -187,6 +193,7 @@ export const workflowSchema = z.object({
           "interaction",
           "conditional",
           "web_request",
+          "script",
         ])
         .optional(),
       data: z.union([
@@ -196,6 +203,8 @@ export const workflowSchema = z.object({
         schemas[NodeTypes.SwapWorkflow],
         schemas[NodeTypes.Interaction],
         schemas[NodeTypes.Conditional],
+        schemas[NodeTypes.WebRequest],
+        schemas[NodeTypes.Script],
       ]),
       position: z.object({ x: z.number(), y: z.number() }),
       deletable: z.boolean().optional(),

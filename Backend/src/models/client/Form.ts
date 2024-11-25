@@ -15,6 +15,7 @@ export type IForm = {
   type: IFormType;
   period?: { open: string | null | Date; close: string | null | Date };
   active: boolean;
+  sla: number | null;
   url: string;
   description: string;
   published: ObjectId | string | null;
@@ -39,6 +40,7 @@ export const schema = new Schema<IForm>(
       sparse: true,
     },
     url: { type: String, required: false, default: null },
+    sla: { type: Number, required: false, default: null },
     type: {
       type: String,
       required: true,

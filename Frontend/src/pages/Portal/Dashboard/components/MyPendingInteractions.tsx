@@ -8,9 +8,9 @@ import {
   IconButton,
   Text,
 } from "@chakra-ui/react";
+import DueDateIndicator from "@components/atoms/DueDateIndicatior";
 import Table from "@components/organisms/Table";
 import { useQuery } from "@tanstack/react-query";
-import { convertDateTime } from "@utils/date";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaPen, FaSync } from "react-icons/fa";
@@ -22,16 +22,16 @@ const columns = [
     label: "common.fields.protocol",
   },
   {
-    key: "name",
+    key: "user",
     label: "common.fields.name",
   },
   {
-    key: "description",
-    label: "common.fields.description",
+    key: "name",
+    label: "common.fields.type",
   },
   {
-    key: "createdAt",
-    label: "common.fields.createdAt",
+    key: "due_date",
+    label: "common.fields.due_date",
   },
   {
     key: "actions",
@@ -74,7 +74,12 @@ const PendingInteractions: React.FC = () => {
     //[Todo] - Verificar se o campo form.period.close é o correto
     return data.map((activity) => ({
       ...activity,
-      createdAt: convertDateTime(activity.form.period.close),
+      user: activity?.users[0]?.name || "-",
+      due_date: activity.due_date ? (
+        <DueDateIndicator dueDate={activity.due_date} />
+      ) : (
+        "-"
+      ),
       actions: (
         <Flex>
           <Button mr={2} onClick={() => handleView(activity)} size="sm">

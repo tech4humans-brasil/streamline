@@ -54,6 +54,7 @@ const NumberInput: React.FC<TextProps> = ({ input, max, min }) => {
         render={({ field }) => (
           <NumberInputChackra
             {...field}
+            value={field.value || ""}
             isDisabled={input?.isDisabled}
             max={max}
             min={min}

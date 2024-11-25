@@ -13,6 +13,7 @@ type IForm = {
   type: "created" | "interaction" | "time-trigger" | "external";
   period: { open?: string | null; close?: string | null };
   description: string;
+  sla: number | null;
   url: string | null;
   published: boolean;
   institute: [string] | null;
