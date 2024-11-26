@@ -110,7 +110,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
           {label}:
         </Text>
         {/* @ts-ignore */}
-        {value?.map(
+        {value?.map?.(
             // @ts-ignore
             (el) =>
               // @ts-ignore
