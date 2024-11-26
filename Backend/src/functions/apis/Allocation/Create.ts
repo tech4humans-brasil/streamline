@@ -4,19 +4,31 @@ import { IAllocation } from "../../../models/client/Allocation";
 import { IEquipmentStatus } from "../../../models/client/Equipment";
 import AllocationRepository from "../../../repositories/Allocation";
 import EquipmentRepository from "../../../repositories/Equipment";
+import UserRepository from "../../../repositories/User";
+
+interface IBody {
+  user: string;
+  equipments: string[];
+  startDate: string;
+  endDate?: string;
+  loanTermUrl?: string;
+  returnNotes?: string;
+  additionalNotes?: string;
+}
 
 const handler: HttpHandler = async (conn, req) => {
-  const allocationData = req.body as IAllocation;
+  const allocationData = req.body as IBody;
   const allocationRepository = new AllocationRepository(conn);
   const equipmentRepository = new EquipmentRepository(conn);
+  const userRepository = new UserRepository(conn);
 
   // Check if any equipment of the list is not in any active allocation
   const existingAllocations = await allocationRepository.find({
     where: {
       equipments: { $in: allocationData.equipments },
       endDate: { $exists: false },
-    }
-  })
+    },
+  });
 
   console.log(existingAllocations);
 
@@ -24,20 +36,33 @@ const handler: HttpHandler = async (conn, req) => {
     return res.conflict("One or more equipments are already allocated");
   }
 
-  const allocation = await allocationRepository.create(allocationData);
-  allocation.save();
+  const user = await userRepository.findById({
+    id: allocationData.user,
+    select: { password: 0, __v: 0 },
+  });
+
+  const allocation = await allocationRepository.create({
+    user,
+    equipments: allocationData.equipments,
+    startDate: new Date(allocationData.startDate),
+    endDate: allocationData.endDate ? new Date(allocationData.endDate) : null,
+    loanTermUrl: allocationData.loanTermUrl,
+    returnNotes: allocationData.returnNotes,
+    additionalNotes: allocationData.additionalNotes,
+  });
 
   const updatedResult = await equipmentRepository.updateMany({
     where: { _id: { $in: allocationData.equipments } },
-    data: { 
+    data: {
       status: IEquipmentStatus.allocated,
-      currentAllocation: allocation 
-    } 
+      currentAllocation: allocation,
+    },
   });
 
   if (updatedResult.modifiedCount !== allocationData.equipments.length) {
     return res.notFound("One or more equipments could not be found");
   }
+  await allocation.save();
 
   return res.created(allocation);
 };
@@ -45,21 +70,14 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
-      user: schema.object().shape({
-        _id: schema.string().required(),
-        name: schema.string().required().min(3).max(255),
-        email: schema.string().required().email(),
-        roles: schema
-        .array(schema.mixed().oneOf(["admin", "student", "teacher"]))
-        .required(),
-      }),
-      equipments: schema.array().required(),
+      user: schema.string().required(),
+      equipments: schema.array(schema.string()).required(),
       startDate: schema.date().required(),
       endDate: schema.date().optional().default(null).nullable(),
       loanTermUrl: schema.string().optional().default(null).nullable(),
       returnNotes: schema.string().optional().default(null).nullable(),
       additionalNotes: schema.string().optional().default(null).nullable(),
-    })
+    }),
   }))
   .configure({
     name: "AllocationCreate",
@@ -68,4 +86,4 @@ export default new Http(handler)
       methods: ["POST"],
       route: "allocation",
     },
-  })
+  });

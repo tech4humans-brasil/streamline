@@ -121,6 +121,16 @@ class BaseRepository<T extends Document> {
   async delete({ where }: { where: FilterQuery<T> }) {
     return this.model.deleteMany(where).exec();
   }
+
+  async distinct({
+    field,
+    where,
+  }: {
+    field: string;
+    where?: FilterQuery<T>;
+  }): Promise<any[]> {
+    return this.model.distinct(field, where).exec();
+  }
 }
 
 export default BaseRepository;

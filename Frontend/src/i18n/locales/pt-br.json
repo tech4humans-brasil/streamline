@@ -25,9 +25,14 @@
     "fields": {
       "name": "Nome",
       "yes": "Sim",
+      "allocation": "Alocação",
       "no": "Não",
       "url": "URL",
+      "serial": "Nº Serial",
       "sla": "SLA",
+      "inventoryNumber": "Número de inventário",
+      "brand": "Marca",
+      "situation": "Situação",
       "due_date": "Prazo",
       "all": "Todos",
       "visibilities": "Responsáveis",
@@ -36,7 +41,18 @@
       "start": "Início",
       "end": "Fim",
       "project": "Projeto",
+      "notes": "Notas",
       "protocol": "Protocolo",
+      "allocated": "Alocado",
+      "available": "Disponível",
+      "new": "Novo",
+      "used": "Usado",
+      "broken": "Quebrado",
+      "lost": "Perdido",
+      "discarded": "Descartado",
+      "damaged": "Danificado",
+      "discarded": "Descartado",
+      "office": "Escritório",
       "timezone": "Fuso horário",
       "search": "Pesquisar",
       "acronym": "Sigla",
@@ -192,7 +208,8 @@
     "forms": "Formulários",
     "reportings": "Relatórios",
     "projects": "Projetos",
-    "schedules": "Agendamentos"
+    "schedules": "Agendamentos",
+    "equipments": "Equipamentos"
   },
   "table": {
     "noData": "Nenhum dado encontrado",
@@ -474,5 +491,19 @@
     "success": "Agendamento salvo com sucesso",
     "error": "Erro ao carregar agendamento",
     "edit": "Editar agendamento"
+  },
+  "equipment": {
+    "title": "Equipamentos",
+    "create": "Criar equipamento",
+    "cancel": "Cancelar",
+    "success": "Equipamento salvo com sucesso",
+    "error": "Erro ao carregar equipamento"
+  },
+  "equipments": {
+    "title": "Equipamentos",
+    "create": "Criar equipamento",
+    "cancel": "Cancelar",
+    "success": "Equipamento salvo com sucesso",
+    "error": "Erro ao carregar equipamento"
   }
 }

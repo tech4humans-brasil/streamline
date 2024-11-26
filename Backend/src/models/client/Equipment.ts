@@ -5,7 +5,7 @@ export enum IEquipmentStatus {
   allocated = "allocated",
   available = "available",
   discarded = "discarded",
-  office = "office"
+  office = "office",
 }
 
 export enum IEquipmentSituation {
@@ -14,7 +14,7 @@ export enum IEquipmentSituation {
   broken = "broken",
   damaged = "damaged",
   lost = "lost",
-  discarded = "discarded"
+  discarded = "discarded",
 }
 
 export interface IEquipment extends mongoose.Document {
@@ -29,7 +29,7 @@ export interface IEquipment extends mongoose.Document {
   serialNumber?: string;
   additionalNotes?: string;
   currentAllocation: IAllocation | null;
-};
+}
 
 export const schema: Schema = new Schema<IEquipment>(
   {
@@ -37,13 +37,13 @@ export const schema: Schema = new Schema<IEquipment>(
     inventoryNumber: { type: String, required: true },
     equipmentType: { type: String, required: true },
     brandName: { type: String, required: false },
-    status: { 
-      type: String, 
+    status: {
+      type: String,
       enum: Object.values(IEquipmentStatus),
       default: IEquipmentStatus.available,
     },
-    situation: { 
-      type: String, 
+    situation: {
+      type: String,
       enum: Object.values(IEquipmentSituation),
       default: IEquipmentSituation.new,
     },
@@ -53,7 +53,12 @@ export const schema: Schema = new Schema<IEquipment>(
     currentAllocation: { type: Object, default: null, required: false },
   },
   { timestamps: true }
-);
+)
+  .index({ inventoryNumber: 1 }, { unique: true })
+  .index({ createdAt: 1 })
+  .index({ situation: 1 })
+  .index({ status: 1 })
+  .index({ equipmentType: 1 });
 
 class Equipment {
   conn: Connection;

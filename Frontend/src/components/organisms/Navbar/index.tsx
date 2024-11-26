@@ -21,7 +21,7 @@ import {
   BsFolder,
 } from "react-icons/bs";
 import { AiOutlineTeam } from "react-icons/ai";
-import { FaRegEnvelope } from "react-icons/fa";
+import { FaLaptop, FaRegEnvelope } from "react-icons/fa";
 import { GoWorkflow } from "react-icons/go";
 import React from "react";
 import Can from "@components/atoms/Can";
@@ -70,7 +70,7 @@ const steps: JoyrideSteps = [
   {
     target: "#reportings",
     content: "navbar.joyride.reportings",
-  },
+  }
 ];
 
 const CustomCard = React.forwardRef<HTMLSpanElement, TagProps>(
@@ -218,6 +218,16 @@ function Sidebar() {
             label="title.reportings"
             icon={BsPostcardFill}
             active={location.pathname === "/portal/reportings"}
+          />
+        </Can>
+
+        <Can permission="equipment.view">
+          <NavLink
+            id="equipments"
+            to="/portal/equipments"
+            label="title.equipments"
+            icon={FaLaptop}
+            active={location.pathname === "/portal/equipment"}
           />
         </Can>
       </List>

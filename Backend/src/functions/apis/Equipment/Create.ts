@@ -46,6 +46,6 @@ export default new Http(handler)
     permission: "equipment.create",
     options: {
       methods: ["POST"],
-      route: "equipment",
+      route: "equipments",
     },
   });

@@ -5,6 +5,7 @@ export enum IUserRoles {
   admin = "admin",
   student = "student",
   teacher = "teacher",
+  equipment = "equipment",
 }
 
 export enum IUserProviders {

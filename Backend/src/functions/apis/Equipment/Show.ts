@@ -28,6 +28,6 @@ export default new Http(handler)
       permission: "equipment.read",
       options: {
         methods: ["GET"],
-        route: "equipment/{id}",
+        route: "equipments/{id}",
       },
   })

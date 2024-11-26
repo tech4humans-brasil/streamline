@@ -11,7 +11,8 @@ interface Query {
 
 const filterQueryBuilder = new FilterQueryBuilder(
   {
-    equipmentType: WhereEnum.ILIKE
+    inventoryNumber: WhereEnum.ILIKE,
+    equipmentType: WhereEnum.ILIKE,
   },
 )
 
