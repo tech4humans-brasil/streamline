@@ -4,7 +4,7 @@ import { memo } from "react";
 import FileItem from "../FileItem";
 import { FieldTypes, IField } from "@interfaces/FormDraft";
 import { convertDateTime } from "@utils/date";
-import ReactMarkdown from "react-markdown";
+import MarkdownRenderer from "../MarkdownRenderer";
 
 const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (!field) {
@@ -24,7 +24,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
           {label}:
         </Text>
         {/* @ts-ignore */}
-        <ReactMarkdown>{value ?? "N/A"}</ReactMarkdown>
+        <MarkdownRenderer>{value}</MarkdownRenderer>
       </Flex>
     );
   }
