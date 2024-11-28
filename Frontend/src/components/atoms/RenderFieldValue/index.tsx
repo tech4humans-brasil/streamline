@@ -4,6 +4,7 @@ import { memo } from "react";
 import FileItem from "../FileItem";
 import { FieldTypes, IField } from "@interfaces/FormDraft";
 import { convertDateTime } from "@utils/date";
+import ReactMarkdown from "react-markdown";
 
 const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (!field) {
@@ -15,17 +16,17 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (
     type === FieldTypes.textarea ||
     type === FieldTypes.text ||
-    value === ""
+    type === FieldTypes.placeholder
   ) {
-    <Flex direction={"column"}>
-      <Text fontSize="sm" mr={2}>
-        {label}:
-      </Text>
-      <Text fontSize="sm" fontWeight={"bold"}>
+    return (
+      <Flex direction={"column"}>
+        <Text fontSize="sm" mr={2}>
+          {label}:
+        </Text>
         {/* @ts-ignore */}
-        {value ?? "N/A"}
-      </Text>
-    </Flex>;
+        <ReactMarkdown>{value ?? "N/A"}</ReactMarkdown>
+      </Flex>
+    );
   }
 
   if (type === FieldTypes.file) {
