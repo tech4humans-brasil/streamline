@@ -70,7 +70,7 @@ export default class FormRepository extends BaseRepository<IForm> {
               },
             ],
           },
-        ],
+        ]
       },
       select: options.select,
       sort: options.sort,

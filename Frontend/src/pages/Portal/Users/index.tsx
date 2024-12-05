@@ -10,12 +10,13 @@ import { useQuery } from "@tanstack/react-query";
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BiEdit, BiRefresh } from "react-icons/bi";
+import { FaLaptop } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const roleMap = {
   admin: "Admin",
-  student: "Estudante",
-  teacher: "Professor",
+  student: "Usuário",
+  equipment: "Equipamento",
 };
 
 const columns = [
@@ -52,11 +53,22 @@ const Action = memo((user: { _id: string }) => {
     navigate(`/portal/user/${user._id}`);
   }, [navigate, user._id]);
 
+  const handleAllocations = useCallback(() => {
+    navigate(`/portal/allocations/${user._id}`);
+  }, [navigate, user._id]);
+
   return (
     <div>
-      <Button mr={2} onClick={handleEdit} size="sm">
-        <BiEdit size={20} />
-      </Button>
+      <Can permission="allocation.view">
+        <Button mr={2} onClick={handleAllocations} size="sm">
+          <FaLaptop size={20} />
+        </Button>
+      </Can>
+      <Can permission="user.update">
+        <Button mr={2} onClick={handleEdit} size="sm">
+          <BiEdit size={20} />
+        </Button>
+      </Can>
     </div>
   );
 });

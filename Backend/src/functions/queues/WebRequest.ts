@@ -16,6 +16,7 @@ import { decrypt } from "../../utils/crypto";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
 import axios from "axios";
+import safeStringify from "safe-stable-stringify";
 
 interface TMessage extends GenericMessage {}
 
@@ -178,7 +179,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       urlReplacedPromise,
     ]);
 
-    const bodyParsed = await JSON.parse(bodyReplaced);
+    const bodyParsed = safeStringify(bodyReplaced);
 
     const request = {
       data: bodyParsed,

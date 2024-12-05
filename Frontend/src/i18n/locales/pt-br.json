@@ -25,9 +25,14 @@
     "fields": {
       "name": "Nome",
       "yes": "Sim",
+      "allocation": "Alocação",
       "no": "Não",
       "url": "URL",
+      "serial": "Nº Serial",
       "sla": "SLA",
+      "inventoryNumber": "Número de inventário",
+      "brand": "Marca",
+      "situation": "Situação",
       "due_date": "Prazo",
       "all": "Todos",
       "visibilities": "Responsáveis",
@@ -36,7 +41,17 @@
       "start": "Início",
       "end": "Fim",
       "project": "Projeto",
+      "notes": "Notas",
       "protocol": "Protocolo",
+      "allocated": "Alocado",
+      "available": "Disponível",
+      "new": "Novo",
+      "used": "Usado",
+      "broken": "Quebrado",
+      "lost": "Perdido",
+      "discarded": "Descartado",
+      "damaged": "Danificado",
+      "office": "Escritório",
       "timezone": "Fuso horário",
       "search": "Pesquisar",
       "acronym": "Sigla",
@@ -65,6 +80,7 @@
       "active": "Ativo",
       "inactive": "Inativo",
       "matriculation": "Matrícula",
+      "invoice": "Nota fiscal",
       "external": "Externo",
       "institute": "Grupo",
       "hours": "Horas",
@@ -83,7 +99,15 @@
       "by": "Criado por",
       "anonymous": "Anônimo",
       "initialStatus": "Status inicial",
-      "workflow": "Fluxo"
+      "workflow": "Fluxo",
+      "equipments": "Equipamentos",
+      "startDate": "Data de início",
+      "endDate": "Data de término",
+      "loanTermUrl": "URL do termo de empréstimo",
+      "returnNotes": "Notas de devolução",
+      "additionalNotes": "Notas adicionais",
+      "noEndDate": "Sem data de término",
+      "loanTerm": "Termo de empréstimo"
     },
     "actions": {
       "copy": {
@@ -192,7 +216,8 @@
     "forms": "Formulários",
     "reportings": "Relatórios",
     "projects": "Projetos",
-    "schedules": "Agendamentos"
+    "schedules": "Agendamentos",
+    "equipments": "Equipamentos"
   },
   "table": {
     "noData": "Nenhum dado encontrado",
@@ -474,5 +499,39 @@
     "success": "Agendamento salvo com sucesso",
     "error": "Erro ao carregar agendamento",
     "edit": "Editar agendamento"
+  },
+  "equipment": {
+    "title": "Equipamentos",
+    "create": "Criar equipamento",
+    "edit": "Editar equipamento",
+    "cancel": "Cancelar",
+    "success": "Equipamento salvo com sucesso",
+    "error": "Erro ao carregar equipamento",
+    "allocations": "Alocações",
+    "submit": "Salvar Alterações"
+  },
+  "equipments": {
+    "title": "Equipamentos",
+    "create": "Criar equipamento",
+    "cancel": "Cancelar",
+    "success": "Equipamento salvo com sucesso",
+    "error": "Erro ao carregar equipamento"
+  },
+  "allocation": {
+    "edit": "Editar alocação",
+    "create": "Criar alocação",
+    "updated": "Alocação atualizada com sucesso",
+    "created": "Alocação criada com sucesso",
+    "error": "Erro ao salvar alocação",
+    "deallocate": "Desalocar",
+    "deallocated": "Equipamento desalocado com sucesso",
+    "confirmDeallocate": "Confirmar desalocação",
+    "confirmDeallocateMessage": "Tem certeza que deseja desalocar o equipamento? Esta ação não pode ser desfeita."
+  },
+  "allocations": {
+    "title": "Alocações",
+    "editRecent": "Editar alocação recente",
+    "createNew": "Criar nova alocação",
+    "deallocate": "Desalocar"
   }
 }

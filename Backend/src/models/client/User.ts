@@ -1,15 +1,25 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
 import { IInstitute } from "./Institute";
+import { IEquipment } from "./Equipment";
+import { eq } from "cheerio/lib/api/traversing";
 
 export enum IUserRoles {
   admin = "admin",
   student = "student",
   teacher = "teacher",
+  equipment = "equipment",
 }
 
 export enum IUserProviders {
   self = "self",
   google = "google",
+}
+
+export interface UserEquipmentAllocation {
+  _id: ObjectId;
+  equipment: string | ObjectId;
+  endDate: Date | null;
+  startDate: Date;
 }
 
 export type IUser = {
@@ -19,6 +29,7 @@ export type IUser = {
   password: string;
   matriculation?: string;
   roles: IUserRoles[];
+  allocations: mongoose.Types.DocumentArray<UserEquipmentAllocation>;
   institutes: mongoose.Types.DocumentArray<IInstitute>;
   active: boolean;
   providers: IUserProviders[];
@@ -26,6 +37,23 @@ export type IUser = {
   tutorials: string[];
   last_login: Date | null;
 } & mongoose.Document;
+
+const userEquipmentAllocationSchema = new Schema<UserEquipmentAllocation>({
+  _id: { type: Schema.Types.ObjectId, auto: true },
+  equipment: { type: Schema.Types.ObjectId, ref: "Equipment", required: true },
+  startDate: { type: Date, required: true, default: Date.now },
+  endDate: { type: Date, default: null },
+})
+  .index(
+    { equipment: 1, endDate: 1 },
+    {
+      unique: true,
+      partialFilterExpression: {
+        endDate: null,
+      },
+    }
+  )
+  .index({ equipment: 1 });
 
 export const instituteSchema = new Schema<IInstitute>({
   name: { type: String, required: true },
@@ -40,6 +68,7 @@ export const schema: Schema = new Schema<IUser>(
     password: { type: String, required: true },
     active: { type: Boolean, default: true, index: true },
     isExternal: { type: Boolean, default: false, index: true },
+    allocations: { type: [userEquipmentAllocationSchema], default: [] },
     matriculation: {
       type: String,
     },

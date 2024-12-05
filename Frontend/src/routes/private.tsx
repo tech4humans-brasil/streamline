@@ -31,6 +31,10 @@ import Project from "@pages/Portal/Project/Project";
 import Schedules from "@pages/Portal/Schedules";
 import Schedule from "@pages/Portal/Schedules/Schedule";
 
+import Equipments from "@pages/Equipment/Equipments";
+import Equipment from "@pages/Equipment/Equipments/Equipment";
+import Allocations from "@pages/Equipment/Allocations";
+
 const routes: RouteType = [
   {
     path: "/portal",
@@ -198,6 +202,18 @@ const routes: RouteType = [
       {
         path: "/portal/schedule/:id?",
         element: <Schedule />,
+      },
+      {
+        path: "/portal/equipments",
+        element: <Equipments />,
+      },
+      {
+        path: "/portal/equipment/:id?",
+        element: <Equipment />,
+      },
+      {
+        path: "/portal/allocations/:id",
+        element: <Allocations />,
       },
     ],
   },
