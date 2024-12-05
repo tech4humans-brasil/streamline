@@ -1,7 +1,7 @@
 import { samlGoogle } from "@apis/auth";
 import { Box, Center, Spinner, useToast } from "@chakra-ui/react";
 import useAuth from "@hooks/useAuth";
-import { IUserRoles } from "@interfaces/JwtData";
+import { IUserRoles } from "@interfaces/User";
 import {
   CredentialResponse,
   GoogleLogin,
