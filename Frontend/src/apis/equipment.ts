@@ -8,9 +8,10 @@ type Equipment = Pick<
   | "_id"
   | "brandName"
   | "equipmentType"
-  | "serialNumber"
+  | "inventoryNumber"
   | "situation"
   | "status"
+  | "allocations"
 >;
 
 type ReqEquipments = Response<
@@ -42,7 +43,7 @@ export const getEquipment = async ({
 };
 
 export const createEquipment = async (
-  data: Omit<IEquipment, "_id" | "currentAllocation">
+  data: Omit<IEquipment, "_id" | "allocations">
 ) => {
   const res = await api.post<reqEquipment>("/equipments", data);
 
@@ -51,15 +52,15 @@ export const createEquipment = async (
 
 export const updateEquipment = async (
   id: string,
-  data: Omit<IEquipment, "_id" | "currentAllocation">
+  data: Omit<IEquipment, "_id" | "allocations">
 ) => {
-  const res = await api.put<reqEquipment>(`/equipments/${id}`, data);
+  const res = await api.put<reqEquipment>(`/equipment/${id}`, data);
 
   return res.data.data;
 };
 
 export const createOrUpdateEquipment = async (
-  data: Omit<IEquipment, "_id" | "currentAllocation"> & { _id?: string }
+  data: Omit<IEquipment, "_id" | "allocations"> & { _id?: string }
 ) => {
   if (data._id) {
     return updateEquipment(data._id, data);
@@ -69,7 +70,21 @@ export const createOrUpdateEquipment = async (
 };
 
 export const equipmentsForms = async () => {
-  const res = await api.get<Response<{ types: string[] }>>("/equipments/forms");
+  const res = await api.get<
+    Response<{
+      types: string[];
+      brandNames: string[];
+      status: string[];
+      situation: string[];
+    }>
+  >("/equipment/forms");
 
   return res.data.data;
+};
+
+export const getAvailableEquipments = async () => {
+  const response = await api.get<ReqEquipments>("/equipments", {
+    params: { status: "available", limit: 10000 },
+  });
+  return response.data.data;
 };

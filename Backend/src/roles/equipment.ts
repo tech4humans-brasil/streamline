@@ -10,7 +10,11 @@ export const EquipmentRole: Role = {
     },
     {
       name: "allocation",
-      permissions: ["view", "read", "create", "update", "delete"],
+      permissions: ["view", "read", "create", "update", "delete", "deallocate"],
+    },
+    {
+      name: "user",
+      permissions: ["view", "read"],
     },
   ],
 };

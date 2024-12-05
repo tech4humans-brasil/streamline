@@ -1,90 +1,50 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import AllocationRepository from "../../../repositories/Allocation"; 
-import FilterQueryBuilder, { WhereEnum } from "../../../utils/filterQueryBuilder";
-
-interface Query {
-  page?: number;
-  limit?: number;
-  name?: string;
-  user?: string;
-  startDate?: string;
-}
-
-const filterQueryBuilder = new FilterQueryBuilder(
-  {
-    name: {
-      type: WhereEnum.ILIKE,
-      alias: "user.name"
-    },
-    user: {
-      type: WhereEnum.EQUAL,
-      alias: "user._id"
-    },
-    startDate: WhereEnum.DATE
-  }
-);
+import UserRepository from "../../../repositories/User";
 
 const handler: HttpHandler = async (conn, req) => {
-  const { page = 1, limit = 10, ...filters } = req.query as Query;
+  const { userId } = req.params as { userId: string };
+  const userRepository = new UserRepository(conn);
 
-  const allocationRepository = new AllocationRepository(conn);
-
-  const where = filterQueryBuilder.build(filters);
-
-  const allocations = await allocationRepository.find({
-    skip: (page - 1) * limit,
-    where,
-    limit,
-    sort: {
-      createdAt: -1,
-    }
-  });
-
-  const total = await allocationRepository.count({ where });
-  const totalPages = Math.ceil(total / limit);
-
-  return res.success({
-    allocations,
-    pagination: {
-      page: Number(page),
-      total,
-      totalPages,
-      count: allocations.length + (page - 1) * limit,
+  const user = await userRepository.findById({
+    id: userId,
+    select: {
+      _id: 1,
+      name: 1,
+      email: 1,
+      allocations: 1,
     },
+    populate: [
+      {
+        path: "allocations.equipment",
+        select: {
+          formName: 1,
+          inventoryNumber: 1,
+          status: 1,
+          situation: 1,
+        },
+      },
+    ],
   });
-}
+
+  if (!user) {
+    return res.notFound("User not found");
+  }
+
+  return res.success(user);
+};
 
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
-    query: schema
-      .object({
-        page: schema
-          .number()
-          .optional()
-          .transform((v) => Number(v))
-          .default(1)
-          .min(1),
-        limit: schema
-          .number()
-          .optional()
-          .transform((v) => Number(v)),
-        name: schema
-          .string()
-          .optional(),
-        user: schema
-          .string()
-          .optional(),
-        startDate: schema
-          .string()
-          .optional()
-      })
+    params: schema.object({
+      userId: schema.string().required(),
+    }),
   }))
   .configure({
-    name: "AllocationList",
-    permission: "allocation.view",
+    name: "UserAllocationsList",
+    permission: "user.read",
     options: {
       methods: ["GET"],
-      route: "allocations",
+      route: "user/{userId}/allocation",
     },
   });

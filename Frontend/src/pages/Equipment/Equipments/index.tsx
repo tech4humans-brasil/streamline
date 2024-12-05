@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BiEdit, BiRefresh } from "react-icons/bi";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 
 const columns = [
   {
@@ -73,6 +73,7 @@ const Create = memo(() => {
 const Equipments: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const {
     data: { equipments, pagination } = {},
@@ -122,15 +123,63 @@ const Equipments: React.FC = () => {
           }}
         />
 
+        <Text
+          input={{
+            label: t("common.fields.serial"),
+            id: "serialNumber",
+          }}
+        />
+
         <Select
           input={{
             label: t("common.fields.type"),
             id: "equipmentType",
-            options: forms?.types?.map((type) => ({
-              label: type,
-              value: type,
-            })) || [],
+            options:
+              forms?.types?.map((type) => ({
+                label: type,
+                value: type,
+              })) || [],
           }}
+          isLoading={isFetchingForms}
+        />
+
+        <Select
+          input={{
+            label: t("common.fields.brand"),
+            id: "brandName",
+            options:
+              forms?.brandNames?.map((brand) => ({
+                label: brand,
+                value: brand,
+              })) || [],
+          }}
+          isLoading={isFetchingForms}
+        />
+
+        <Select
+          input={{
+            label: t("common.fields.status"),
+            id: "status",
+            options:
+              forms?.status?.map((status) => ({
+                label: t(`common.fields.${status}`),
+                value: status,
+              })) || [],
+          }}
+          isLoading={isFetchingForms}
+        />
+
+        <Select
+          input={{
+            label: t("common.fields.situation"),
+            id: "situation",
+            options:
+              forms?.situation?.map((situation) => ({
+                label: t(`common.fields.${situation}`),
+                value: situation,
+              })) || [],
+          }}
+          isLoading={isFetchingForms}
         />
       </Filter.Container>
 

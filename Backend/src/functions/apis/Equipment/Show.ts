@@ -1,7 +1,7 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import { IEquipment } from "../../../models/client/Equipment";
 import EquipmentRepository from "../../../repositories/Equipment";
+import BlobUploader from "../../../services/upload";
 
 const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params as { id: string };
@@ -10,12 +10,18 @@ const handler: HttpHandler = async (conn, req) => {
 
   const equipment = await equipmentRepository.findById({ id });
 
+  const blobUploader = new BlobUploader(req.user.id);
+
   if (!equipment) {
     return res.notFound("Equipment not found");
   }
 
+  if (equipment.invoice) {
+    await blobUploader.updateSas(equipment.invoice);
+  }
+
   return res.success(equipment);
-}
+};
 
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
@@ -24,10 +30,10 @@ export default new Http(handler)
     }),
   }))
   .configure({
-      name: "EquipmentShow",
-      permission: "equipment.read",
-      options: {
-        methods: ["GET"],
-        route: "equipments/{id}",
-      },
-  })
+    name: "EquipmentShow",
+    permission: "equipment.read",
+    options: {
+      methods: ["GET"],
+      route: "equipments/{id}",
+    },
+  });

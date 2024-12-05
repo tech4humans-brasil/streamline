@@ -64,7 +64,7 @@ export default new Http(handler)
         }),
       matriculation: schema.string().optional(),
       roles: schema
-        .array(schema.mixed().oneOf(["admin", "student", "teacher"]))
+        .array(schema.mixed().oneOf(["admin", "student", "teacher", "equipment"]))
         .required(),
       institute: schema.string().optional(),
       isExternal: schema.boolean().optional(),

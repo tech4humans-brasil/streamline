@@ -124,7 +124,7 @@ class BaseRepository<T extends Document> {
 
   async distinct({
     field,
-    where,
+    where = {},
   }: {
     field: string;
     where?: FilterQuery<T>;

@@ -1,4 +1,4 @@
-import { IAllocation } from "./Allocation";
+import { FileUploaded } from "./Answer";
 
 export enum IEquipmentStatus {
   allocated = "allocated",
@@ -15,6 +15,17 @@ export enum IEquipmentSituation {
   lost = "lost",
 }
 
+interface UserEquipmentAllocation {
+  allocation: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  endDate: Date | null;
+  startDate: Date;
+}
+
 export interface IEquipment {
   _id: string;
   formName: string;
@@ -26,5 +37,6 @@ export interface IEquipment {
   modelDescription?: string;
   serialNumber?: string;
   additionalNotes?: string;
-  currentAllocation: IAllocation | null;
+  allocations: UserEquipmentAllocation[];
+  invoice: FileUploaded | null;
 }

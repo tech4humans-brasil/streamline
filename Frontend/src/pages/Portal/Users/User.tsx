@@ -185,7 +185,9 @@ export default function User() {
     }
   }, [user, reset]);
 
-  useEffect(() => {}, [errors]);
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
 
   return (
     <Flex w="100%" my="6" mx="auto" px="6" justify="center">

@@ -79,7 +79,7 @@ export const AdminRole: Role = {
     },
     {
       name: "allocation",
-      permissions: ["view", "read", "create", "update", "delete"],
+      permissions: ["view", "read", "create", "update", "delete", "deallocate"],
     },
   ],
 };

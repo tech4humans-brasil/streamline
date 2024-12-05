@@ -1,17 +1,23 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import AllocationRepository from "../../../repositories/Allocation";
+import UserRepository from "../../../repositories/User";
 
 const handler: HttpHandler = async (conn, req) => {
-  const { id } = req.params;
-  const allocationRepository = new AllocationRepository(conn);
+  const { id, userId } = req.params as { id: string; userId: string };
+  const userRepository = new UserRepository(conn);
 
-  const allocation = await allocationRepository.findById({
-    id,
+  const user = await userRepository.findById({
+    id: userId,
     select: {
-        __v: 0,
+      allocations: 1,
     },
   });
+
+  if (!user) {
+    return res.notFound("User not found");
+  }
+
+  const allocation = user.allocations.id(id);
 
   if (!allocation) {
     return res.notFound("Allocation not found");
@@ -23,14 +29,14 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     params: schema.object({
-      id: schema.string().matches(/^[0-9a-fA-F]{24}$/).required(),
+      id: schema.string().required(),
     }),
   }))
   .configure({
-    name: "AllocationShow",
-    permission: "allocation.read",
+    name: "UserAllocationsShow",
+    permission: "user.read",
     options: {
       methods: ["GET"],
-      route: "allocation/{id}",
+      route: "user/{userId}/allocation/{id}",
     },
-  })
+  });

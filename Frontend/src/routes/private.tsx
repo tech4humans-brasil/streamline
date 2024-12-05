@@ -33,6 +33,7 @@ import Schedule from "@pages/Portal/Schedules/Schedule";
 
 import Equipments from "@pages/Equipment/Equipments";
 import Equipment from "@pages/Equipment/Equipments/Equipment";
+import Allocations from "@pages/Equipment/Allocations";
 
 const routes: RouteType = [
   {
@@ -209,6 +210,10 @@ const routes: RouteType = [
       {
         path: "/portal/equipment/:id?",
         element: <Equipment />,
+      },
+      {
+        path: "/portal/allocations/:id",
+        element: <Allocations />,
       },
     ],
   },

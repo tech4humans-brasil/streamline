@@ -11,8 +11,15 @@ import {
   CardHeader,
   Flex,
   useToast,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Heading,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
 import Select from "@components/atoms/Inputs/Select";
 import { createOrUpdateEquipment, getEquipment } from "@apis/equipment";
@@ -21,9 +28,11 @@ import { useTranslation } from "react-i18next";
 import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 import TextArea from "@components/atoms/Inputs/TextArea";
 import { IEquipmentSituation, IEquipmentStatus } from "@interfaces/Equipment";
+import { FaArrowLeft, FaEye } from "react-icons/fa";
+import File from "@components/atoms/Inputs/File";
 
 const Schema = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   formName: z.string(),
   inventoryNumber: z.string(),
   equipmentType: z.string(),
@@ -33,6 +42,15 @@ const Schema = z.object({
   modelDescription: z.string().optional(),
   serialNumber: z.string().optional(),
   additionalNotes: z.string().optional(),
+  invoice: z
+    .object({
+      name: z.string(),
+      url: z.string(),
+      mimeType: z.string(),
+      size: z.string(),
+      containerName: z.string(),
+    })
+    .nullable(),
 });
 
 const equipmentTypes = [
@@ -87,6 +105,10 @@ export default function Equipment() {
   const params = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
 
+  const handleBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
 
@@ -128,6 +150,7 @@ export default function Equipment() {
   const {
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = methods;
 
@@ -147,8 +170,20 @@ export default function Equipment() {
 
   useEffect(() => {}, [errors]);
 
+  console.log(errors);
+
+  const isAllocated = watch("status") === IEquipmentStatus.allocated;
+
   return (
-    <Flex w="100%" my="6" mx="auto" px="6" justify="center">
+    <Flex
+      w="100%"
+      my="6"
+      mx="auto"
+      px="6"
+      justify="center"
+      direction="column"
+      align="center"
+    >
       <FormProvider {...methods}>
         <Card
           as="form"
@@ -159,10 +194,16 @@ export default function Equipment() {
           maxW="1000px"
         >
           <CardHeader>
-            <Box textAlign="center" fontSize="lg" fontWeight="bold">
-              {t(`equipment.${isEditing ? "edit" : "create"}`)}
-            </Box>
+            <Flex direction="row" justify={"center"} align="center" gap={4}>
+              <Button variant="ghost" onClick={handleBack} w="fit-content">
+                <FaArrowLeft />
+              </Button>
+              <Heading size="lg">
+                {t(`equipment.${isEditing ? "edit" : "create"}`)}
+              </Heading>
+            </Flex>
           </CardHeader>
+
           <CardBody display="flex" flexDirection="column" gap="4">
             <Flex justify="space-between" gap="4" direction={["column", "row"]}>
               <Text
@@ -197,6 +238,24 @@ export default function Equipment() {
                   id: "brandName",
                   label: t("common.fields.brand"),
                   placeholder: t("common.fields.brand"),
+                }}
+              />
+            </Flex>
+
+            <Flex justify="space-between" gap="4" direction={["column", "row"]}>
+              <Text
+                input={{
+                  id: "serialNumber",
+                  label: t("common.fields.serial"),
+                  placeholder: t("common.fields.serial"),
+                }}
+              />
+
+              <File
+                input={{
+                  id: "invoice",
+                  label: t("common.fields.invoice"),
+                  placeholder: t("common.fields.invoice"),
                 }}
               />
             </Flex>
@@ -262,6 +321,7 @@ export default function Equipment() {
                 mt={4}
                 colorScheme="blue"
                 isLoading={isPending || isLoading}
+                isDisabled={isAllocated}
                 type="submit"
               >
                 {t("equipment.submit")}
@@ -270,6 +330,54 @@ export default function Equipment() {
           </CardBody>
         </Card>
       </FormProvider>
+
+      {equipment?.allocations && equipment.allocations.length > 0 && (
+        <Card borderRadius={8} h="fit-content" w="100%" maxW="1000px" mt={4}>
+          <CardHeader>
+            <Box textAlign="center" fontSize="lg" fontWeight="bold">
+              {t("equipment.allocations")}
+            </Box>
+          </CardHeader>
+          <CardBody>
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>{t("common.fields.user")}</Th>
+                  <Th>{t("common.fields.email")}</Th>
+                  <Th>{t("common.fields.startDate")}</Th>
+                  <Th>{t("common.fields.endDate")}</Th>
+                  <Th>{t("common.fields.actions")}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {equipment.allocations.map((allocation) => (
+                  <Tr key={allocation.allocation}>
+                    <Td>{allocation.user.name}</Td>
+                    <Td>{allocation.user.email}</Td>
+                    <Td>
+                      {new Date(allocation.startDate).toLocaleDateString()}
+                    </Td>
+                    <Td>
+                      {allocation.endDate
+                        ? new Date(allocation.endDate).toLocaleDateString()
+                        : t("common.fields.active")}
+                    </Td>
+                    <Td>
+                      <NavLink
+                        to={`/portal/allocations/${allocation.user._id}`}
+                      >
+                        <Button size="sm">
+                          <FaEye />
+                        </Button>
+                      </NavLink>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </CardBody>
+        </Card>
+      )}
     </Flex>
   );
 }

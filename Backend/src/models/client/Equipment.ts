@@ -1,5 +1,5 @@
-import mongoose, { Connection, Mongoose, Schema } from "mongoose";
-import { IAllocation } from "./Allocation";
+import mongoose, { Connection, Schema } from "mongoose";
+import { FileUploaded } from "../../services/upload";
 
 export enum IEquipmentStatus {
   allocated = "allocated",
@@ -17,6 +17,43 @@ export enum IEquipmentSituation {
   discarded = "discarded",
 }
 
+interface UserSchema {
+  _id: mongoose.Types.ObjectId | string;
+  name: string;
+  email: string;
+}
+
+const userSchema = new Schema({
+  _id: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  matriculation: { type: String, required: false },
+});
+
+interface UserEquipmentAllocation {
+  allocation: mongoose.Types.ObjectId | string;
+  user: UserSchema;
+  endDate: Date | null;
+  startDate: Date;
+}
+
+const userEquipmentAllocationSchema = new Schema<UserEquipmentAllocation>({
+  allocation: { type: Schema.Types.ObjectId, required: true },
+  user: { type: userSchema, required: true },
+  startDate: { type: Date, required: true, default: Date.now },
+  endDate: { type: Date, default: null },
+})
+  .index(
+    { equipment: 1, endDate: 1 },
+    {
+      unique: true,
+      partialFilterExpression: {
+        endDate: null,
+      },
+    }
+  )
+  .index({ equipment: 1 });
+
 export interface IEquipment extends mongoose.Document {
   _id: mongoose.Types.ObjectId | string;
   formName: string;
@@ -25,10 +62,11 @@ export interface IEquipment extends mongoose.Document {
   brandName?: string;
   status: IEquipmentStatus;
   situation: IEquipmentSituation;
+  invoice: FileUploaded | null;
   modelDescription?: string;
   serialNumber?: string;
   additionalNotes?: string;
-  currentAllocation: IAllocation | null;
+  allocations: mongoose.Types.DocumentArray<UserEquipmentAllocation>;
 }
 
 export const schema: Schema = new Schema<IEquipment>(
@@ -47,10 +85,11 @@ export const schema: Schema = new Schema<IEquipment>(
       enum: Object.values(IEquipmentSituation),
       default: IEquipmentSituation.new,
     },
+    invoice: { type: Object, required: false },
     modelDescription: { type: String, required: false },
     serialNumber: { type: String, required: false },
     additionalNotes: { type: String, required: false },
-    currentAllocation: { type: Object, default: null, required: false },
+    allocations: { type: [userEquipmentAllocationSchema], default: [] },
   },
   { timestamps: true }
 )

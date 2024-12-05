@@ -12,9 +12,9 @@ const handler: HttpHandler = async (conn, req) => {
   const equipmentExists = await equipmentRepository.findOne({
     where: {
       equipmentType: data.equipmentType,
-      inventoryNumber: data.inventoryNumber
-    }
-  })
+      inventoryNumber: data.inventoryNumber,
+    },
+  });
 
   if (equipmentExists) {
     return res.conflict("Equipment already exists");
@@ -22,8 +22,8 @@ const handler: HttpHandler = async (conn, req) => {
 
   const equipment = await equipmentRepository.create({ ...data });
 
-  return res.created(equipment)
-}
+  return res.created(equipment);
+};
 
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
@@ -33,9 +33,29 @@ export default new Http(handler)
         .matches(/^TECH-\d{2}$/)
         .required(),
       equipmentType: schema.string().required(),
+      invoice: schema
+        .object()
+        .shape({
+          name: schema.string(),
+          url: schema.string(),
+          mimeType: schema.string(),
+          size: schema.string(),
+          containerName: schema.string(),
+        })
+        .optional()
+        .default(null)
+        .nullable(),
       brandName: schema.string().optional().default(null).nullable(),
-      status: schema.string().optional().default("available").oneOf(["allocated", "available", "discarded", "office"]),
-      situation: schema.string().optional().default("new").oneOf(["new", "used", "broken", "damaged", "lost", "discarded"]),
+      status: schema
+        .string()
+        .optional()
+        .default("available")
+        .oneOf(["allocated", "available", "discarded", "office"]),
+      situation: schema
+        .string()
+        .optional()
+        .default("new")
+        .oneOf(["new", "used", "broken", "damaged", "lost", "discarded"]),
       modelDescription: schema.string().optional().default(null).nullable(),
       serialNumber: schema.string().optional().default(null).nullable(),
       additionalNotes: schema.string().optional().default(null).nullable(),
