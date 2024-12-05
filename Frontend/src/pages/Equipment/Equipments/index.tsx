@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BiEdit, BiRefresh } from "react-icons/bi";
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const columns = [
   {
@@ -73,7 +73,6 @@ const Create = memo(() => {
 const Equipments: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const {
     data: { equipments, pagination } = {},

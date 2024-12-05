@@ -8,7 +8,6 @@ import {
   useToast,
   CircularProgress,
   InputRightElement,
-  Button,
   Flex,
   IconButton,
 } from "@chakra-ui/react";

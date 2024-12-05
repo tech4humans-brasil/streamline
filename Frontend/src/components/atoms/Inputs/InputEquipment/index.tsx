@@ -1,20 +1,7 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  useColorModeValue,
-  Text,
-  Box,
-} from "@chakra-ui/react";
 import Select from "@components/atoms/Inputs/Select";
-import InfoTooltip from "@components/atoms/Inputs/InfoTooltip";
 import { useQuery } from "@tanstack/react-query";
-import React, { useCallback, useMemo } from "react";
-import { useFormContext, useFieldArray } from "react-hook-form";
-import { FaTrashAlt } from "react-icons/fa";
+import React, { useMemo } from "react";
 import { getAvailableEquipments } from "@apis/equipment";
-import ErrorMessages from "../ErrorMessage";
 
 interface InputEquipmentProps {
   input: {

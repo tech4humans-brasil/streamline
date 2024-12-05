@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { convertDateTime } from "@utils/date";
-import { FaEye, FaLaptop, FaPen } from "react-icons/fa";
+import { FaEye, FaLaptop } from "react-icons/fa";
 import { UserEquipmentAllocation } from "@interfaces/User";
 import { IEquipment } from "@interfaces/Equipment";
 import { BsXCircleFill } from "react-icons/bs";

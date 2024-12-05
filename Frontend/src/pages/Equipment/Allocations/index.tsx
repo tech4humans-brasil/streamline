@@ -11,6 +11,7 @@ import {
   useDisclosure,
   Flex,
   Divider,
+  Spinner,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft } from "react-icons/fa";
@@ -60,6 +61,8 @@ const UserAllocations: React.FC = () => {
       </Flex>
 
       <Divider mt={4} />
+
+      {isLoading && <Spinner margin="auto" />}
 
       <Box mt={4}>
         <Heading size="md">{t("common.fields.active")}</Heading>
