@@ -1,7 +1,7 @@
 import apiClient from "@services/api";
 import Response from "@interfaces/Response";
 import IUser, { UserEquipmentAllocation } from "@interfaces/User";
-import { IEquipment } from "@interfaces/Equipment";
+import { IEquipment, IReturn } from "@interfaces/Equipment";
 
 type Allocation = UserEquipmentAllocation;
 type ReqAllocations = Response<
@@ -47,11 +47,13 @@ export const createAllocation = async (
 export const updateAllocation = async ({
   userId,
   id,
+  data,
 }: {
   userId: string;
   id: string;
+  data: Omit<IReturn, "createdBy">;
 }) => {
-  const res = await apiClient.put(`user/${userId}/allocation/${id}`, {});
+  const res = await apiClient.put(`user/${userId}/allocation/${id}`, data);
   return res.data;
 };
 

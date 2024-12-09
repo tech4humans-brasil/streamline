@@ -24,6 +24,36 @@ interface UserEquipmentAllocation {
   };
   endDate: Date | null;
   startDate: Date;
+  return: IReturn | null;
+}
+
+export interface IReturn {
+  description: string;
+  checklist: {
+    backup: {
+      backupToDrive: string;
+      verifyFilesIncluded: string;
+      secureBackup: string;
+    };
+    formattingCompleted: string;
+  };
+  physicalDamages: {
+    additionalInfo: {
+      hasPhysicalDamage: string;
+      damageDetails: string | null;
+    };
+    componentDamage: {
+      hasComponentDamage: string;
+      damageDetails: string | null;
+    };
+    accessoriesReturned: string;
+  };
+  createdBy: {
+    _id: string;
+    name: string;
+    email: string;
+    matriculation: string;
+  };
 }
 
 export interface IEquipment {
