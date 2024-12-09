@@ -1,7 +1,5 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
 import { IInstitute } from "./Institute";
-import { IEquipment } from "./Equipment";
-import { eq } from "cheerio/lib/api/traversing";
 
 export enum IUserRoles {
   admin = "admin",

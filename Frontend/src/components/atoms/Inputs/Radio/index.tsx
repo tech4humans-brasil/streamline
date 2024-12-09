@@ -17,7 +17,6 @@ interface RadioProps {
     id: string;
     label: string;
     placeholder?: string;
-    type: string;
     required?: boolean;
     options: IOption[];
     describe?: string | null;

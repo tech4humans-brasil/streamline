@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import {
   CardHeader,
   Flex,
   useToast,
+  Text as TextChakra,
   Table,
   Thead,
   Tbody,
@@ -18,6 +19,13 @@ import {
   Th,
   Td,
   Heading,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
@@ -27,8 +35,12 @@ import { createOrUpdateEquipment, getEquipment } from "@apis/equipment";
 import { useTranslation } from "react-i18next";
 import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 import TextArea from "@components/atoms/Inputs/TextArea";
-import { IEquipmentSituation, IEquipmentStatus } from "@interfaces/Equipment";
-import { FaArrowLeft, FaEye } from "react-icons/fa";
+import {
+  IEquipmentSituation,
+  IEquipmentStatus,
+  IReturn,
+} from "@interfaces/Equipment";
+import { FaArrowLeft, FaEye, FaReply } from "react-icons/fa";
 import File from "@components/atoms/Inputs/File";
 
 const Schema = z.object({
@@ -52,6 +64,61 @@ const Schema = z.object({
     })
     .nullable(),
 });
+
+const techBrands = [
+  { value: "apple", label: "Apple" },
+  { value: "asus", label: "Asus" },
+  { value: "acer", label: "Acer" },
+  { value: "dell", label: "Dell" },
+  { value: "hp", label: "HP" },
+  { value: "lenovo", label: "Lenovo" },
+  { value: "msi", label: "MSI" },
+  { value: "samsung", label: "Samsung" },
+  { value: "lg", label: "LG" },
+  { value: "sony", label: "Sony" },
+  { value: "toshiba", label: "Toshiba" },
+  { value: "razer", label: "Razer" },
+  { value: "logitech", label: "Logitech" },
+  { value: "corsair", label: "Corsair" },
+  { value: "hyperx", label: "HyperX" },
+  { value: "steelseries", label: "SteelSeries" },
+  { value: "coolermaster", label: "Cooler Master" },
+  { value: "gigabyte", label: "Gigabyte" },
+  { value: "nvidia", label: "NVIDIA" },
+  { value: "amd", label: "AMD" },
+  { value: "intel", label: "Intel" },
+  { value: "microsoft", label: "Microsoft" },
+  { value: "huawei", label: "Huawei" },
+  { value: "xiaomi", label: "Xiaomi" },
+  { value: "oneplus", label: "OnePlus" },
+  { value: "anker", label: "Anker" },
+  { value: "tp-link", label: "TP-Link" },
+  { value: "netgear", label: "Netgear" },
+  { value: "sandisk", label: "SanDisk" },
+  { value: "kingston", label: "Kingston" },
+  { value: "seagate", label: "Seagate" },
+  { value: "western-digital", label: "Western Digital" },
+  { value: "synology", label: "Synology" },
+  { value: "qnap", label: "QNAP" },
+  { value: "epson", label: "Epson" },
+  { value: "canon", label: "Canon" },
+  { value: "brother", label: "Brother" },
+  { value: "benq", label: "BenQ" },
+  { value: "viewsonic", label: "ViewSonic" },
+  { value: "philips", label: "Philips" },
+  { value: "zowie", label: "Zowie" },
+  { value: "thermaltake", label: "Thermaltake" },
+  { value: "evga", label: "EVGA" },
+  { value: "adata", label: "ADATA" },
+  { value: "crucial", label: "Crucial" },
+  { value: "beats", label: "Beats by Dre" },
+  { value: "bose", label: "Bose" },
+  { value: "jbl", label: "JBL" },
+  { value: "sony-audio", label: "Sony (Áudio)" },
+  { value: "sennheiser", label: "Sennheiser" },
+  { value: "plantronics", label: "Plantronics" },
+  { value: "astro", label: "Astro Gaming" },
+];
 
 const equipmentTypes = [
   {
@@ -104,6 +171,7 @@ export default function Equipment() {
   const navigate = useNavigate();
   const params = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
+  const [selectedReturn, setSelectedReturn] = useState<IReturn | null>(null);
 
   const handleBack = useCallback(() => {
     navigate(-1);
@@ -174,6 +242,14 @@ export default function Equipment() {
 
   const isAllocated = watch("status") === IEquipmentStatus.allocated;
 
+  const handleViewReturn = (returnData: IReturn | null) => {
+    setSelectedReturn(returnData);
+  };
+
+  const handleCloseReturnModal = () => {
+    setSelectedReturn(null);
+  };
+
   return (
     <Flex
       w="100%"
@@ -233,11 +309,13 @@ export default function Equipment() {
                   options: equipmentTypes ?? [],
                 }}
               />
-              <Text
+              <CreatableSelect
                 input={{
                   id: "brandName",
                   label: t("common.fields.brand"),
                   placeholder: t("common.fields.brand"),
+                  options: techBrands ?? [],
+                  required: true,
                 }}
               />
             </Flex>
@@ -256,6 +334,7 @@ export default function Equipment() {
                   id: "invoice",
                   label: t("common.fields.invoice"),
                   placeholder: t("common.fields.invoice"),
+                  required: false,
                 }}
               />
             </Flex>
@@ -272,6 +351,7 @@ export default function Equipment() {
                     { label: t("common.fields.discarded"), value: "discarded" },
                     { label: t("common.fields.office"), value: "office" },
                   ],
+                  isDisabled: isAllocated,
                 }}
               />
 
@@ -321,7 +401,6 @@ export default function Equipment() {
                 mt={4}
                 colorScheme="blue"
                 isLoading={isPending || isLoading}
-                isDisabled={isAllocated}
                 type="submit"
               >
                 {t("equipment.submit")}
@@ -363,13 +442,23 @@ export default function Equipment() {
                         : t("common.fields.active")}
                     </Td>
                     <Td>
-                      <NavLink
-                        to={`/portal/allocations/${allocation.user._id}`}
-                      >
-                        <Button size="sm">
-                          <FaEye />
-                        </Button>
-                      </NavLink>
+                      <Flex justify="center" gap={2} direction="row">
+                        <NavLink
+                          to={`/portal/allocations/${allocation.user._id}`}
+                        >
+                          <Button size="sm">
+                            <FaEye />
+                          </Button>
+                        </NavLink>
+                        {allocation.return && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleViewReturn(allocation?.return)}
+                          >
+                            <FaReply />
+                          </Button>
+                        )}
+                      </Flex>
                     </Td>
                   </Tr>
                 ))}
@@ -378,6 +467,120 @@ export default function Equipment() {
           </CardBody>
         </Card>
       )}
+      <Modal isOpen={!!selectedReturn} onClose={handleCloseReturnModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t("allocation.returnDetails")}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {selectedReturn && (
+              <Flex direction="column" gap={2}>
+                <TextChakra>{t("common.fields.description")}:</TextChakra>
+                <TextChakra>
+                  <strong>{selectedReturn.description}</strong>
+                </TextChakra>
+
+                <TextChakra>{t("common.fields.backupToDrive")}:</TextChakra>
+                <TextChakra>
+                  <strong>
+                    {t(
+                      `common.fields.${selectedReturn.checklist.backup.backupToDrive}`
+                    )}
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>
+                  {t("common.fields.verifyFilesIncluded")}:
+                </TextChakra>
+                <TextChakra>
+                  <strong>
+                    {t(
+                      `common.fields.${selectedReturn.checklist.backup.verifyFilesIncluded}`
+                    )}
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>{t("common.fields.secureBackup")}:</TextChakra>
+                <TextChakra>
+                  <strong>
+                    {t(
+                      `common.fields.${selectedReturn.checklist.backup.secureBackup}`
+                    )}
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>
+                  {t("common.fields.formattingCompleted")}:
+                </TextChakra>
+                <TextChakra>
+                  <strong>
+                    {t(
+                      `common.fields.${selectedReturn.checklist.formattingCompleted}`
+                    )}
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>{t("common.fields.hasPhysicalDamage")}:</TextChakra>
+                <TextChakra>
+                  <strong>
+                    {t(
+                      `common.fields.${selectedReturn.physicalDamages.additionalInfo.hasPhysicalDamage}`
+                    )}
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>{t("common.fields.damageDetails")}:</TextChakra>
+                <TextChakra>
+                  <strong>
+                    {
+                      selectedReturn.physicalDamages.additionalInfo
+                        .damageDetails
+                    }
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>
+                  {t("common.fields.hasComponentDamage")}:
+                </TextChakra>
+                <TextChakra>
+                  <strong>
+                    {t(
+                      `common.fields.${selectedReturn.physicalDamages.componentDamage.hasComponentDamage}`
+                    )}
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>{t("common.fields.damageDetails")}:</TextChakra>
+                <TextChakra>
+                  <strong>
+                    {
+                      selectedReturn.physicalDamages.componentDamage
+                        .damageDetails
+                    }
+                  </strong>
+                </TextChakra>
+
+                <TextChakra>
+                  {t("common.fields.accessoriesReturned")}:
+                </TextChakra>
+                <TextChakra>
+                  <strong>
+                    {t(
+                      `common.fields.${selectedReturn.physicalDamages.accessoriesReturned}`
+                    )}
+                  </strong>
+                </TextChakra>
+              </Flex>
+            )}
+          </ModalBody>
+          <ModalFooter justifyContent="space-between">
+            <TextChakra fontSize="sm" opacity={0.8}>
+              {selectedReturn?.createdBy?.name}{" "}
+              {selectedReturn?.createdBy?.email}
+            </TextChakra>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 }

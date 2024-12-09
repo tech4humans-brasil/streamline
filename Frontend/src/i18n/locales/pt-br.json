@@ -17,6 +17,7 @@
     "activities": "Tickets",
     "back": "Voltar",
     "yes": "Sim",
+    "close": "Fechar",
     "no": "Não",
     "save": "Salvar",
     "cancel": "Cancelar",
@@ -40,6 +41,10 @@
       "description": "Descrição",
       "start": "Início",
       "end": "Fim",
+      "hasPhysicalDamage": "Possui dano físico",
+      "damageDetails": "Detalhes do dano",
+      "hasComponentDamage": "Possui dano de componente",
+      "accessoriesReturned": "Acessórios devolvidos",
       "project": "Projeto",
       "notes": "Notas",
       "protocol": "Protocolo",
@@ -80,6 +85,11 @@
       "active": "Ativo",
       "inactive": "Inativo",
       "matriculation": "Matrícula",
+      "checked": "Verificado",
+      "backupToDrive": "Backup no Drive",
+      "verifyFilesIncluded": "Todos os arquivos incluídos",
+      "secureBackup": "Armazenados de forma segura no Drive",
+      "formattingCompleted": "Realizar formatação do computador",
       "invoice": "Nota fiscal",
       "external": "Externo",
       "institute": "Grupo",
@@ -88,6 +98,7 @@
       "days": "Dias",
       "weeks": "Semanas",
       "months": "Meses",
+      "equipment": "Equipamento",
       "university": "Universidade",
       "statusType": {
         "done": "Concluído",
@@ -519,6 +530,7 @@
   },
   "allocation": {
     "edit": "Editar alocação",
+    "returnDetails": "Detalhes da devolução",
     "create": "Criar alocação",
     "updated": "Alocação atualizada com sucesso",
     "created": "Alocação criada com sucesso",
@@ -533,5 +545,8 @@
     "editRecent": "Editar alocação recente",
     "createNew": "Criar nova alocação",
     "deallocate": "Desalocar"
+  },
+  "physicalDamages": {
+    "additionalInformation": "Informações adicionais"
   }
 }

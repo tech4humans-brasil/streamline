@@ -42,6 +42,12 @@ const handler: HttpHandler = async (conn, req) => {
     allocation: user.allocations[user.allocations.length - 1]._id,
     user: user.toObject(),
     startDate: new Date(allocationData.startDate),
+    createdBy: {
+      _id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      matriculation: req.user.matriculation,
+    },
   });
 
   await user.save();

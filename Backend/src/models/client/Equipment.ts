@@ -35,13 +35,88 @@ interface UserEquipmentAllocation {
   user: UserSchema;
   endDate: Date | null;
   startDate: Date;
+  return: IReturn | null;
+  createdBy: {
+    _id: mongoose.Types.ObjectId | string;
+    name: string;
+    email: string;
+    matriculation: string;
+  }
 }
+
+export interface IReturn {
+  description: string;
+  checklist: {
+    backup: {
+      backupToDrive: boolean;
+      verifyFilesIncluded: boolean;
+      secureBackup: boolean;
+    };
+    formattingCompleted: boolean;
+  };
+  physicalDamages: {
+    additionalInfo: {
+      hasPhysicalDamage: boolean;
+      damageDetails: string | null;
+    };
+    componentDamage: {
+      hasComponentDamage: boolean;
+      damageDetails: string | null;
+    };
+    accessoriesReturned: boolean;
+  };
+  createdBy: {
+    _id: mongoose.Types.ObjectId | string;
+    name: string;
+    email: string;
+    matriculation: string;
+  };
+}
+
+const ReturnSchema = new mongoose.Schema<IReturn>({
+  description: {
+    type: String,
+    required: true,
+  },
+  checklist: {
+    backup: {
+      backupToDrive: { type: String, default: false },
+      verifyFilesIncluded: { type: String, default: false },
+      secureBackup: { type: String, default: false },
+    },
+    formattingCompleted: { type: String, default: false },
+  },
+  physicalDamages: {
+    additionalInfo: {
+      hasPhysicalDamage: { type: String, default: false },
+      damageDetails: { type: String, default: null },
+    },
+    componentDamage: {
+      hasComponentDamage: { type: String, default: false },
+      damageDetails: { type: String, default: null },
+    },
+    accessoriesReturned: { type: String, default: true },
+  },
+  createdBy: {
+    _id: { type: Schema.Types.ObjectId, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    matriculation: { type: String, required: true },
+  },
+});
 
 const userEquipmentAllocationSchema = new Schema<UserEquipmentAllocation>({
   allocation: { type: Schema.Types.ObjectId, required: true },
   user: { type: userSchema, required: true },
   startDate: { type: Date, required: true, default: Date.now },
   endDate: { type: Date, default: null },
+  createdBy: {
+    _id: { type: Schema.Types.ObjectId, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    matriculation: { type: String, required: true },
+  },
+  return: { type: ReturnSchema, required: false },
 })
   .index(
     { equipment: 1, endDate: 1 },

@@ -23,6 +23,7 @@ import { FaEye, FaLaptop } from "react-icons/fa";
 import { UserEquipmentAllocation } from "@interfaces/User";
 import { IEquipment } from "@interfaces/Equipment";
 import { BsXCircleFill } from "react-icons/bs";
+import DeallocationForm from "./DesallocationForm";
 
 type AllocationCardProps = {
   allocation: Omit<UserEquipmentAllocation, "equipment"> & {
@@ -32,45 +33,12 @@ type AllocationCardProps = {
 
 const AllocationCard: React.FC<AllocationCardProps> = ({ allocation }) => {
   const { t } = useTranslation();
-  const { id: userId = "" } = useParams<{ id: string }>();
-  const toast = useToast();
-  const ref = useRef(null);
-  const queryClient = useQueryClient();
 
   const {
     isOpen: isConfirmOpen,
     onClose: onConfirmClose,
     onOpen: onConfirmOpen,
   } = useDisclosure();
-
-  const { mutateAsync: deallocateMutation, isPending: isDeallocating } =
-    useMutation({
-      mutationFn: updateAllocation,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["allocations", userId] });
-        toast({
-          title: t("allocation.deallocated"),
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-        onConfirmClose();
-      },
-      onError: () => {
-        toast({
-          title: t("allocation.error"),
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-      },
-    });
-
-  const handleDeallocate = async () => {
-    await deallocateMutation({ userId, id: allocation._id });
-  };
 
   return (
     <>
@@ -119,29 +87,11 @@ const AllocationCard: React.FC<AllocationCardProps> = ({ allocation }) => {
         </CardBody>
       </Card>
 
-      <AlertDialog
+      <DeallocationForm
         isOpen={isConfirmOpen}
         onClose={onConfirmClose}
-        leastDestructiveRef={ref}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader>{t("allocation.confirmDeallocate")}</AlertDialogHeader>
-            <AlertDialogBody>{t("allocation.confirmDeallocateMessage")}</AlertDialogBody>
-            <AlertDialogFooter>
-              <Button onClick={onConfirmClose}>{t("cancel")}</Button>
-              <Button
-                colorScheme="red"
-                onClick={handleDeallocate}
-                ml={3}
-                isLoading={isDeallocating}
-              >
-                {t("deallocate")}
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+        id={allocation._id}
+      />
     </>
   );
 };
