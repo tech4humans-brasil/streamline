@@ -30,7 +30,6 @@ export default new Http(handler)
     body: schema.object().shape({
       inventoryNumber: schema
         .string()
-        .matches(/^TECH-\d{2}$/)
         .required(),
       equipmentType: schema.string().required(),
       invoice: schema

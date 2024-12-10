@@ -41,7 +41,7 @@ interface UserEquipmentAllocation {
     name: string;
     email: string;
     matriculation: string;
-  }
+  };
 }
 
 export interface IReturn {
@@ -168,7 +168,7 @@ export const schema: Schema = new Schema<IEquipment>(
   },
   { timestamps: true }
 )
-  .index({ inventoryNumber: 1 }, { unique: true })
+  .index({ inventoryNumber: 1, equipmentType: 1 }, { unique: true })
   .index({ createdAt: 1 })
   .index({ situation: 1 })
   .index({ status: 1 })
