@@ -1,4 +1,4 @@
-import { getUsers } from "@apis/users";
+import { equipmentsForms, getEquipments } from "@apis/equipment";
 import { Box, Button, Flex, Heading } from "@chakra-ui/react";
 import Can from "@components/atoms/Can";
 import Select from "@components/atoms/Inputs/Select";
@@ -10,38 +10,27 @@ import { useQuery } from "@tanstack/react-query";
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BiEdit, BiRefresh } from "react-icons/bi";
-import { FaLaptop } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
-
-const roleMap = {
-  admin: "Admin",
-  student: "Usuário",
-  equipment: "Equipamento",
-};
 
 const columns = [
   {
-    key: "name",
-    label: "common.fields.name",
+    key: "inventoryNumber",
+    label: "id",
   },
   {
-    key: "email",
-    label: "common.fields.email",
+    key: "equipmentType",
+    label: "common.fields.type",
   },
   {
-    key: "institute",
-    label: "common.fields.institute",
+    key: "brandName",
+    label: "common.fields.brand",
   },
   {
-    key: "active",
-    label: "common.fields.active",
+    key: "status",
+    label: "common.fields.status",
   },
   {
-    key: "roles",
-    label: "common.fields.profiles",
-  },
-  {
-    key: "actions",
+    key: "action",
     label: "common.fields.actions",
   },
 ];
@@ -50,25 +39,14 @@ const Action = memo((user: { _id: string }) => {
   const navigate = useNavigate();
 
   const handleEdit = useCallback(() => {
-    navigate(`/portal/user/${user._id}`);
-  }, [navigate, user._id]);
-
-  const handleAllocations = useCallback(() => {
-    navigate(`/portal/allocations/${user._id}`);
+    navigate(`/portal/equipment/${user._id}`);
   }, [navigate, user._id]);
 
   return (
     <div>
-      <Can permission="allocation.view">
-        <Button mr={2} onClick={handleAllocations} size="sm">
-          <FaLaptop size={20} />
-        </Button>
-      </Can>
-      <Can permission="user.update">
-        <Button mr={2} onClick={handleEdit} size="sm">
-          <BiEdit size={20} />
-        </Button>
-      </Can>
+      <Button mr={2} onClick={handleEdit} size="sm">
+        <BiEdit size={20} />
+      </Button>
     </div>
   );
 });
@@ -78,51 +56,52 @@ const Create = memo(() => {
   const navigate = useNavigate();
 
   const handleCreate = useCallback(() => {
-    navigate(`/portal/user`);
+    navigate(`/portal/equipment`);
   }, [navigate]);
 
   return (
     <div>
-      <Can permission="user.create">
+      <Can permission="equipment.create">
         <Button colorScheme="blue" mr={2} onClick={handleCreate} size="sm">
-          {t("users.create")}
+          {t("equipment.create")}
         </Button>
       </Can>
     </div>
   );
 });
 
-const Users: React.FC = () => {
+const Equipments: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
   const {
-    data: { users, pagination } = {},
+    data: { equipments, pagination } = {},
     isFetching,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["users", searchParams.toString()],
-    queryFn: getUsers,
+    queryKey: ["equipments", searchParams.toString()],
+    queryFn: getEquipments,
+  });
+
+  const { data: forms, isFetching: isFetchingForms } = useQuery({
+    queryKey: ["equipments", "forms"],
+    queryFn: equipmentsForms,
   });
 
   const data = useMemo(() => {
-    if (!users) return [];
+    if (!equipments) return [];
 
-    return users.map((user) => ({
-      ...user,
-      roles: user.roles.map((role) => roleMap[role]).join(", "),
-      active: user.active
-        ? t("common.fields.active")
-        : t("common.fields.inactive"),
-      institute: user.institute?.acronym,
-      actions: <Action {...user} />,
+    return equipments.map((equipment) => ({
+      ...equipment,
+      status: t(`common.fields.${equipment.status}`),
+      action: <Action {...equipment} />,
     }));
-  }, [users]);
+  }, [equipments]);
 
   return (
     <Box width="100%" p={[4, 10]}>
-      <Heading>{t("users.title")}</Heading>
+      <Heading>{t("equipments.title")}</Heading>
       <Flex justifyContent="flex-end" mt="4" width="100%">
         <Button
           onClick={() => refetch()}
@@ -138,38 +117,68 @@ const Users: React.FC = () => {
       <Filter.Container>
         <Text
           input={{
-            label: t("common.fields.name"),
-            id: "name",
+            label: "Id",
+            id: "inventoryNumber",
           }}
         />
 
         <Text
           input={{
-            label: t("common.fields.matriculation"),
-            id: "matriculation",
+            label: t("common.fields.serial"),
+            id: "serialNumber",
           }}
         />
 
         <Select
           input={{
-            label: t("common.fields.active"),
-            id: "active",
-            options: [
-              { label: t("common.fields.active"), value: "true" },
-              { label: t("common.fields.inactive"), value: "false" },
-            ],
+            label: t("common.fields.type"),
+            id: "equipmentType",
+            options:
+              forms?.types?.map((type) => ({
+                label: type,
+                value: type,
+              })) || [],
           }}
+          isLoading={isFetchingForms}
         />
 
         <Select
           input={{
-            label: t("common.fields.external"),
-            id: "isExternal",
-            options: [
-              { label: t("common.yes"), value: "true" },
-              { label: t("common.no"), value: "false" },
-            ],
+            label: t("common.fields.brand"),
+            id: "brandName",
+            options:
+              forms?.brandNames?.map((brand) => ({
+                label: brand,
+                value: brand,
+              })) || [],
           }}
+          isLoading={isFetchingForms}
+        />
+
+        <Select
+          input={{
+            label: t("common.fields.status"),
+            id: "status",
+            options:
+              forms?.status?.map((status) => ({
+                label: t(`common.fields.${status}`),
+                value: status,
+              })) || [],
+          }}
+          isLoading={isFetchingForms}
+        />
+
+        <Select
+          input={{
+            label: t("common.fields.situation"),
+            id: "situation",
+            options:
+              forms?.situation?.map((situation) => ({
+                label: t(`common.fields.${situation}`),
+                value: situation,
+              })) || [],
+          }}
+          isLoading={isFetchingForms}
         />
       </Filter.Container>
 
@@ -195,4 +204,4 @@ const Users: React.FC = () => {
   );
 };
 
-export default Users;
+export default Equipments;

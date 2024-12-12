@@ -8,10 +8,12 @@ import {
   useToast,
   CircularProgress,
   InputRightElement,
+  Flex,
+  IconButton,
 } from "@chakra-ui/react";
 import React, { useRef, useState, useCallback } from "react";
 import { useFormContext } from "react-hook-form";
-import { FiFile, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { FiFile, FiCheckCircle, FiAlertCircle, FiDownload } from "react-icons/fi";
 import ErrorMessage from "../ErrorMessage";
 import InfoTooltip from "../InfoTooltip";
 import { BlockBlobClient } from "@azure/storage-blob";
@@ -142,6 +144,12 @@ const File: React.FC<FileProps> = ({ input }) => {
       });
   }, []);
 
+  const handleDownload = useCallback(() => {
+    if (formValue?.url) {
+      window.open(formValue.url, '_blank');
+    }
+  }, [formValue]);
+
   return (
     <FormControl
       id={input.id}
@@ -158,35 +166,48 @@ const File: React.FC<FileProps> = ({ input }) => {
         <FormLabel>{input.label}</FormLabel>
       </div>
       <InfoTooltip describe={input.describe} />
-      <InputGroup
-        onClick={() => {
-          if (uploadStatus !== "uploading") inputRef.current?.click();
-        }}
-      >
-        <InputLeftElement pointerEvents="none">{leftIcon()}</InputLeftElement>
-        <Input
-          type="file"
-          ref={(e) => {
-            ref(e);
-            inputRef.current = e;
+      <Flex gap={2}>
+        <InputGroup
+          onClick={() => {
+            if (uploadStatus !== "uploading") inputRef.current?.click();
           }}
-          onChange={(e) => {
-            e.target.files?.[0] && uploadFile(e.target.files[0]);
-          }}
-          hidden
-          disabled={uploadStatus === "uploading"}
-          required={false}
-        />
-        <Input
-          name={input.id}
-          {...rest}
-          type="text"
-          cursor={uploadStatus === "uploading" ? "not-allowed" : "pointer"}
-          placeholder={formValue?.name?.split("@")?.pop()}
-          readOnly
-        />
-        <InputRightElement>{rightIcon()}</InputRightElement>
-      </InputGroup>
+        >
+          <InputLeftElement pointerEvents="none">{leftIcon()}</InputLeftElement>
+          <Input
+            type="file"
+            ref={(e) => {
+              ref(e);
+              inputRef.current = e;
+            }}
+            onChange={(e) => {
+              e.target.files?.[0] && uploadFile(e.target.files[0]);
+            }}
+            hidden
+            disabled={uploadStatus === "uploading"}
+            required={false}
+          />
+          <Input
+            name={input.id}
+            {...rest}
+            type="text"
+            cursor={uploadStatus === "uploading" ? "not-allowed" : "pointer"}
+            placeholder={formValue?.name?.split("@")?.pop()}
+            readOnly
+          />
+          <InputRightElement>{rightIcon()}</InputRightElement>
+        </InputGroup>
+        
+        {formValue?.url && (
+          <IconButton 
+            aria-label="Download"
+            onClick={handleDownload}
+            icon={<FiDownload />}
+            size="md"
+            colorScheme="blue"
+          >
+          </IconButton>
+        )}
+      </Flex>
       <ErrorMessage id={input.id} />
     </FormControl>
   );

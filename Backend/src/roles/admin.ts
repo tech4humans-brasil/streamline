@@ -73,5 +73,13 @@ export const AdminRole: Role = {
       name: "schedule",
       permissions: ["view", "read", "create", "update", "delete"],
     },
+    {
+      name: "equipment",
+      permissions: ["view", "read", "create", "update"],
+    },
+    {
+      name: "allocation",
+      permissions: ["view", "read", "create", "update", "delete", "deallocate"],
+    },
   ],
 };

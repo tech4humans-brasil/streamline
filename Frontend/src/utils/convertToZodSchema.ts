@@ -25,7 +25,7 @@ export default function convertToZodSchema(fields: IField[]): z.ZodObject<any> {
       case "email":
       case "password":
       case "textarea":
-        fieldSchema = z.string();
+        fieldSchema = z.string().refine(value => !value?.includes('"') && !value?.includes('\n'), 'Não são permitidas aspas duplas ou quebras de linha')
         break;
       case "number":
         fieldSchema = z.coerce.number();
@@ -72,14 +72,14 @@ export default function convertToZodSchema(fields: IField[]): z.ZodObject<any> {
         break;
       case "file":
         fieldSchema = z.union([
-          z.string(),
+          z.string().optional(),
           z.object({
             containerName: z.string(),
             name: z.string(),
             url: z.string(),
             mimeType: z.string(),
             size: z.string(),
-          }),
+          }).optional(),
         ]);
         break;
       case "teacher":

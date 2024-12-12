@@ -87,7 +87,7 @@ export default new Http(handler)
       email: schema.string().required().email(),
       isExternal: schema.boolean().default(false),
       roles: schema
-        .array(schema.mixed().oneOf(["admin", "student", "teacher"]))
+        .array(schema.mixed().oneOf(["admin", "student", "teacher", "equipment"]))
         .required(),
     }),
   }))

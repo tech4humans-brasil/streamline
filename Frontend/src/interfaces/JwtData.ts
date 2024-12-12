@@ -1,8 +1,4 @@
-export enum IUserRoles {
-  admin = "admin",
-  student = "student",
-  teacher = "teacher",
-}
+import { IUserRoles } from "./User";
 
 export default interface JwtData {
   id: string;
@@ -10,7 +6,6 @@ export default interface JwtData {
   matriculation: string;
   email: string;
   roles: IUserRoles[];
-  role: IUserRoles;
   slug: string;
   client: string;
   permissions: string[];
