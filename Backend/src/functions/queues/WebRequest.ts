@@ -179,10 +179,10 @@ const handler: QueueWrapperHandler<TMessage> = async (
       urlReplacedPromise,
     ]);
 
-    const bodyParsed = safeStringify(bodyReplaced);
+    const bodyParsed = bodyReplaced;
 
     const request = {
-      data: bodyParsed,
+      data: JSON.parse(bodyParsed),
       headers: headersReplaced.reduce((acc, header) => {
         acc[header.key] = header.value;
         return acc;
@@ -194,7 +194,9 @@ const handler: QueueWrapperHandler<TMessage> = async (
     const response = await axios.request(request);
 
     if (response.status >= 400) {
-      throw new Error(`Request failed with status code ${response.status}`);
+      throw new Error(
+        `Request failed with status code ${response.status}, ${response.data?.message}`
+      );
     }
 
     if (!is_async) {
