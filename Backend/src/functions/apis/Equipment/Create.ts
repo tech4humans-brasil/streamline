@@ -1,6 +1,6 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
-import { IEquipment } from "../../../models/client/Equipment";
+import { IEquipment, IEquipmentStatus } from "../../../models/client/Equipment";
 import EquipmentRepository from "../../../repositories/Equipment";
 
 const handler: HttpHandler = async (conn, req) => {
@@ -20,7 +20,11 @@ const handler: HttpHandler = async (conn, req) => {
     return res.conflict("Equipment already exists");
   }
 
-  const equipment = await equipmentRepository.create({ ...data });
+  const equipment = await equipmentRepository.create({
+    ...data,
+    inventoryNumber: data.inventoryNumber.toLocaleUpperCase().trim(),
+    status: IEquipmentStatus.available,
+  });
 
   return res.created(equipment);
 };
@@ -28,9 +32,7 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
-      inventoryNumber: schema
-        .string()
-        .required(),
+      inventoryNumber: schema.string().required(),
       equipmentType: schema.string().required(),
       invoice: schema
         .object()

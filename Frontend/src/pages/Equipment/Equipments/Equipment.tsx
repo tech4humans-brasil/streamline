@@ -62,6 +62,7 @@ const Schema = z.object({
       size: z.string(),
       containerName: z.string(),
     })
+    .optional()
     .nullable(),
 });
 
@@ -212,7 +213,10 @@ export default function Equipment() {
 
   const methods = useForm<EquipmentFormInputs>({
     resolver: zodResolver(Schema),
-    defaultValues: equipment,
+    defaultValues: {
+      ...equipment,
+      status: equipment?.status ?? IEquipmentStatus.available,
+    },
   });
 
   const {
@@ -340,20 +344,32 @@ export default function Equipment() {
             </Flex>
 
             <Flex justify="space-between" gap="4" direction={["column", "row"]}>
-              <Select
-                input={{
-                  id: "status",
-                  label: t("common.fields.status"),
-                  placeholder: t("common.fields.status"),
-                  options: [
-                    { label: t("common.fields.allocated"), value: "allocated" },
-                    { label: t("common.fields.available"), value: "available" },
-                    { label: t("common.fields.discarded"), value: "discarded" },
-                    { label: t("common.fields.office"), value: "office" },
-                  ],
-                  isDisabled: isAllocated,
-                }}
-              />
+              {isEditing && (
+                <Select
+                  input={{
+                    id: "status",
+                    label: t("common.fields.status"),
+                    placeholder: t("common.fields.status"),
+                    options: [
+                      {
+                        label: t("common.fields.allocated"),
+                        value: "allocated",
+                        isDisabled: true,
+                      },
+                      {
+                        label: t("common.fields.available"),
+                        value: "available",
+                      },
+                      {
+                        label: t("common.fields.discarded"),
+                        value: "discarded",
+                      },
+                      { label: t("common.fields.office"), value: "office" },
+                    ],
+                    isDisabled: isAllocated,
+                  }}
+                />
+              )}
 
               <Select
                 input={{
