@@ -32,7 +32,7 @@ const handler: HttpHandler = async (conn, req) => {
     where,
     limit,
     sort: {
-      createdAt: -1,
+      inventoryNumber: 1
     },
   });
 

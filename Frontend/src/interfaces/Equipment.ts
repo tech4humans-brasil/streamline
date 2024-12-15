@@ -68,5 +68,5 @@ export interface IEquipment {
   serialNumber?: string;
   additionalNotes?: string;
   allocations: UserEquipmentAllocation[];
-  invoice: FileUploaded | null;
+  invoice?: FileUploaded | null;
 }

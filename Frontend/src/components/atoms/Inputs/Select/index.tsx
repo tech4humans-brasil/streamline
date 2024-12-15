@@ -13,8 +13,11 @@ interface SelectProps {
     required?: boolean;
     isDisabled?: boolean;
     options:
-      | { value: string; label: string }[]
-      | { label: string; options: { value: string; label: string }[] }[];
+      | { value: string; label: string; isDisabled?: boolean }[]
+      | {
+          label: string;
+          options: { value: string; label: string; isDisabled?: boolean }[];
+        }[];
     describe?: string;
   };
   isMulti?: boolean;
