@@ -147,7 +147,7 @@ export interface IEquipment extends mongoose.Document {
 export const schema: Schema = new Schema<IEquipment>(
   {
     formName: { type: String, required: true },
-    inventoryNumber: { type: String, required: true },
+    inventoryNumber: { type: String, required: true, index: true },
     equipmentType: { type: String, required: true },
     brandName: { type: String, required: false },
     status: {
