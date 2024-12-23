@@ -12,18 +12,23 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { MilestoneEnd, MilestoneItem } from "@components/molecules/TimeLine";
-import IActivity, { IActivityStep } from "@interfaces/Activitiy";
+import IActivity, {
+  IActivityStep,
+  IActivityInteractions,
+} from "@interfaces/Activitiy";
 import { IStep, NodeTypes } from "@interfaces/WorkflowDraft";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { GoMilestone, GoTag, GoWorkflow } from "react-icons/go";
 import { FaWpforms } from "react-icons/fa";
 import { BiGitRepoForked, BiMailSend } from "react-icons/bi";
 import useActivity from "@hooks/useActivity";
 import IFormDraft, { IField } from "@interfaces/FormDraft";
 import ExtraFields from "./ExtraFields";
-import { BsArrowsFullscreen } from "react-icons/bs";
+import { BsArrowsFullscreen, BsSend } from "react-icons/bs";
 import { RiWebhookLine } from "react-icons/ri";
 import Accordion from "@components/atoms/Accordion";
+import useAuth from "@hooks/useAuth";
+import { Link, useNavigate } from "react-router-dom";
 
 const statusMap = {
   idle: "Aguardando Resposta",
@@ -157,6 +162,13 @@ const TimelineStepItem = ({
     [handleOpenModal]
   );
 
+  const { open, closed } = useMemo(() => {
+    const open = interaction?.answers.filter((answer) => answer.data);
+    const closed = interaction?.answers.filter((answer) => !answer.data);
+
+    return { open, closed };
+  }, [interaction]);
+
   if (!step || !step?.data.visible) return null;
 
   return (
@@ -181,46 +193,43 @@ const TimelineStepItem = ({
         <Divider my={2} />
         {interaction && (
           <Box w="100%">
-            {interaction.answers
-              .filter((answer) => answer.data)
-              .map((answer) => (
-                <Box key={answer._id} p={2}>
-                  <Text fontWeight="bold">{answer.user.name}</Text>
-                  <Text fontSize={"sm"}>{answer.user.email}</Text>
-                  {answer?.data ? (
-                    <Button
-                      size="sm"
-                      mt="1"
-                      onClick={() => handleOpenModalItem(answer.data)}
-                      variant={"outline"}
-                      leftIcon={<BsArrowsFullscreen />}
-                    >
-                      Resposta Enviada
-                    </Button>
-                  ) : (
-                    <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-                      {statusMap[answer.status]}
-                    </Tag>
-                  )}
-                  <Divider my={2} />
-                </Box>
-              ))}
+            {open?.map((answer) => (
+              <Box key={answer._id} p={2}>
+                <Text fontWeight="bold">{answer.user.name}</Text>
+                <Text fontSize={"sm"}>{answer.user.email}</Text>
+                {answer?.data ? (
+                  <Button
+                    size="sm"
+                    mt="1"
+                    onClick={() => handleOpenModalItem(answer.data)}
+                    variant={"outline"}
+                    leftIcon={<BsArrowsFullscreen />}
+                  >
+                    Resposta Enviada
+                  </Button>
+                ) : (
+                  <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
+                    {statusMap[answer.status]}
+                  </Tag>
+                )}
+                <Divider my={2} />
+              </Box>
+            ))}
 
-            <Accordion.Container
-              defaultIndex={interaction.finished ? [] : [0]}
-              allowToggle
-              allowMultiple
-            >
-              <Accordion.Item>
-                <Accordion.Button fontSize="sm">
-                  {interaction.finished
-                    ? "Respostas não enviadas"
-                    : "Aguardando Respostas"}
-                </Accordion.Button>
-                <Accordion.Panel>
-                  {interaction.answers
-                    .filter((answer) => !answer.data)
-                    .map((answer) => (
+            {!!closed?.length && (
+              <Accordion.Container
+                defaultIndex={interaction.finished ? [] : [0]}
+                allowToggle
+                allowMultiple
+              >
+                <Accordion.Item>
+                  <Accordion.Button fontSize="sm">
+                    {interaction.finished
+                      ? "Respostas não enviadas"
+                      : "Aguardando Respostas"}
+                  </Accordion.Button>
+                  <Accordion.Panel>
+                    {closed.map((answer) => (
                       <Box key={answer._id}>
                         <Text fontWeight="bold">{answer.user.name}</Text>
                         <Text fontSize={"sm"}>{answer.user.email}</Text>
@@ -235,30 +244,66 @@ const TimelineStepItem = ({
                             Resposta Enviada
                           </Button>
                         ) : (
-                          <Tag
-                            size="sm"
-                            variant="subtle"
-                            colorScheme="gray"
-                            mt="2"
-                          >
-                            {statusMap[answer.status]}
-                          </Tag>
+                          <PendencieTag
+                            answer={answer}
+                            activity_id={activity?._id}
+                            slug={interaction.form.slug}
+                          />
                         )}
                         <Divider my={2} />
                       </Box>
                     ))}
-
-                  {interaction.answers.length === 0 && (
-                    <Flex justifyContent="center" alignItems="center" h="100%">
-                      Todos responderam
-                    </Flex>
-                  )}
-                </Accordion.Panel>
-              </Accordion.Item>
-            </Accordion.Container>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              </Accordion.Container>
+            )}
           </Box>
         )}
       </Flex>
     </MilestoneItem>
   );
 };
+
+const PendencieTag = memo(
+  ({
+    answer,
+    slug,
+    activity_id,
+  }: {
+    answer: IActivityInteractions["answers"][0];
+    slug: string;
+    activity_id: string | undefined;
+  }) => {
+    const [auth] = useAuth();
+    const navigate = useNavigate();
+
+    const handleResponse = useCallback(() => {
+      navigate(`/response/${slug}`, {
+        state: {
+          activity_id,
+        },
+      });
+    }, [activity_id, slug]);
+
+    if (auth?.id === answer.user._id && answer.status === "idle") {
+      return (
+        <Button
+          size="sm"
+          mt="2"
+          colorScheme="blue"
+          variant={"outline"}
+          rightIcon={<BsSend />}
+          onClick={handleResponse}
+        >
+          Responder
+        </Button>
+      );
+    }
+
+    return (
+      <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
+        {statusMap[answer.status]}
+      </Tag>
+    );
+  }
+);

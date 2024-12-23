@@ -41,8 +41,8 @@ const Schema = z
     time: z.string().nullable().optional(),
     workflow: z.string().min(3, { message: "Workflow é obrigatório" }),
     expression: z.string().min(3, { message: "Expressão é obrigatória" }),
-    day: z.coerce.number().min(1).max(31).nullable().optional(),
-    advanced: z.boolean().optional(),
+    day: z.string().nullable().optional(),
+    advanced: z.boolean().optional().default(false),
     form: z.string().min(3, { message: "Formulário é obrigatório" }),
     start: z.coerce.date(),
     end: z.union([z.null(), z.coerce.date()]).default(null),
@@ -69,11 +69,12 @@ const Schema = z
           return false;
         }
       }
+
       return true;
     },
     {
       message: "Interval, schedule and time are required",
-      path: ["interval, schedule, time"],
+      path: ["interval", "schedule", "time"],
     }
   );
 
@@ -109,9 +110,7 @@ export default function Schedule() {
   const params = useParams<{ id?: string }>();
   const location = useLocation();
   const queryClient = useQueryClient();
-
   const project = location.state?.project as string | undefined;
-
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
 
@@ -159,6 +158,7 @@ export default function Schedule() {
     reset,
     formState: { errors },
     watch,
+    setValue,
   } = methods;
 
   const interval = watch("interval");
@@ -178,9 +178,12 @@ export default function Schedule() {
 
   useEffect(() => {
     if (scheduleData) {
-      const { schedule, interval, time } = convertFromCron(
+      const { schedule, interval, time, day } = convertFromCron(
         scheduleData.expression
       );
+
+      console.log(schedule, interval, time, day);
+
       reset({
         ...scheduleData,
         //@ts-ignore
@@ -192,25 +195,26 @@ export default function Schedule() {
         schedule,
         interval,
         time,
+        day: day !== "*" ? day : "",
+        advanced: !!schedule,
       });
     }
   }, [scheduleData, reset]);
 
   useEffect(() => {
-    if (interval && schedule && time) {
-      const cron = convertToCron(interval, schedule, time, day);
-
-      methods.setValue("expression", cron);
+    if (!advanced) {
+      if (interval && schedule && time) {
+        const cron = convertToCron(interval, schedule, time, day);
+        setValue("expression", cron);
+      }
     }
-  }, [interval, schedule, time]);
+  }, [interval, schedule, time, day, advanced, setValue]);
 
   useEffect(() => {
     if (project) {
       methods.setValue("project", project);
     }
-  }, [project]);
-
-  console.log("errors", errors);
+  }, [project, methods.setValue]);
 
   return (
     <Flex w="100%" my="6" mx="auto" px="6" justify="center">
@@ -284,7 +288,6 @@ export default function Schedule() {
                   required: true,
                 }}
               />
-
               <Text
                 input={{
                   id: "end",
@@ -406,7 +409,6 @@ export default function Schedule() {
                 })}
               </Box>
             )}
-
             <Flex mt="8" justify="flex-end" gap="4">
               <Button
                 mt={4}
@@ -429,7 +431,6 @@ export default function Schedule() {
                 </Button>
               </Can>
             </Flex>
-
             {isEditing && (
               <Flex mt="4" direction="column">
                 <ExecutionList executions={scheduleData?.scheduled ?? []} />
