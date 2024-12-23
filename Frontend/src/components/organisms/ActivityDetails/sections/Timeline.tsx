@@ -28,7 +28,7 @@ import { BsArrowsFullscreen, BsSend } from "react-icons/bs";
 import { RiWebhookLine } from "react-icons/ri";
 import Accordion from "@components/atoms/Accordion";
 import useAuth from "@hooks/useAuth";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const statusMap = {
   idle: "Aguardando Resposta",

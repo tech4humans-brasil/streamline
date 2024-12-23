@@ -161,6 +161,8 @@ export default function Schedule() {
     setValue,
   } = methods;
 
+  console.log(errors);
+
   const interval = watch("interval");
   const schedule = watch("schedule");
   const time = watch("time");
