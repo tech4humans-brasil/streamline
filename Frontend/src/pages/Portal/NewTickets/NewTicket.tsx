@@ -56,11 +56,13 @@ const NewTicket: React.FC = () => {
     );
     const allForms = institute?.forms ?? [];
 
-    return allForms.filter(
-      (form) =>
-        form.name.toLowerCase().includes(search.toLowerCase()) ||
-        form.description.toLowerCase().includes(search.toLowerCase())
-    );
+    return allForms
+      .filter(
+        (form) =>
+          form.name.toLowerCase().includes(search.toLowerCase()) ||
+          form.description.toLowerCase().includes(search.toLowerCase())
+      )
+      ?.sort((a, b) => a?.name.localeCompare(b?.name));
   }, [forms, institute_id, search]);
 
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
