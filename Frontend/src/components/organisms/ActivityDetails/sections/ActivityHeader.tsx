@@ -1,8 +1,17 @@
 // ActivityHeader.tsx
 import React from "react";
-import { Flex, Heading, Text, Badge, Divider } from "@chakra-ui/react";
+import {
+  Flex,
+  Heading,
+  Text,
+  Badge,
+  Divider,
+  IconButton,
+} from "@chakra-ui/react";
 import Comments from "./Comments";
 import { IActivityState } from "@interfaces/Activitiy";
+import { RiParentFill } from "react-icons/ri";
+import { Link } from "react-router-dom";
 
 interface ActivityHeaderProps {
   id: string;
@@ -10,6 +19,7 @@ interface ActivityHeaderProps {
   protocol: string;
   status: string;
   state: IActivityState;
+  parent?: string | null;
 }
 
 const ActiveStateMap = {
@@ -25,6 +35,7 @@ const ActivityHeader: React.FC<ActivityHeaderProps> = ({
   protocol,
   status,
   state,
+  parent,
 }) => {
   const badgeColor = (() => {
     switch (state) {
@@ -55,6 +66,22 @@ const ActivityHeader: React.FC<ActivityHeaderProps> = ({
       </Flex>
 
       <Flex gap={2} alignItems={"center"}>
+        {parent && (
+          <Link
+            to={`/portal/activity/${parent}`}
+            title="Atividade pai"
+            style={{ textDecoration: "none" }}
+          >
+            <IconButton
+              aria-label="Parent"
+              icon={<RiParentFill />}
+              title="Atividade pai"
+              size="sm"
+              colorScheme="blue"
+            />
+          </Link>
+        )}
+
         <Badge
           p={2}
           borderRadius="sm"

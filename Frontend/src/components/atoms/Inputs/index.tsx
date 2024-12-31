@@ -11,6 +11,7 @@ import Password from "./Password";
 
 interface Props {
   fields: IField[];
+  name?: string;
 }
 
 const fieldComponents: {
@@ -45,7 +46,7 @@ const fieldComponents: {
   time: Text,
 };
 
-const Inputs: React.FC<Props> = memo(({ fields }) => {
+const Inputs: React.FC<Props> = memo(({ fields, name }) => {
   const renderInput = useCallback((input: IField) => {
     const FieldComponent =
       fieldComponents[input.type as keyof typeof fieldComponents];
@@ -57,7 +58,7 @@ const Inputs: React.FC<Props> = memo(({ fields }) => {
     return (
       <FieldComponent
         // @ts-ignore
-        input={input}
+        input={name ? { ...input, id: `${name}.${input.id}` } : input}
         isMulti={input.type === "multiselect"}
       />
     );

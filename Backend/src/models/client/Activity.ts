@@ -50,8 +50,7 @@ export type IActivityStep = {
   _id: ObjectId;
   step: ObjectId;
   status: IActivityStepStatus;
-  data: object;
-  interactions: IFormDraft[];
+  data: Record<string, string | number | boolean | null>;
 };
 
 export type ActivityWorkflow = {
@@ -100,6 +99,7 @@ export type IActivity = {
   protocol: string;
   state: IActivityState;
   users: IUserChild[];
+  parent: mongoose.Types.ObjectId | string;
   form: mongoose.Types.ObjectId | string;
   form_draft: IFormDraft;
   finished_at: Date | null;
@@ -205,7 +205,6 @@ export const ActivityStepSchema = new Schema<IActivityStep>({
     default: IActivityStepStatus.idle,
   },
   data: { type: Object, required: false, default: {} },
-  interactions: [{ type: Object, required: false, default: [] }],
 });
 
 export const ActivityWorkflowSchema = new Schema<ActivityWorkflow>({
@@ -227,6 +226,12 @@ export const schema: Schema = new Schema<IActivity>(
     protocol: { type: String, required: false, unique: true },
     description: { type: String, required: true },
     comments: [{ type: commentSchema, required: false, default: [] }],
+    parent: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      default: null,
+      ref: "Activity",
+    },
     state: {
       type: String,
       required: true,

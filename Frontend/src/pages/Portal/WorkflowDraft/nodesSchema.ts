@@ -156,6 +156,13 @@ const schemas: NodeSchemas = {
     script: z.string().min(3, { message: "Script é obrigatório" }),
     visible: z.boolean().default(false),
   }),
+
+  [NodeTypes.NewTicket]: z.object({
+    name: z.string().min(3, { message: "Nome é obrigatório" }),
+    visible: z.boolean().default(true),
+    form_id: z.string().min(3, { message: "Selecione um formulário" }),
+    fields: z.record(z.string()),
+  }),
 };
 
 export type SchemaTypes = keyof typeof schemas;
@@ -185,16 +192,7 @@ export const workflowSchema = z.object({
     z.object({
       id: z.string(),
       type: z
-        .enum([
-          "send_email",
-          "change_status",
-          "circle",
-          "swap_workflow",
-          "interaction",
-          "conditional",
-          "web_request",
-          "script",
-        ])
+        .nativeEnum(NodeTypes)
         .optional(),
       data: z.union([
         schemas[NodeTypes.SendEmail],
