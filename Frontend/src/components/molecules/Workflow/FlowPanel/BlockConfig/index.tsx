@@ -23,7 +23,6 @@ import { useParams } from "react-router-dom";
 import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 import NumberInput from "@components/atoms/Inputs/NumberInput";
 import CodeEditor from "@components/atoms/Inputs/CodeEditor";
-import Inputs from "@components/atoms/Inputs";
 
 interface BlockConfigProps {
   type: NodeTypes;
@@ -683,7 +682,17 @@ const FormFieldsInput = memo(({ form_id, name }: FormFieldsInputProps) => {
       {isLoading ? (
         <Spinner />
       ) : (
-        <Inputs name={name} fields={formsData?.fields ?? []} />
+        formsData?.fields?.map((field) => (
+          <Text
+            key={field.id}
+            input={{
+              label: field.label,
+              id: `${name}.${field.id}`,
+              placeholder: field.label,
+              required: field.required,
+            }}
+          />
+        ))
       )}
     </Flex>
   );
