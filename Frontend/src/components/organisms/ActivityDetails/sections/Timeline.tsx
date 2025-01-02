@@ -261,7 +261,7 @@ const TimelineStepItem = ({
             )}
           </Box>
         )}
-        {step.type === NodeTypes.NewTicket && "new_ticket" in data.data && (
+        {step.type === NodeTypes.NewTicket && !!data.data?.new_ticket && (
           <Link to={`/portal/activity/${data.data.new_ticket}`}>
             <Button size="sm" mt="2" colorScheme="blue" rightIcon={<FaEye />}>
               Acessar Ticket

@@ -4,7 +4,6 @@ import QueueWrapper, {
 } from "../../middlewares/queue";
 import { INewTicket, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
-import StatusRepository from "../../repositories/Status";
 import { handler as NewTicket } from "../apis/Response/Created";
 import sendNextQueue from "../../utils/sendNextQueue";
 import { IUserRoles } from "../../models/client/User";
@@ -67,17 +66,16 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const activityObj = activity.toObject();
 
-    const body = await Object.entries(fields).reduce(
-      async (acc, [key, value]) => {
-        acc[key] = await replaceSmartValues({
-          conn,
-          activity_id: activityObj,
-          replaceValues: value,
-        });
-        return acc;
-      },
-      {}
-    );
+    const body: { [key: string]: any } = {};
+
+    for (const [key, value] of Object.entries(fields)) {
+      body[key] = await replaceSmartValues({
+        conn,
+        activity_id: activityObj,
+        replaceValues: value,
+      });
+    }
+    console.log("body", body);
 
     const newActivity = await NewTicket(
       conn,

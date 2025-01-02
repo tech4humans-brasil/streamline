@@ -67,7 +67,7 @@ export type IActivityStep = {
   _id: string;
   step: string;
   status: IActivityStepStatus;
-  data: object;
+  data: Record<string, string | number | boolean | null>;
 };
 
 export type ActivityWorkflow = {
