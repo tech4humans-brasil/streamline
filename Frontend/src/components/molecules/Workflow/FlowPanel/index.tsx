@@ -11,6 +11,7 @@ import { ConditionalIcon } from "@components/atoms/Workflow/Nodes/Conditional";
 import { WebRequestIcon } from "@components/atoms/Workflow/Nodes/WebRequest";
 import { ScriptIcon } from "@components/atoms/Workflow/Nodes/Script";
 import Can from "@components/atoms/Can";
+import { NewTicketIcon } from "@components/atoms/Workflow/Nodes/NewTicket";
 
 const FlowPanel: React.FC = () => {
   return (
@@ -46,6 +47,9 @@ const FlowPanel: React.FC = () => {
         </PanelItem>
         <PanelItem nodeType={NodeTypes.WebRequest}>
           <WebRequestIcon />
+        </PanelItem>
+        <PanelItem nodeType={NodeTypes.NewTicket}>
+          <NewTicketIcon />
         </PanelItem>
         <Can permission="workflow.script">
           <PanelItem nodeType={NodeTypes.Script}>

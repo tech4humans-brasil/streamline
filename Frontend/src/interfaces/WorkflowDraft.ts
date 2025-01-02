@@ -9,6 +9,7 @@ export enum NodeTypes {
   Conditional = "conditional",
   WebRequest = "web_request",
   Script = "script",
+  NewTicket = "new_ticket",
 }
 
 export interface ISendEmail {
@@ -17,6 +18,18 @@ export interface ISendEmail {
   to: string[];
   sender: string;
   visible: boolean;
+}
+
+export interface INewTicket {
+  name: string;
+  form_id: string;
+  visible: boolean;
+  field_populate?: [
+    {
+      key: string;
+      value: string;
+    }
+  ];
 }
 
 export interface IScript {
@@ -129,6 +142,10 @@ export type IStep = {
   | {
       type: NodeTypes.Script;
       data: IScript;
+    }
+  | {
+      type: NodeTypes.NewTicket;
+      data: INewTicket;
     }
 );
 

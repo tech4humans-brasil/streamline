@@ -67,8 +67,7 @@ export type IActivityStep = {
   _id: string;
   step: string;
   status: IActivityStepStatus;
-  data: object;
-  interactions: IFormDraft[];
+  data: Record<string, string | number | boolean | null>;
 };
 
 export type ActivityWorkflow = {
@@ -86,6 +85,7 @@ export type IActivity = {
   users: IUserChild[];
   form: IForm;
   form_draft: IFormDraft;
+  parent: string;
   status: IStatus;
   due_date: Date | string | null;
   comments: IComment[];
