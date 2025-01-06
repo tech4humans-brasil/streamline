@@ -25,7 +25,8 @@ class ZipCreator {
       const pdfName = path.basename(pdfExport);
       archive.file(pdfExport, { name: pdfName });
 
-      if (files.length > 1) {
+      if (files.length) {
+        console.log("Adding files to zip");
         for (const file of files) {
           const fileName = path.basename(file);
           archive.file(file, { name: `files/${fileName}` });
