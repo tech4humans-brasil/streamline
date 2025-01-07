@@ -68,6 +68,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
           protocol={activity.protocol}
           status={activity.status.name}
           state={activity.state}
+          parent={activity.parent}
         />
         <VStack mb={4} align="start">
           <Text fontWeight={"bold"} fontSize="md">

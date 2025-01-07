@@ -9,6 +9,7 @@ interface DiscordMessage {
     title: string;
     description: string;
     color: number;
+    url?: string;
     fields?: {
       name: string;
       value: string;
@@ -42,36 +43,39 @@ export const sendDiscordBlockError = async ({
   client: string;
 }) => {
   return await sendDiscordMessage({
-    content: `Error on client ${client}`,
+    content: `⚠️ **Error Detected on Client: ${client}**`,
     embeds: [
       {
-        title: `Error on ${name} block`,
-        description: `${error.message}`,
-        color: 16711680,
-        author: {
-          name: name,
-        },
-      },
-      {
-        title: "Activity",
-        description: "",
+        title: `🚨 Error in "${name}" Block`,
+        description: `An error occurred while processing the system. Below are the details:`,
+        color: process.env.NODE_ENV === "production" ? 16711680 : 14745344,
+        url: `${process.env.FRONTEND_URL}/portal/activity/${activity?._id}`,
         fields: [
           {
-            name: "ID",
-            value: activity ? activity._id.toString() : "Activity not found",
+            name: "Environment",
+            value: `\`${process.env.NODE_ENV}\``,
           },
           {
-            name: "Name",
-            value: activity ? activity.name : "Activity not found",
+            name: "🛑 Error Message",
+            value: `\`\`\`diff\n- ${error.message}\n\`\`\``,
           },
           {
-            name: "Protocol",
-            value: activity ? activity.protocol : "Activity not found",
+            name: "🆔 Activity ID",
+            value: activity ? `${activity._id.toString()}` : "`Not Found`",
+          },
+          {
+            name: "📜 Protocol",
+            value: activity ? `\`${activity.protocol}\`` : "`Not Found`",
+          },
+          {
+            name: "👤 User",
+            value: activity
+              ? activity.users?.at(-1)?.name || "`User not identified`"
+              : "`Not Found`",
           },
         ],
-        color: 16711680,
         author: {
-          name: activity ? activity.users.at(-1).name : "User not found",
+          name: "DevOps Logs",
         },
       },
     ],

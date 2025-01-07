@@ -6,6 +6,7 @@ import SwapWorkflow from "./SwapWorkflow";
 import Conditional from "./Conditional";
 import WebRequest from "./WebRequest";
 import Script from "./Script";
+import NewTicket from "./NewTicket";
 
 export default {
   circle: CircleNode,
@@ -16,4 +17,5 @@ export default {
   conditional: Conditional,
   web_request: WebRequest,
   script: Script,
+  new_ticket: NewTicket,
 };

@@ -299,7 +299,10 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
             )}
 
             {watch("form_id") && (
-              <ConditionalRender form_id={watch("form_id")} />
+              <ConditionalFields
+                form_id={watch("form_id")}
+                name="conditional"
+              />
             )}
           </>
         );
@@ -341,7 +344,7 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
               }}
             /> */}
 
-            <ConditionalRender form_id={watch("form_id")} />
+            <ConditionalFields form_id={watch("form_id")} name="conditional" />
           </>
         );
       case NodeTypes.WebRequest:
@@ -441,6 +444,42 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
             />
           </>
         );
+      case NodeTypes.NewTicket:
+        return (
+          <>
+            <Text
+              input={{
+                label: "Nome",
+                id: "name",
+                placeholder: "Nome do bloco",
+                required: true,
+              }}
+            />
+
+            <Switch
+              input={{
+                label: "Visivel",
+                id: "visible",
+                required: true,
+              }}
+            />
+
+            <Select
+              input={{
+                label: "Formulário",
+                id: "form_id",
+                placeholder: "Selecione o formulário que será enviado",
+                options: formsData?.forms.created ?? [],
+                required: true,
+              }}
+            />
+
+            {watch("form_id") && (
+              <FormFieldsInput form_id={watch("form_id")} name="fields" />
+            )}
+          </>
+        );
+
       default:
         return <h1>Default</h1>;
     }
@@ -478,9 +517,10 @@ export default BlockConfig;
 
 interface ConditionalProps {
   form_id: string;
+  name: string;
 }
 
-const ConditionalRender = memo(({ form_id }: ConditionalProps) => {
+const ConditionalFields = memo(({ form_id, name }: ConditionalProps) => {
   const { data: formsData, isLoading } = useQuery({
     queryKey: ["formDraft", form_id],
     queryFn: getFormWithFields,
@@ -497,7 +537,7 @@ const ConditionalRender = memo(({ form_id }: ConditionalProps) => {
     append,
     remove,
   } = useFieldArray({
-    name: "conditional",
+    name: name,
     control: control,
   });
 
@@ -552,42 +592,44 @@ const ConditionalRender = memo(({ form_id }: ConditionalProps) => {
                   <Select
                     input={{
                       label: "Campo",
-                      id: `conditional[${index}].field`,
+                      id: `${name}[${index}].field`,
                       placeholder: "Field Id",
                       options: getFieldOptions,
                       required: true,
                     }}
                   />
+
                   <Select
                     input={{
                       label: "Operador",
-                      id: `conditional[${index}].operator`,
-                      placeholder: "-",
+                      id: `${name}[${index}].operator`,
+                      placeholder: "Selecione",
                       options: conditionalOperators,
                       required: true,
                     }}
                   />
-                  {haveOptions(watch(`conditional[${index}].field`)) ? (
+
+                  {haveOptions(watch(`${name}[${index}].field`)) ? (
                     <Select
                       input={{
                         label: "Valor",
-                        id: `conditional[${index}].value`,
+                        id: `${name}[${index}].value`,
                         placeholder: "Selecione",
                         options:
-                          getField(watch(`conditional[${index}].field`))
-                            ?.options ?? [],
+                          getField(watch(`${name}[${index}].field`))?.options ??
+                          [],
                         required: true,
                       }}
                     />
                   ) : (
                     <>
                       {["isNull", "isNotNull"].includes(
-                        watch(`conditional[${index}].operator`)
+                        watch(`${name}[${index}].operator`)
                       ) ? null : (
                         <Text
                           input={{
                             label: "Valor",
-                            id: `conditional[${index}].value`,
+                            id: `${name}[${index}].value`,
                             placeholder: "Digite",
                             required: true,
                           }}
@@ -613,6 +655,44 @@ const ConditionalRender = memo(({ form_id }: ConditionalProps) => {
             </Flex>
           ))}
         </>
+      )}
+    </Flex>
+  );
+});
+
+interface FormFieldsInputProps {
+  form_id: string;
+  name: string;
+}
+
+const FormFieldsInput = memo(({ form_id, name }: FormFieldsInputProps) => {
+  const { data: formsData, isLoading } = useQuery({
+    queryKey: ["formDraft", form_id],
+    queryFn: getFormWithFields,
+    retryOnMount: false,
+    select(data) {
+      return data?.published;
+    },
+  });
+
+  return (
+    <Flex direction="column" gap={5}>
+      <Divider />
+      <Heading size="sm">Campos do Formulário</Heading>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        formsData?.fields?.map((field) => (
+          <Text
+            key={field.id}
+            input={{
+              label: field.label,
+              id: `${name}.${field.id}`,
+              placeholder: field.label,
+              required: field.required,
+            }}
+          />
+        ))
       )}
     </Flex>
   );

@@ -25,6 +25,15 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
     });
   }
 
+  if (type === NodeTypes.NewTicket) {
+    return schema.object().shape({
+      name: schema.string().required(),
+      form_id: schema.string().required(),
+      visible: schema.boolean().default(true),
+      fields: schema.object().required(),
+    });
+  }
+
   if (type === NodeTypes.Interaction) {
     return schema.object().shape({
       name: schema.string().required(),

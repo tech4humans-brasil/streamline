@@ -77,11 +77,17 @@ export function replaceVariables(data, template: string): string {
     }
   }
 
-  return template.replace(regex, (match, key) => {
+  const result = template.replace(regex, (match, key) => {
     const levels = key.split(".");
     const resolvedValue = resolveValue(data, levels);
     return resolvedValue !== undefined ? resolvedValue : "-";
   });
+
+  if (result.includes("${")) {
+    return runDynamicTemplate(result, data);
+  }
+
+  return result;
 }
 
 export const extractCustomFields = (form_draft: { fields: IField[] }) => {
@@ -116,3 +122,30 @@ export const extractCustomFields = (form_draft: { fields: IField[] }) => {
     return acc;
   }, {});
 };
+
+export function runDynamicTemplate(template: string, context: any): any {
+  const { activity, vars } = context;
+
+  if (template.includes("activity.&")) {
+    const before = template.split("activity.&");
+    const value = before[1].split("}")[0];
+
+    return activity?.[value] || "-";
+  }
+
+  try {
+    // Cria a função dinâmica com o template
+    const dynamicFunction = new Function(
+      "activity",
+      "vars",
+      "return `" + template + "`;"
+    );
+
+    const result = dynamicFunction(activity, vars);
+
+    return result; // Retorna o resultado diretamente se não houver "&"
+  } catch (error) {
+    console.error("Erro ao processar template: " + template, error);
+    return "";
+  }
+}

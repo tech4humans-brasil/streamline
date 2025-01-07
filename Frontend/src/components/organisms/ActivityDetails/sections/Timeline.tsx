@@ -19,7 +19,7 @@ import IActivity, {
 import { IStep, NodeTypes } from "@interfaces/WorkflowDraft";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { GoMilestone, GoTag, GoWorkflow } from "react-icons/go";
-import { FaWpforms } from "react-icons/fa";
+import { FaEye, FaPlusSquare, FaWpforms } from "react-icons/fa";
 import { BiGitRepoForked, BiMailSend } from "react-icons/bi";
 import useActivity from "@hooks/useActivity";
 import IFormDraft, { IField } from "@interfaces/FormDraft";
@@ -28,7 +28,7 @@ import { BsArrowsFullscreen, BsSend } from "react-icons/bs";
 import { RiWebhookLine } from "react-icons/ri";
 import Accordion from "@components/atoms/Accordion";
 import useAuth from "@hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const statusMap = {
   idle: "Aguardando Resposta",
@@ -135,6 +135,8 @@ const TimelineStepItem = ({
         return RiWebhookLine;
       case NodeTypes.Circle:
         return GoMilestone;
+      case NodeTypes.NewTicket:
+        return FaPlusSquare;
       default:
         return FaWpforms;
     }
@@ -258,6 +260,13 @@ const TimelineStepItem = ({
               </Accordion.Container>
             )}
           </Box>
+        )}
+        {step.type === NodeTypes.NewTicket && !!data.data?.new_ticket && (
+          <Link to={`/portal/activity/${data.data.new_ticket}`}>
+            <Button size="sm" mt="2" colorScheme="blue" rightIcon={<FaEye />}>
+              Acessar Ticket
+            </Button>
+          </Link>
         )}
       </Flex>
     </MilestoneItem>

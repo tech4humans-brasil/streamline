@@ -48,7 +48,9 @@ export const handler: HttpHandler = async (conn, req, context) => {
         _id: req.params.form_id,
         type: IFormType.Created,
       },
-      institutes: req.user.institutes.map((institute) => institute._id),
+      institutes: !!req.user.institutes
+        ? req.user.institutes?.map((institute) => institute._id)
+        : undefined,
     })
   )[0];
 
@@ -106,16 +108,17 @@ export const handler: HttpHandler = async (conn, req, context) => {
     status: status.toObject(),
     users: [user.toObject()],
     form_draft: formDraft.toObject(),
+    parent: req.params.parent_id ?? null,
+    automatic: !!req.params.automatic,
   });
 
-  console.log("form.sla", form.sla);
+  console.log("Activity", activity);
 
   if (form.sla) {
     const slaCalculator = new Holiday();
 
     const dueDate = await slaCalculator.calculateDueDate(new Date(), form.sla);
 
-    console.log("dueDate", dueDate);
     activity.due_date = dueDate;
   }
 
