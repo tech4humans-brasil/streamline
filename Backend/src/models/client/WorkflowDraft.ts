@@ -10,6 +10,7 @@ export enum NodeTypes {
   WebRequest = "web_request",
   Script = "script",
   NewTicket = "new_ticket",
+  Clicksign = "clicksign",
 }
 
 export interface INewTicket {
@@ -31,6 +32,17 @@ export interface IChangeStatus {
   name: string;
   status_id: string;
   visible: boolean;
+}
+
+export interface IClicksign {
+  name: string;
+  visible: false;
+  documentKey: string;
+  signers: Array<{
+    name: string;
+    email: string;
+  }>;
+  fields: Record<string, string>;
 }
 
 export interface ICircle {
@@ -156,6 +168,10 @@ export type IStep = {
   | {
       type: NodeTypes.NewTicket;
       data: INewTicket;
+    }
+  | {
+      type: NodeTypes.Clicksign;
+      data: IClicksign;
     }
 );
 
