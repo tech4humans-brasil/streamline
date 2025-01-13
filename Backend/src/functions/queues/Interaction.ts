@@ -8,6 +8,7 @@ import ActivityRepository from "../../repositories/Activity";
 import FormRepository from "../../repositories/Form";
 import UserRepository from "../../repositories/User";
 import { sendEmail } from "../../services/email";
+import InteractionHelper from "../../use-cases/InteractionHelper";
 import emailTemplate from "../../utils/emailTemplate";
 
 interface TMessage extends GenericMessage {}
@@ -71,6 +72,8 @@ const handler: QueueWrapperHandler<TMessage> = async (
       waitForOne = null,
       waitType = null,
       waitValue = null,
+      canAddParticipants = false,
+      permissionAddParticipants = [],
     } = data;
 
     let destination: string[] = to.flatMap((t) => {
@@ -103,42 +106,52 @@ const handler: QueueWrapperHandler<TMessage> = async (
       },
     });
 
-    if (!users.length) {
+    if (!users.length && !canAddParticipants) {
       throw new Error("Users not found");
     }
 
     const form = await formRepository.findById({ id: form_id });
 
-    const waitFor = (() => {
-      if (waitType === "any") {
-        return 1;
-      }
+    const waitFor = InteractionHelper.calculateWaitFor(users.length, data);
 
-      if (waitType === "custom") {
-        if (waitValue > users.length) {
-          return users.length;
-        }
+    const permissionAddParticipantsResult = await (async () => {
+      const usersP = await await userRepository.find({
+        where: {
+          $or: [
+            {
+              _id: { $in: permissionAddParticipants },
+            },
+            {
+              "institutes._id": {
+                $in: permissionAddParticipants,
+              },
+            },
+          ],
+        },
+        select: {
+          _id: 1,
+        },
+      });
 
-        return waitValue;
-      }
+      const usersSet = new Set(users.map((u) => u._id.toString()));
 
-      if (waitType === "all") {
-        return users.length;
-      }
+      usersP.forEach((u) => {
+        usersSet.add(u._id.toString());
+      });
 
-      if (waitForOne) {
-        return 1;
-      }
-
-      return users.length;
+      return [...usersSet];
     })();
 
-    console.log("waitFor", waitFor, waitType, waitValue);
+    if (users.length === 0 && permissionAddParticipantsResult.length === 0) {
+      throw new Error("Users to and permissionAddParticipants not found");
+    }
 
     activity.interactions.push({
       activity_workflow_id,
       activity_step_id,
       form: form.toObject(),
+      canAddParticipants,
+      permissionAddParticipants: permissionAddParticipantsResult,
       waitFor,
       answers: users.map((u) => ({
         status: "idle",
@@ -150,7 +163,8 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     await activity.save();
 
-    const content = `
+    if (users.length > 0) {
+      const content = `
     <p>Olá, ${users.map((u) => u.name).join(", ")}!</p>
     <p>O formulário "${form.name}" foi enviado para você.</p>
     <p>Acesse o painel para responder.</p> 
@@ -162,14 +176,15 @@ const handler: QueueWrapperHandler<TMessage> = async (
     <a href="${process.env.FRONTEND_URL}/portal">Acessar o painel</a>
 `;
 
-    const { html, css } = emailTemplate(content);
+      const { html, css } = emailTemplate(content);
 
-    await sendEmail(
-      users.map((u) => u.email),
-      `[${activity.protocol}] - Você possui uma nova pendência!`,
-      html,
-      css
-    );
+      await sendEmail(
+        users.map((u) => u.email),
+        `[${activity.protocol}] - Você possui uma nova pendência!`,
+        html,
+        css
+      );
+    }
 
     activityStep.status = IActivityStepStatus.idle;
 

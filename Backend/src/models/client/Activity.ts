@@ -67,9 +67,12 @@ export type IActivityInteractions = {
   form: IForm;
   waitFor: number;
   waitForOne?: boolean;
+  canAddParticipants?: boolean;
+  permissionAddParticipants?: string[];
   answers: mongoose.Types.DocumentArray<{
     _id: ObjectId;
     status: IActivityStepStatus;
+    observation?: string | null;
     user: Omit<IUser, "password">;
     data: IFormDraft | null;
   }>;
@@ -135,6 +138,8 @@ const interactionSchema = new Schema<IActivityInteractions>({
   form: { type: Object, required: true },
   waitFor: { type: Number, default: 1 },
   waitForOne: { type: Boolean, required: false },
+  canAddParticipants: { type: Boolean, required: false },
+  permissionAddParticipants: [{ type: Schema.Types.ObjectId, required: false }],
   answers: [
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
@@ -143,6 +148,7 @@ const interactionSchema = new Schema<IActivityInteractions>({
         required: true,
         enum: Object.values(IActivityStepStatus),
       },
+      observation: { type: String, required: false },
       user: { type: userSchema, required: true },
       data: { type: Object, default: null },
     },
