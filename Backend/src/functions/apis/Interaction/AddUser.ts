@@ -60,8 +60,8 @@ const handler: HttpHandler = async (conn, req, context) => {
   });
 
   if (!interaction.answers.length) {
-    interaction.permissionAddParticipants = usersData.map((u) =>
-      u._id.toString()
+    interaction.permissionAddParticipants.concat(
+      ...usersData.map((u) => u._id.toString())
     );
   }
 
