@@ -30,28 +30,15 @@ export type IActivityInteractions = {
   activity_workflow_id: string;
   activity_step_id: string;
   form: IForm;
+  canAddParticipants?: boolean;
+  permissionAddParticipants?: string[];
   answers: Array<{
     _id: string;
     status: IActivityStepStatus;
     user: Omit<IUser, "password">;
+    observation?: string;
     data: IFormDraft | null;
   }>;
-  finished: boolean;
-};
-
-export type IActivityEvaluations = {
-  _id: string;
-  activity_workflow_id: string;
-  activity_step_id: string;
-  form: IForm;
-  final_grade: number;
-  answers: Array<{
-    _id: string;
-    status: IActivityStepStatus;
-    grade: number | null;
-    user: Omit<IUser, "password">;
-    data: IFormDraft | null;
-  }> | null;
   finished: boolean;
 };
 
@@ -90,7 +77,6 @@ export type IActivity = {
   due_date: Date | string | null;
   comments: IComment[];
   interactions: IActivityInteractions[];
-  evaluations: IActivityEvaluations[];
   workflows: ActivityWorkflow[];
   description: string;
   createdAt: string;

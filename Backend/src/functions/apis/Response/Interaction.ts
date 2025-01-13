@@ -14,6 +14,7 @@ import UserRepository from "../../../repositories/User";
 import BlobUploader from "../../../services/upload";
 import AnswerRepository from "../../../repositories/Answer";
 import ResponseUseCases from "../../../use-cases/Response";
+import InteractionHelper from "../../../use-cases/InteractionHelper";
 
 interface File {
   name: string;
@@ -97,33 +98,12 @@ const handler: HttpHandler = async (conn, req, context) => {
   interaction.answers[myAnswer].data = formDraft.toObject();
   interaction.answers[myAnswer].status = IActivityStepStatus.finished;
 
-  const answeredCount = interaction.answers.filter(
-    (answer) => answer.status === IActivityStepStatus.finished
-  ).length;
-
-  const shouldProceed = answeredCount >= interaction.waitFor;
-
-  console.log("shouldProceed", shouldProceed, answeredCount, interaction.waitFor);
-
-  if (shouldProceed) {
-    interaction.finished = true;
-    interaction.answers.forEach((answer) => {
-      if (answer.status === IActivityStepStatus.idle) {
-        answer.status = IActivityStepStatus.finished;
-      }
-    });
-
-    sendToQueue({
-      context,
-      message: {
-        activity_id: activity._id.toString(),
-        activity_workflow_id: interaction.activity_workflow_id.toString(),
-        activity_step_id: interaction.activity_step_id.toString(),
-        client: conn.name,
-      },
-      queueName: "interaction_process",
-    });
-  }
+  InteractionHelper.processInteractionAnswers(
+    interaction,
+    activity,
+    context,
+    conn
+  );
 
   const answerRepository = new AnswerRepository(conn);
 

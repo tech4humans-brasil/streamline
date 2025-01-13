@@ -29,6 +29,7 @@ import { RiWebhookLine } from "react-icons/ri";
 import Accordion from "@components/atoms/Accordion";
 import useAuth from "@hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
+import AddInteractionUser from "./AddInteractionUser";
 
 const statusMap = {
   idle: "Aguardando Resposta",
@@ -259,6 +260,8 @@ const TimelineStepItem = ({
                 </Accordion.Item>
               </Accordion.Container>
             )}
+
+            <AddInteractionUser interaction={interaction} />
           </Box>
         )}
         {step.type === NodeTypes.NewTicket && !!data.data?.new_ticket && (
@@ -296,16 +299,24 @@ const PendencieTag = memo(
 
     if (auth?.id === answer.user._id && answer.status === "idle") {
       return (
-        <Button
-          size="sm"
-          mt="2"
-          colorScheme="blue"
-          variant={"outline"}
-          rightIcon={<BsSend />}
-          onClick={handleResponse}
-        >
-          Responder
-        </Button>
+        <>
+          {answer.observation && (
+            <>
+              <Divider my={2} />
+              <Text fontSize={"sm"}>{answer.observation}</Text>
+            </>
+          )}
+          <Button
+            size="sm"
+            mt="2"
+            colorScheme="blue"
+            variant={"outline"}
+            rightIcon={<BsSend />}
+            onClick={handleResponse}
+          >
+            Responder
+          </Button>
+        </>
       );
     }
 
