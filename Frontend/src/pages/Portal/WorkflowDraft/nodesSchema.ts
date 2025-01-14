@@ -80,6 +80,20 @@ const schemas: NodeSchemas = {
         path: ["waitValue"],
       }
     ),
+  [NodeTypes.Clicksign]: z.object({
+    name: z.string().min(3, { message: "Nome é obrigatório" }),
+    documentKey: z
+      .string()
+      .min(3, { message: "Chave do documento é obrigatória" }),
+    signers: z.array(
+      z.object({
+        user: z.string().min(3, { message: "Selecione um usuário" }),
+        type: z.string().min(3, { message: "Selecione um tipo" }),
+      })
+    ),
+    fields: z.record(z.string()),
+    visible: z.boolean().default(true),
+  }),
   [NodeTypes.WebRequest]: z.object({
     name: z.string().min(3, { message: "Nome é obrigatório" }),
     url: z.string().min(3, { message: "URL é obrigatório" }),
@@ -191,9 +205,7 @@ export const workflowSchema = z.object({
   nodes: z.array(
     z.object({
       id: z.string(),
-      type: z
-        .nativeEnum(NodeTypes)
-        .optional(),
+      type: z.nativeEnum(NodeTypes).optional(),
       data: z.union([
         schemas[NodeTypes.SendEmail],
         schemas[NodeTypes.ChangeStatus],
@@ -203,6 +215,8 @@ export const workflowSchema = z.object({
         schemas[NodeTypes.Conditional],
         schemas[NodeTypes.WebRequest],
         schemas[NodeTypes.Script],
+        schemas[NodeTypes.NewTicket],
+        schemas[NodeTypes.Clicksign],
       ]),
       position: z.object({ x: z.number(), y: z.number() }),
       deletable: z.boolean().optional(),

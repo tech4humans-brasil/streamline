@@ -100,8 +100,8 @@ export class ClickSignService {
     ticketId: string;
     workflowId: string;
     stepId: string;
-  }): Promise<void> {
-    await axios.post(
+  }) {
+    const response = await axios.post<{ data: { id: string } }>(
       `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/documents`,
       {
         data: {
@@ -122,6 +122,8 @@ export class ClickSignService {
       },
       { headers: this.getHeaders() }
     );
+
+    return response.data?.data;
   }
 
   async addSigner({
@@ -134,7 +136,7 @@ export class ClickSignService {
     signerEmail: string;
     refusable?: boolean;
     envelopeId: string;
-  }): Promise<{ data: { id: string } }> {
+  }) {
     const response = await axios.post<{ data: { id: string } }>(
       `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/signers`,
       {
@@ -156,7 +158,10 @@ export class ClickSignService {
       { headers: this.getHeaders() }
     );
 
-    return response.data;
+    return {
+      id: response.data?.data.id,
+      userId: signerEmail,
+    };
   }
 
   async startEnvelope(envelopeId: string): Promise<void> {
@@ -204,5 +209,50 @@ export class ClickSignService {
       headers: this.getHeaders(),
     });
     return response.data;
+  }
+
+  async addRequirements({
+    envelopeId,
+    documentId,
+    requirements,
+  }: {
+    envelopeId: string;
+    documentId: string;
+    requirements: {
+      signer: string;
+      type: `${string}:${string}`;
+    }[];
+  }) {
+    await axios.post(
+      `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/bulk_requirements`,
+      {
+        "atomic:operations": requirements.map((requirement) => ({
+          op: "add",
+          data: {
+            type: "requirements",
+            attributes: {
+              action: requirement.type.split(":")[0],
+              role: requirement.type.split(":")[1],
+              auths: "email",
+            },
+            relationships: {
+              document: {
+                data: {
+                  id: documentId,
+                  type: "documents",
+                },
+              },
+              signer: {
+                data: {
+                  type: "signers",
+                  id: requirement.signer,
+                },
+              },
+            },
+          },
+        })),
+      },
+      { headers: this.getHeaders() }
+    );
   }
 }

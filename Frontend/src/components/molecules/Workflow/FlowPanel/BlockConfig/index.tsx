@@ -17,12 +17,13 @@ import nodesSchema, {
 } from "../../../../../pages/Portal/WorkflowDraft/nodesSchema";
 import Switch from "@components/atoms/Inputs/Switch";
 import { getFormWithFields } from "@apis/form";
-import { FaTrash } from "react-icons/fa";
+import { FaPlus, FaTrash } from "react-icons/fa";
 import TextArea from "@components/atoms/Inputs/TextArea";
 import { useParams } from "react-router-dom";
 import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 import NumberInput from "@components/atoms/Inputs/NumberInput";
 import CodeEditor from "@components/atoms/Inputs/CodeEditor";
+import { getUsersByRole } from "@apis/field";
 
 interface BlockConfigProps {
   type: NodeTypes;
@@ -480,6 +481,35 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
           </>
         );
 
+      case NodeTypes.Clicksign:
+        return (
+          <>
+            <Text
+              input={{
+                label: "Nome",
+                id: "name",
+                placeholder: "Nome do bloco",
+                required: true,
+              }}
+            />
+            <Switch
+              input={{
+                label: "Visivel",
+                id: "visible",
+                required: true,
+              }}
+            />
+
+            <ClicksignConfig />
+
+            <KeyValueArray
+              name="fields"
+              label={"Alterar campos da atividade"}
+              control={methods.control}
+            />
+          </>
+        );
+
       default:
         return <h1>Default</h1>;
     }
@@ -764,3 +794,108 @@ const KeyValueArray: React.FC<KeyValueArrayProps> = memo(
     );
   }
 );
+
+const ClicksignConfig: React.FC = () => {
+  const { control, watch } = useFormContext();
+
+  const { fields, append, remove } = useFieldArray({
+    name: "signers",
+    control: control,
+  });
+
+  const addSigner = useCallback(() => {
+    append({
+      user: {
+        name: "",
+        email: "",
+      },
+      type: "",
+    });
+  }, [append]);
+
+  return (
+    <Flex direction="column" gap={5}>
+      <Heading size="sm">Signatários</Heading>
+      <Flex justify="end">
+        <Button onClick={addSigner} leftIcon={<FaPlus />}>
+          Adicionar
+        </Button>
+      </Flex>
+      {fields.map((field, index) => (
+        <Flex key={field.id} gap={2} direction="column">
+          <Text
+            input={{
+              label: "Nome",
+              id: `signers[${index}].user.name`,
+              placeholder: "Nome",
+              required: true,
+            }}
+          />
+
+          <Text
+            input={{
+              label: "Email",
+              id: `signers[${index}].user.email`,
+              placeholder: "Email",
+              required: true,
+            }}
+          />
+
+          <Select
+            input={{
+              label: "Tipo",
+              id: `signers[${index}].type`,
+              placeholder: "Selecione",
+              options: ClicksignTypes,
+              required: true,
+            }}
+          />
+
+          <Button
+            size="sm"
+            onClick={() => remove(index)}
+            variant="outline"
+            colorScheme="red"
+          >
+            <FaTrash />
+          </Button>
+        </Flex>
+      ))}
+    </Flex>
+  );
+};
+
+const ClicksignTypes = [
+  {
+    label: "Contratada",
+    value: "agree:contractee",
+  },
+  {
+    label: "Contratante",
+    value: "agree:contractor",
+  },
+  {
+    label: "Empregado",
+    value: "agree:employee",
+  },
+  {
+    label: "Empregador",
+    value: "agree:employer",
+  },
+  {
+    label: "Representante Legal",
+    value: "agree:legal_representative",
+  },
+  {
+    label: "Sócio",
+    value: "agree:partner",
+  },
+  {
+    label: "Testemunha",
+    value: "agree:witness",
+  },
+  {
+    label: "Aprovador",
+    value: "agree:approve",
+  },
+];

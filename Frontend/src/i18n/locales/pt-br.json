@@ -391,6 +391,12 @@
       "conditional": {
         "title": "Condicional"
       },
+      "new_ticket": {
+        "title": "Criar Novo ticket"
+      },
+      "clicksign": {
+        "title": "Assinatura Clicksign"
+      },
       "web_request": {
         "title": "Requisição Web"
       },

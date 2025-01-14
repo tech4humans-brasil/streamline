@@ -10,6 +10,7 @@ export enum NodeTypes {
   WebRequest = "web_request",
   Script = "script",
   NewTicket = "new_ticket",
+  Clicksign = "clicksign",
 }
 
 export interface ISendEmail {
@@ -99,6 +100,23 @@ export type IConditional = {
   ifNotExists: string | null;
 };
 
+export interface IClicksign {
+  name: string;
+  visible: false;
+  documentKey: string;
+  signers: Array<{
+    user: {
+      name: {
+        name: string;
+        email: string;
+      }
+      email: string;
+    }
+    type: `${string}:${string}`;
+  }>;
+  fields: Record<string, string>;
+}
+
 export type IStep = {
   _id: string;
   id: string;
@@ -146,6 +164,10 @@ export type IStep = {
   | {
       type: NodeTypes.NewTicket;
       data: INewTicket;
+    }
+  | {
+      type: NodeTypes.Clicksign;
+      data: IClicksign;
     }
 );
 

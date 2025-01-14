@@ -5,6 +5,7 @@ import QueueWrapper, {
 import { IActivityStepStatus } from "../../models/client/Activity";
 import { IClicksign, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
+import UserRepository from "../../repositories/User";
 import { ClickSignService } from "../../services/clicksign";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 
@@ -20,6 +21,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       messageQueue;
 
     const activityRepository = new ActivityRepository(conn);
+    const userRepository = new UserRepository(conn);
 
     const activity = await activityRepository.findById({ id: activity_id });
 
@@ -65,9 +67,44 @@ const handler: QueueWrapperHandler<TMessage> = async (
       process.env.CLICKSIGN_API_KEY
     );
 
-    const { documentKey, name, fields } = data;
+    const { documentKey, name, fields, signers } = data;
 
     const fieldsReplaced: { key: string; value: string }[] = [];
+
+    const destination: {
+      user: { email: string; name: string };
+      type: string;
+    }[] = [];
+
+    for (const signer of signers) {
+      const user = signer.user;
+      let userName = user.name;
+      let userEmail = user.email;
+
+      if (user.name.startsWith("${{") && user.name.endsWith("}}")) {
+        userName = await replaceSmartValues({
+          conn,
+          activity_id: activity.toObject(),
+          replaceValues: user.name,
+        });
+      }
+
+      if (user.email.startsWith("${{") && user.email.endsWith("}}")) {
+        userEmail = await replaceSmartValues({
+          conn,
+          activity_id: activity.toObject(),
+          replaceValues: user.email,
+        });
+      }
+
+      destination.push({
+        user: {
+          name: userName,
+          email: userEmail,
+        },
+        type: signer.type,
+      });
+    }
 
     for (const [key, value] of Object.entries(fields)) {
       fieldsReplaced.push({
@@ -100,15 +137,24 @@ const handler: QueueWrapperHandler<TMessage> = async (
       workflowId: activity_workflow_id,
     });
 
-    const signers = data.signers.map((signer) =>
+    const addSignersPromises = destination.map((signer) =>
       clicksignService.addSigner({
-        signerEmail: signer.email,
-        signerName: signer.name,
+        signerName: signer.user.name,
+        signerEmail: signer.user.email,
         envelopeId,
       })
     );
 
-    await Promise.all(signers);
+    const signersIds = await Promise.all(addSignersPromises);
+
+    await clicksignService.addRequirements({
+      envelopeId,
+      documentId: document.id,
+      requirements: signers.map((signer) => ({
+        signer: signersIds.find((s) => s.userId === signer.user.email)?.id,
+        type: signer.type,
+      })),
+    });
 
     activityStep.status = IActivityStepStatus.idle;
 

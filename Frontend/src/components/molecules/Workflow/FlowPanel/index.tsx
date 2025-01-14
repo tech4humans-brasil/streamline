@@ -12,6 +12,7 @@ import { WebRequestIcon } from "@components/atoms/Workflow/Nodes/WebRequest";
 import { ScriptIcon } from "@components/atoms/Workflow/Nodes/Script";
 import Can from "@components/atoms/Can";
 import { NewTicketIcon } from "@components/atoms/Workflow/Nodes/NewTicket";
+import { ClicksignIcon } from "@components/atoms/Workflow/Nodes/Clicksign";
 
 const FlowPanel: React.FC = () => {
   return (
@@ -50,6 +51,9 @@ const FlowPanel: React.FC = () => {
         </PanelItem>
         <PanelItem nodeType={NodeTypes.NewTicket}>
           <NewTicketIcon />
+        </PanelItem>
+        <PanelItem nodeType={NodeTypes.Clicksign}>
+          <ClicksignIcon />
         </PanelItem>
         <Can permission="workflow.script">
           <PanelItem nodeType={NodeTypes.Script}>

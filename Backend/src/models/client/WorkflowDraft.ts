@@ -39,8 +39,11 @@ export interface IClicksign {
   visible: false;
   documentKey: string;
   signers: Array<{
-    name: string;
-    email: string;
+    user: {
+      name: string;
+      email: string;
+    }
+    type: `${string}:${string}`;
   }>;
   fields: Record<string, string>;
 }
