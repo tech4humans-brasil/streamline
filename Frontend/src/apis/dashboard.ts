@@ -141,28 +141,6 @@ export const getMyActivitiesPendingEvaluations = async ({
   return res.data.data;
 };
 
-type ReqBoardDefinitions = Response<
-  Pick<
-    IActivity,
-    "_id" | "name" | "description" | "protocol" | "evaluations" | "createdAt"
-  >[]
->;
-
-export const getBoardDefinitions = async ({
-  queryKey: [, page = "1", limit = "10"],
-}: {
-  queryKey: string[];
-}) => {
-  const res = await api.get<ReqBoardDefinitions>(
-    "/dashboard/board-definitions",
-    {
-      params: { page, limit },
-    }
-  );
-
-  return res.data.data;
-};
-
 export const getMyActivitiesTracking = async ({
   queryKey: [, page = "1", limit = "10"],
 }: {

@@ -100,3 +100,16 @@ export const exportActivity = async (id: string) => {
 
   return res.data.data;
 };
+
+export const addUsersInInteraction = async (data: {
+  users?: { userId: string; observation: string }[];
+  id: string;
+  interactionId: string;
+}) => {
+  const res = await api.patch<ReqActivity>(
+    `/activity/${data.id}/interaction/${data.interactionId}/users`,
+    data
+  );
+
+  return res.data.data;
+};

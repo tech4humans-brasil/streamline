@@ -206,7 +206,7 @@ export default new Http(handler)
     permission: "response.create",
     options: {
       methods: ["POST"],
-      route: "response/{form_id}/created",
+      route: "response/{form_id}/created/{parent_id?}/{automatic?}",
       extraOutputs: sbusOutputs,
     },
   });
