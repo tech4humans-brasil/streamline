@@ -14,8 +14,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import useAuth from "@hooks/useAuth";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import {  FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import InputText from "@components/atoms/Inputs/Text";
@@ -25,7 +24,6 @@ import Icon from "@components/atoms/Icon";
 import SwitchTheme from "@components/molecules/SwitchTheme";
 import { useTranslation } from "react-i18next";
 import LocaleSwap from "@components/atoms/LocaleSwap";
-import { IUserRoles } from "@interfaces/User";
 import GoogleAuth from "@components/molecules/GoogleAuth";
 
 const schema = z.object({
@@ -53,7 +51,6 @@ const Login: React.FC = () => {
   const { handleSubmit } = methods;
   const toast = useToast();
 
-  const [, setAuth] = useAuth();
   const navigate = useNavigate();
 
   const { mutateAsync, isPending } = useMutation({
