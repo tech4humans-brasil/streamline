@@ -9,7 +9,7 @@ interface Body {
   password: string;
 }
 
-type Token = {
+export type Token = {
   id: string;
   client: string;
 };

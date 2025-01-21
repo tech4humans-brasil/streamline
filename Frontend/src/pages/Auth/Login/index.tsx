@@ -51,33 +51,15 @@ const Login: React.FC = () => {
   });
 
   const { handleSubmit } = methods;
+  const toast = useToast();
 
-  const toast = useToast({
-    position: "top-right",
-    isClosable: true,
-  });
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: login,
     onSuccess: ({ data }) => {
-      toast({
-        title: "Login realizado com sucesso",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        icon: <FaCheckCircle />,
-      });
-      const user = setAuth(data.token);
-      navigate(
-        `${
-          user?.roles.includes(IUserRoles.admin) &&
-          !user.tutorials.includes("first-page")
-            ? "/welcome"
-            : redirect
-        }`
-      );
+      navigate(`/auth/two-step?redirect=${redirect}&token=${data.token}`);
     },
     onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
       toast({

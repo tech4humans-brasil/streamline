@@ -34,6 +34,10 @@ export type IUser = {
   isExternal: boolean;
   tutorials: string[];
   last_login: Date | null;
+  twoStepVerification: {
+    code: string | null;
+    expiration: Date | null;
+  };
 } & mongoose.Document;
 
 const userEquipmentAllocationSchema = new Schema<UserEquipmentAllocation>({
@@ -94,6 +98,10 @@ export const schema: Schema = new Schema<IUser>(
     ],
     tutorials: [{ type: String }],
     last_login: { type: Date, default: null },
+    twoStepVerification: {
+      code: { type: String, default: null },
+      expiration: { type: Date, default: null },
+    },
   },
   {
     timestamps: true,
