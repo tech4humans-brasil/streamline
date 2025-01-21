@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -74,7 +74,10 @@ const TwoStep: React.FC = () => {
   });
 
   const onSubmit = handleSubmit(async (data: FormData) => {
-    await mutateAsync({ verificationCode: data.verificationCode, token: resetToken });
+    await mutateAsync({
+      verificationCode: data.verificationCode,
+      token: resetToken,
+    });
   });
 
   const decodedToken = useMemo(() => {

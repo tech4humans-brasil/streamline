@@ -1,7 +1,6 @@
 import {
   FormControl,
   FormLabel,
-  NumberInput,
   PinInput as PinInputChackra,
   PinInputField,
   HStack,
