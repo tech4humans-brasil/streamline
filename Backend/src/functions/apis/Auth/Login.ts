@@ -5,7 +5,8 @@ import jwt from "../../../services/jwt";
 import { connect, connectAdmin } from "../../../services/mongo";
 import AdminClient from "../../../models/admin/Client";
 import UserRepository from "../../../repositories/User";
-import { Permissions } from "../../../services/permissions";
+import { sendEmail } from "../../../services/email";
+import emailTemplate from "../../../utils/emailTemplate";
 
 interface Body {
   email: string;
@@ -43,26 +44,61 @@ export const handler: HttpHandler = async (_, req, context) => {
     return res.unauthorized("User or password not found");
   }
 
-  user.last_login = new Date();
-  user.save();
+  const verificationCode = Math.floor(
+    100000 + Math.random() * 900000
+  ).toString();
+  user.twoStepVerification.code = verificationCode;
+  await user.save();
 
-  const permissions = Permissions.getPermissionsByRoles(user.roles);
+  await user.save();
 
-  const token = await jwt.sign({
+  const content = `
+    <p>Olá, ${user.name}!</p>
+    <p>Seu código de verificação é:</p>
+    
+    <div class="code">
+      <span>${verificationCode}</span>
+    </div>
+
+    <p>Se você não solicitou este código, por favor, ignore este e-mail.</p>
+`;
+
+  const contentCss = `
+    .code {
+      display: flex;
+      width: 100%;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    .code span {
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+      text-align: center;
+      background-color: #f5f5f5;
+    }
+  `;
+
+  const { html, css } = emailTemplate(content, contentCss);
+
+  await sendEmail(user.email, "Your verification code", html, css);
+
+  const token = await jwt.signResetPassword({
     id: user._id,
-    name: user.name,
-    matriculation: user.matriculation,
-    email: user.email,
-    roles: user.roles,
-    institutes: user.institutes,
-    slug: acronym,
     client: conn.name,
-    tutorials: user.tutorials,
-    permissions,
+    email: user.email,
   });
 
   return res.success({
     token,
+    message: "Verification code sent to your email",
   });
 };
 
