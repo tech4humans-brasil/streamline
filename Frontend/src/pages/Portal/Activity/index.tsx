@@ -30,6 +30,7 @@ const Activity: React.FC = () => {
   } = useQuery({
     queryKey: ["activity", id],
     queryFn: getActivity,
+    refetchInterval: 5000,
   });
 
   const { mutateAsync, isPending } = useMutation({

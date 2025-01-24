@@ -44,6 +44,7 @@ const FormEdit: React.FC<FormEditProps> = memo(({ formType }) => {
             remove={remove}
             swap={swap}
             isEnd={index === fields.length - 1}
+            insert={insert}
           />
           <ButtonAdd length={fields.length} {...{ insert, index, formType }} />
         </Flex>
