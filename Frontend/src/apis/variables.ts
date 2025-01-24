@@ -3,7 +3,6 @@ import Response from "@interfaces/Response";
 import api from "@services/api";
 
 type ReqProjects = Response<{ variables: IVariable[] }>;
-type ReqProject = Response<IVariable>;
 
 export const getVariables = async ({
   queryKey: [, id],
