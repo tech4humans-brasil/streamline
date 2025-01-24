@@ -78,9 +78,16 @@ const VariableForm: React.FC<VariableFormProps> = () => {
     enabled: !!project,
   });
 
+  const methods = useForm<VariableFormSchema>({
+    resolver: zodResolver(variableSchema),
+    defaultValues: {
+      variables: variables?.variables ?? [],
+    },
+  });
+
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createOrUpdateVariable,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: t("variables.saved"),
         status: "success",
@@ -88,7 +95,8 @@ const VariableForm: React.FC<VariableFormProps> = () => {
         isClosable: true,
         position: "top-right",
       });
-      queryClient.invalidateQueries({ queryKey: ["variables"] });
+      queryClient.setQueryData(["variables", project ?? ""], data);
+      methods.reset(data);
     },
     onError: () => {
       toast({
@@ -98,13 +106,6 @@ const VariableForm: React.FC<VariableFormProps> = () => {
         isClosable: true,
         position: "top-right",
       });
-    },
-  });
-
-  const methods = useForm<VariableFormSchema>({
-    resolver: zodResolver(variableSchema),
-    defaultValues: {
-      variables: variables?.variables ?? [],
     },
   });
 
