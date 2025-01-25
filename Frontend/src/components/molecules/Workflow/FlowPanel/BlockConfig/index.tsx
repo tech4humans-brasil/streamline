@@ -132,6 +132,7 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
                 label: "Email do Remetente",
                 type: "email",
                 placeholder: "Caso não queira usar o padrão",
+                required: false,
               }}
             />
             <CreatableSelect

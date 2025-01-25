@@ -24,7 +24,7 @@ interface THttpRequest {
   body: Object;
   query: Object;
   params: HttpRequestParams;
-  headers: Object;
+  headers: Record<string, string>;
   method: string;
   url: string;
   user: User | null;

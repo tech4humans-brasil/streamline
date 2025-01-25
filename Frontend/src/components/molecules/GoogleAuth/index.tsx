@@ -13,9 +13,7 @@ import { useCallback } from "react";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-const GoogleAuth = () => {
+const GoogleAuth = ({ clientId = null }: { clientId: string | null }) => {
   const toast = useToast();
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
@@ -57,7 +55,7 @@ const GoogleAuth = () => {
 
   const handleGoogleSuccess = useCallback(
     (credentialResponse: CredentialResponse) => {
-      if (!credentialResponse.credential) {
+      if (!credentialResponse.credential || !clientId) {
         return;
       }
 
@@ -68,6 +66,10 @@ const GoogleAuth = () => {
     },
     [mutateAsync]
   );
+
+  if (!clientId) {
+    return null;
+  }
 
   return (
     <GoogleOAuthProvider clientId={clientId}>

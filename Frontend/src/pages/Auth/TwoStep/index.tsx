@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import PinInput from "@components/atoms/Inputs/PinInput";
 import { jwtDecode } from "jwt-decode";
 import { useToast } from "@chakra-ui/react";
+import { useConfig } from "@hooks/useConfig";
 
 const schema = z.object({
   verificationCode: z.string().min(6, "O código deve ter no mínimo 6 dígitos"),
@@ -35,6 +36,8 @@ const TwoStep: React.FC = () => {
 
   const redirect = searchParams.get("redirect") ?? "/portal";
   const resetToken = searchParams.get("token");
+
+  const { data } = useConfig();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -109,8 +112,16 @@ const TwoStep: React.FC = () => {
           bg={"bg.card"}
         >
           <CardBody>
-            <Flex alignItems="center" justifyContent="center" gap="4">
-              <Icon w="60px" />
+            <Flex
+              alignItems="center"
+              justifyContent="center"
+              direction="column"
+            >
+              {data?.logo ? (
+                <img src={data.logo?.url} alt="Logo" width="150px" />
+              ) : (
+                <Icon width="60px" />
+              )}
               <Text
                 fontSize="xl"
                 fontWeight="bold"

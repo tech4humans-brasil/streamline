@@ -409,7 +409,7 @@
       "change_status": {
         "title": "Alterar status"
       },
-      "new_ticket":{
+      "new_ticket": {
         "title": "Criar ticket"
       },
       "script": {
@@ -557,5 +557,23 @@
   },
   "physicalDamages": {
     "additionalInformation": "Informações adicionais"
+  },
+  "admin": {
+    "title": "Administração",
+    "updated": "Administração atualizada com sucesso",
+    "error": "Erro ao atualizar administração",
+    "fields": {
+      "name": "Nome",
+      "acronym": "Sigla",
+      "domain": "Domínio",
+      "emailSender": "Remetente do Email",
+      "sendgridApiKey": "Chave API Sendgrid",
+      "googleClientId": "ID do Cliente Google",
+      "googleClientSecret": "Segredo do Cliente Google",
+      "googleRedirectUri": "URI de Redirecionamento Google",
+      "logo": "Logo"
+    },
+    "cancel": "Cancelar",
+    "submit": "Salvar"
   }
 }

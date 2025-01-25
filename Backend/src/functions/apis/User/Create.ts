@@ -6,8 +6,10 @@ import InstituteRepository from "../../../repositories/Institute";
 import { sendEmail } from "../../../services/email";
 import emailTemplate from "../../../utils/emailTemplate";
 import jwt from "../../../services/jwt";
+import AdminRepository from "../../../repositories/Admin";
+import { connectAdmin } from "../../../services/mongo";
 
-const handler: HttpHandler = async (conn, req, context) => {
+const handler: HttpHandler = async (conn, req) => {
   const data = req.body as IUser;
 
   const instituteRepository = new InstituteRepository(conn);
@@ -48,25 +50,34 @@ const handler: HttpHandler = async (conn, req, context) => {
     client: conn.name,
   });
 
+  const connAdmin = await connectAdmin();
+  const admin = await new AdminRepository(connAdmin).findOne({
+    where: {
+      acronym: conn.name,
+    },
+  });
+
   const content = `
     <p>Olá, ${user.name}!</p>
-    <p>Seu cadastro foi realizado com sucesso em nosso site.</p>
+    <p>Seu cadastro foi realizado com sucesso em nosso site por ${
+      admin?.name
+    }.</p>
     <p>Sua conta foi criada em ${new Date().toLocaleString()}.</p>
     <p>Aqui estão algumas informações importantes:</p>
     <ul>
         <li>O domínio de sua conta é: ${conn.name}</li>
         <li>Defina sua senha aqui: <a href="${
-          process.env.FRONTEND_URL
+          admin?.config.domain ?? process.env.FRONTEND_URL
         }/auth/alter-password/${token}">Acessar o painel</a></li>
         <li>Verifique seu e-mail para mais instruções sobre como aproveitar ao máximo nossos serviços.</li>
     </ul>
 `;
 
-  const { html, css } = emailTemplate(content);
+  const { html, css } = emailTemplate(content, "", admin?.logo?.url ?? null);
 
   await sendEmail(
     user.email,
-    "Streamline | Cadastro realizado com sucesso",
+    `${admin?.name} | Bem-vindo ao Streamline`,
     html,
     css
   );
@@ -87,7 +98,9 @@ export default new Http(handler)
       email: schema.string().required().email(),
       isExternal: schema.boolean().default(false),
       roles: schema
-        .array(schema.mixed().oneOf(["admin", "student", "teacher", "equipment"]))
+        .array(
+          schema.mixed().oneOf(["admin", "student", "teacher", "equipment"])
+        )
         .required(),
     }),
   }))
