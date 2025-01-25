@@ -23,7 +23,8 @@ import { useParams } from "react-router-dom";
 import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 import NumberInput from "@components/atoms/Inputs/NumberInput";
 import CodeEditor from "@components/atoms/Inputs/CodeEditor";
-import { getUsersByRole } from "@apis/field";
+import { listClicksignTemplates } from "@apis/clicksign";
+import { ClicksignRequirements } from "@utils/clicksign";
 
 interface BlockConfigProps {
   type: NodeTypes;
@@ -527,7 +528,7 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
 
             <KeyValueArray
               name="fields"
-              label={"Alterar campos da atividade"}
+              label={"Variaveis para preencher no template"}
               control={methods.control}
             />
           </>
@@ -819,12 +820,28 @@ const KeyValueArray: React.FC<KeyValueArrayProps> = memo(
 );
 
 const ClicksignConfig: React.FC = () => {
-  const { control, watch } = useFormContext();
+  const { control } = useFormContext();
 
   const { fields, append, remove } = useFieldArray({
     name: "signers",
     control: control,
   });
+
+  const { data: templatesData, isLoading: isLoadingTemplates } = useQuery({
+    queryKey: ["clicksign", "templates"],
+    queryFn: listClicksignTemplates,
+    retryOnMount: false,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  const templates = useMemo(() => {
+    if (!templatesData) return [];
+
+    return templatesData.data.map((template) => ({
+      label: template.name,
+      value: template.id,
+    }));
+  }, [templatesData]);
 
   const addSigner = useCallback(() => {
     append({
@@ -869,7 +886,7 @@ const ClicksignConfig: React.FC = () => {
               label: "Tipo",
               id: `signers[${index}].type`,
               placeholder: "Selecione",
-              options: ClicksignTypes,
+              options: ClicksignRequirements,
               required: true,
             }}
           />
@@ -884,41 +901,19 @@ const ClicksignConfig: React.FC = () => {
           </Button>
         </Flex>
       ))}
+
+      <Divider />
+
+      <Select
+        input={{
+          label: "Template",
+          id: "documentKey",
+          placeholder: "Selecione um template do clicksign",
+          options: templates,
+          required: true,
+        }}
+        isLoading={isLoadingTemplates}
+      />
     </Flex>
   );
 };
-
-const ClicksignTypes = [
-  {
-    label: "Contratada",
-    value: "agree:contractee",
-  },
-  {
-    label: "Contratante",
-    value: "agree:contractor",
-  },
-  {
-    label: "Empregado",
-    value: "agree:employee",
-  },
-  {
-    label: "Empregador",
-    value: "agree:employer",
-  },
-  {
-    label: "Representante Legal",
-    value: "agree:legal_representative",
-  },
-  {
-    label: "Sócio",
-    value: "agree:partner",
-  },
-  {
-    label: "Testemunha",
-    value: "agree:witness",
-  },
-  {
-    label: "Aprovador",
-    value: "agree:approve",
-  },
-];

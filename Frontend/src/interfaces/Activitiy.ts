@@ -1,3 +1,4 @@
+import { FileUploaded } from "./Answer";
 import IComment from "./Comments";
 import IForm from "./Form";
 import IFormDraft from "./FormDraft";
@@ -42,6 +43,27 @@ export type IActivityInteractions = {
   finished: boolean;
 };
 
+export type IActivityDocument = {
+  _id: string;
+  activity_workflow_id: string;
+  activity_step_id: string;
+  envelope_id: string;
+  documents: Array<{
+    id: string;
+    name: string;
+    closed: boolean;
+    file: FileUploaded | null;
+    users: Array<{
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      signed: boolean;
+    }>;
+  }>;
+  finished: boolean;
+};
+
 export enum IActivityStepStatus {
   idle = "idle",
   inQueue = "in_queue",
@@ -77,6 +99,7 @@ export type IActivity = {
   due_date: Date | string | null;
   comments: IComment[];
   interactions: IActivityInteractions[];
+  documents: IActivityDocument[];
   workflows: ActivityWorkflow[];
   description: string;
   createdAt: string;

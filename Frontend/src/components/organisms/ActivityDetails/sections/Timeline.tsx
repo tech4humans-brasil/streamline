@@ -20,7 +20,7 @@ import { IStep, NodeTypes } from "@interfaces/WorkflowDraft";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { GoMilestone, GoTag, GoWorkflow } from "react-icons/go";
 import { FaEye, FaPlusSquare, FaWpforms } from "react-icons/fa";
-import { BiGitRepoForked, BiMailSend } from "react-icons/bi";
+import { BiGitRepoForked, BiLogoJavascript, BiMailSend } from "react-icons/bi";
 import useActivity from "@hooks/useActivity";
 import IFormDraft, { IField } from "@interfaces/FormDraft";
 import ExtraFields from "./ExtraFields";
@@ -30,6 +30,8 @@ import Accordion from "@components/atoms/Accordion";
 import useAuth from "@hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import AddInteractionUser from "./AddInteractionUser";
+import { AiFillSignature } from "react-icons/ai";
+import { ClicksignRequirements } from "@utils/clicksign";
 
 const statusMap = {
   idle: "Aguardando Resposta",
@@ -138,6 +140,10 @@ const TimelineStepItem = ({
         return GoMilestone;
       case NodeTypes.NewTicket:
         return FaPlusSquare;
+      case NodeTypes.Clicksign:
+        return AiFillSignature;
+      case NodeTypes.Script:
+        return BiLogoJavascript;
       default:
         return FaWpforms;
     }
@@ -152,6 +158,15 @@ const TimelineStepItem = ({
 
     return null;
   }, [data._id, step?.type, interactions]);
+
+  const documents = useMemo(() => {
+    if (step?.type !== NodeTypes.Clicksign) {
+      return null;
+    }
+
+    return activity?.documents.find((doc) => doc.activity_step_id === data._id)
+      ?.documents;
+  }, [activity?.documents, data._id, step?.type]);
 
   const handleOpenModalItem = useCallback(
     (data: IFormDraft | null) => {
@@ -270,6 +285,31 @@ const TimelineStepItem = ({
               Acessar Ticket
             </Button>
           </Link>
+        )}
+
+        {documents && (
+          <Box w="100%">
+            {documents?.map((document) => (
+              <>
+                <Text fontWeight="bold">{document.name}</Text>
+                <Flex gap={2} alignItems="center">
+                  {document.users.map((signer) => (
+                    <Box key={signer.id} p={2}>
+                      <Text fontWeight="bold">{signer.name}</Text>
+                      <Text fontSize={"sm"}>{signer.email}</Text>
+                      <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
+                        {ClicksignRequirements.find(
+                          (req) => req.value === signer.role
+                        )?.label || "Signatário"}
+                      </Tag>
+                      <Divider my={2} />
+                    </Box>
+                  ))}
+                </Flex>
+                <Divider my={2} />
+              </>
+            ))}
+          </Box>
         )}
       </Flex>
     </MilestoneItem>

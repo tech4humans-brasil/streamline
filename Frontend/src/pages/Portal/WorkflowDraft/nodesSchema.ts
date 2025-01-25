@@ -104,11 +104,19 @@ const schemas: NodeSchemas = {
       .min(3, { message: "Chave do documento é obrigatória" }),
     signers: z.array(
       z.object({
-        user: z.string().min(3, { message: "Selecione um usuário" }),
+        user: z.object({
+          name: z.string().min(3, { message: "Nome é obrigatório" }),
+          email: z.string().min(3,{ message: "Email é obrigatório" }),
+        }),
         type: z.string().min(3, { message: "Selecione um tipo" }),
       })
     ),
-    fields: z.record(z.string()),
+    fields: z.array(
+      z.object({
+        key: z.string().min(3, { message: "Selecione uma variavel" }),
+        value: z.string().min(3, { message: "Selecione o valor" }),
+      })
+    ),
     visible: z.boolean().default(true),
   }),
   [NodeTypes.WebRequest]: z.object({

@@ -42,10 +42,13 @@ export interface IClicksign {
     user: {
       name: string;
       email: string;
-    }
+    };
     type: `${string}:${string}`;
   }>;
-  fields: Record<string, string>;
+  fields: Array<{
+    key: string;
+    value: string;
+  }>;
 }
 
 export interface ICircle {

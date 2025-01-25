@@ -5,9 +5,23 @@ import { ClickSignService } from "../../../services/clicksign";
 const handler: HttpHandler = async () => {
   const clicksignService = new ClickSignService(process.env.CLICKSIGN_API_KEY);
 
-  const templates = await clicksignService.listTemplates();
+  try {
+    const response = await clicksignService.listTemplates().catch((err) => {
+      console.error(err.message);
+      throw res.forbidden("Failed to list templates");
+    });
 
-  return res.success(templates);
+    const templates = response.data.map((template) => ({
+      id: template.id,
+      name: template.attributes.name,
+      created: template.attributes.created,
+      modified: template.attributes.modified,
+    }));
+
+    return res.success(templates);
+  } catch (err) {
+    return res.error(err.status, null, err.message);
+  }
 };
 
 export default new Http(handler).configure({

@@ -8,6 +8,7 @@ import ActivityRepository from "../../repositories/Activity";
 import UserRepository from "../../repositories/User";
 import { ClickSignService } from "../../services/clicksign";
 import replaceSmartValues from "../../utils/replaceSmartValues";
+import sendNextQueue from "../../utils/sendNextQueue";
 
 interface TMessage extends GenericMessage {}
 
@@ -73,7 +74,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const destination: {
       user: { email: string; name: string };
-      type: string;
+      type: `${string}:${string}`;
     }[] = [];
 
     for (const signer of signers) {
@@ -106,7 +107,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       });
     }
 
-    for (const [key, value] of Object.entries(fields)) {
+    for (const { key, value } of fields) {
       fieldsReplaced.push({
         key: key,
         value: await replaceSmartValues({
@@ -121,21 +122,30 @@ const handler: QueueWrapperHandler<TMessage> = async (
       data: { id: envelopeId },
     } = await clicksignService
       .createEnvelope({
-        name,
+        name: `Envelope ${activity.protocol} | ${name}`,
       })
       .catch((err) => {
-        throw err;
+        throw "Error creating envelope " + err.message;
       });
+
+    console.log("Envelope created", envelopeId);
+
+    const documentName = `${name}.docx`;
 
     const document = await clicksignService.addDocument({
       templateKey: documentKey,
       envelopeId,
-      content: fields,
-      documentName: name,
+      content: fieldsReplaced.reduce((acc, field) => {
+        acc[field.key] = field.value;
+        return acc;
+      }, {}),
+      documentName,
       stepId: activity_step_id,
       ticketId: activity_id,
       workflowId: activity_workflow_id,
     });
+
+    console.log("Document added", document.id);
 
     const addSignersPromises = destination.map((signer) =>
       clicksignService.addSigner({
@@ -147,22 +157,65 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const signersIds = await Promise.all(addSignersPromises);
 
-    await clicksignService.addRequirements({
-      envelopeId,
-      documentId: document.id,
-      requirements: signers.map((signer) => ({
-        signer: signersIds.find((s) => s.userId === signer.user.email)?.id,
-        type: signer.type,
-      })),
-    });
+    console.log("Signers added", signersIds);
 
-    activityStep.status = IActivityStepStatus.idle;
+    await clicksignService
+      .addRequirements({
+        envelopeId,
+        documentId: document.id,
+        requirements: destination.map((signer) => ({
+          signer: signersIds.find((s) => s.userId === signer.user.email)?.id,
+          type: signer.type,
+        })),
+      })
+      .catch((err) => {
+        throw "Error adding requirements " + err.message;
+      });
+
+    console.log("Requirements added");
 
     await clicksignService.startEnvelope(envelopeId);
 
+    for (const signer of signersIds) {
+      await clicksignService
+        .sendNotification({
+          envelopeId,
+          signerId: signer.id,
+          message: `Você tem um documento para assinar do ticket ${activity.protocol}`,
+        })
+        .catch((err) => {
+          console.error("Error sending notification " + err.message);
+        });
+    }
+
+    activity.documents.push({
+      activity_workflow_id,
+      activity_step_id,
+      envelope_id: envelopeId,
+      documents: [
+        {
+          id: document.id,
+          name: documentName,
+          fields: fieldsReplaced,
+          closed: true,
+          users: destination.map((signer) => ({
+            id: signersIds.find((s) => s.userId === signer.user.email)?.id,
+            name: signer.user.name,
+            email: signer.user.email,
+            role: signer.type,
+          })),
+        },
+      ],
+      finished: true,
+    });
     await activity.save();
+
+    await sendNextQueue({
+      conn,
+      activity,
+      context,
+    });
   } catch (err) {
-    console.error(err);
     throw err;
   }
 };

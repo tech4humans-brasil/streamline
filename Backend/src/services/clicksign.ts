@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
-const CLICKSIGN_API_URL = "https://sandbox.clicksign.com/api/v3";
+const CLICKSIGN_API_URL = "https://app.clicksign.com/api/v3";
 
 interface ClickSignLinks {
   self: string;
@@ -41,14 +41,16 @@ export class ClickSignService {
   private apiKey: string;
 
   constructor(apiKey: string) {
+    if (!apiKey) {
+      throw new Error("Missing ClickSign API key");
+    }
+
     this.apiKey = apiKey;
   }
 
   private getHeaders() {
     return {
       Authorization: this.apiKey,
-      Accept: "application/vnd.api+json",
-      "Content-Type": "application/vnd.api+json",
     };
   }
 
@@ -56,8 +58,7 @@ export class ClickSignService {
     name,
     locale = "pt-BR",
     autoClose = true,
-    deadline_at,
-    remind_interval,
+    remind_interval = 3,
   }: {
     name: string;
     locale?: string;
@@ -74,13 +75,14 @@ export class ClickSignService {
             name,
             locale,
             auto_close: autoClose,
-            deadline_at,
             remind_interval,
+            block_after_refusal: true,
           },
         },
       },
       { headers: this.getHeaders() }
     );
+
     return response.data;
   }
 
@@ -101,29 +103,68 @@ export class ClickSignService {
     workflowId: string;
     stepId: string;
   }) {
-    const response = await axios.post<{ data: { id: string } }>(
-      `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/documents`,
-      {
-        data: {
-          type: "documents",
-          attributes: {
-            filename: documentName,
-            template: {
-              key: templateKey,
-              data: content,
-            },
-            metadata: {
-              ticketId,
-              workflowId,
-              stepId,
+    const response = await axios
+      .post<{ data: { id: string } }>(
+        `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/documents`,
+        {
+          data: {
+            type: "documents",
+            attributes: {
+              filename: documentName,
+              template: {
+                key: templateKey,
+                data: content,
+              },
+              metadata: {
+                ticketId,
+                workflowId,
+                stepId,
+              },
             },
           },
         },
-      },
-      { headers: this.getHeaders() }
-    );
+        { headers: this.getHeaders() }
+      )
+      .catch((err: AxiosError) => {
+        throw new Error(
+          `Error adding document ${err.message} ${JSON.stringify(
+            err.response?.data
+          )}`
+        );
+      });
 
     return response.data?.data;
+  }
+
+  async sendNotification({
+    envelopeId,
+    message = "",
+    signerId,
+  }: {
+    envelopeId: string;
+    message?: string;
+    signerId: string;
+  }) {
+    await axios
+      .post(
+        `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/signers/${signerId}/notifications`,
+        {
+          data: {
+            type: "notifications",
+            attributes: {
+              message,
+            },
+          },
+        },
+        { headers: this.getHeaders() }
+      )
+      .catch((err: AxiosError) => {
+        throw new Error(
+          `Error sending notification ${err.message} ${JSON.stringify(
+            err.response?.data
+          )}`
+        );
+      });
   }
 
   async addSigner({
@@ -137,26 +178,33 @@ export class ClickSignService {
     refusable?: boolean;
     envelopeId: string;
   }) {
-    const response = await axios.post<{ data: { id: string } }>(
-      `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/signers`,
-      {
-        data: {
-          type: "signers",
-          attributes: {
-            email: signerEmail,
-            name: signerName,
-            has_documentation: true,
-            refusable,
-            communicate_events: {
-              document_signed: "email",
-              signature_request: "sms",
-              signature_reminder: "email",
+    const response = await axios
+      .post<{ data: { id: string } }>(
+        `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/signers`,
+        {
+          data: {
+            type: "signers",
+            attributes: {
+              email: signerEmail,
+              name: signerName,
+              refusable,
+              communicate_events: {
+                document_signed: "email",
+                signature_request: "email",
+                signature_reminder: "email",
+              },
             },
           },
         },
-      },
-      { headers: this.getHeaders() }
-    );
+        { headers: this.getHeaders() }
+      )
+      .catch((err: AxiosError) => {
+        throw new Error(
+          `Error adding signer ${err.message} ${JSON.stringify(
+            err.response?.data
+          )}`
+        );
+      });
 
     return {
       id: response.data?.data.id,
@@ -165,19 +213,27 @@ export class ClickSignService {
   }
 
   async startEnvelope(envelopeId: string): Promise<void> {
-    await axios.post(
-      `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/start`,
-      {
-        data: {
-          id: envelopeId,
-          type: "envelopes",
-          attributes: {
-            status: "running",
+    await axios
+      .patch(
+        `${CLICKSIGN_API_URL}/envelopes/${envelopeId}`,
+        {
+          data: {
+            id: envelopeId,
+            type: "envelopes",
+            attributes: {
+              status: "running",
+            },
           },
         },
-      },
-      { headers: this.getHeaders() }
-    );
+        { headers: this.getHeaders() }
+      )
+      .catch((err: AxiosError) => {
+        throw new Error(
+          `Error starting envelope ${err.message} ${JSON.stringify(
+            err.response?.data
+          )}`
+        );
+      });
   }
 
   async listTemplates() {
@@ -223,36 +279,73 @@ export class ClickSignService {
       type: `${string}:${string}`;
     }[];
   }) {
-    await axios.post(
-      `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/bulk_requirements`,
-      {
-        "atomic:operations": requirements.map((requirement) => ({
-          op: "add",
-          data: {
-            type: "requirements",
-            attributes: {
-              action: requirement.type.split(":")[0],
-              role: requirement.type.split(":")[1],
-              auths: "email",
-            },
-            relationships: {
-              document: {
+    for (const requirement of requirements) {
+      const role = requirement.type.split(":")[1];
+      console.log("Adding requirement", role, requirement.signer);
+      await axios
+        .post(
+          `${CLICKSIGN_API_URL}/envelopes/${envelopeId}/bulk_requirements`,
+          {
+            "atomic:operations": [
+              {
+                op: "add",
                 data: {
-                  id: documentId,
-                  type: "documents",
+                  type: "requirements",
+                  attributes: {
+                    action: "provide_evidence",
+                    auth: "email",
+                  },
+                  relationships: {
+                    document: {
+                      data: {
+                        type: "documents",
+                        id: documentId,
+                      },
+                    },
+                    signer: {
+                      data: {
+                        type: "signers",
+                        id: requirement.signer,
+                      },
+                    },
+                  },
                 },
               },
-              signer: {
+              {
+                op: "add",
                 data: {
-                  type: "signers",
-                  id: requirement.signer,
+                  type: "requirements",
+                  attributes: {
+                    action: "agree",
+                    role: role,
+                  },
+                  relationships: {
+                    document: {
+                      data: {
+                        type: "documents",
+                        id: documentId,
+                      },
+                    },
+                    signer: {
+                      data: {
+                        type: "signers",
+                        id: requirement.signer,
+                      },
+                    },
+                  },
                 },
               },
-            },
+            ],
           },
-        })),
-      },
-      { headers: this.getHeaders() }
-    );
+          { headers: this.getHeaders() }
+        )
+        .catch((err: AxiosError) => {
+          throw new Error(
+            `Error adding requirements ${err.message} ${JSON.stringify(
+              err.response?.data
+            )}`
+          );
+        });
+    }
   }
 }

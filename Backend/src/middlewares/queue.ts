@@ -11,7 +11,11 @@ import sbusOutputs from "../utils/sbusOutputs";
 import { NodeTypes } from "../models/client/WorkflowDraft";
 import { sendDiscordBlockError } from "../services/discord";
 
-const IS_IDLE_BLOCK = [NodeTypes.Interaction, NodeTypes.WebRequest];
+const IS_IDLE_BLOCK = [
+  NodeTypes.Interaction,
+  NodeTypes.WebRequest,
+  //NodeTypes.Clicksign,
+];
 
 export interface GenericMessage {
   activity_id: string;

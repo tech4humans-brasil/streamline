@@ -163,6 +163,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
     activity,
   }).catch((error) => {
     console.error("Error sending to queue", error);
+    activity.deleteOne();
     throw new Error(error);
   });
 
