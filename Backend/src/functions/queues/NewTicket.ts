@@ -4,10 +4,12 @@ import QueueWrapper, {
 } from "../../middlewares/queue";
 import { INewTicket, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
-import { handler as NewTicket } from "../apis/Response/Created";
 import sendNextQueue from "../../utils/sendNextQueue";
 import { IUserRoles } from "../../models/client/User";
 import replaceSmartValues from "../../utils/replaceSmartValues";
+import jwt from "../../services/jwt";
+import axios from "axios";
+import { IActivity } from "../../models/client/Activity";
 
 interface TMessage extends GenericMessage {}
 
@@ -77,50 +79,40 @@ const handler: QueueWrapperHandler<TMessage> = async (
     }
     console.log("body", body);
 
-    const newActivity = await NewTicket(
-      conn,
-      {
-        body: {
-          ...body,
-        },
-        params: {
-          form_id,
-          parent_id: activity_id.toString(),
-          automatic: "true",
-        },
-        query: undefined,
-        headers: {},
-        method: "POST",
-        url: "",
-        user: {
-          ...activity.users[0],
-          id: activity.users[0]._id.toString(),
-          slug: conn.name,
-          roles: IUserRoles.student,
-          permissions: [],
-          matriculation: activity.users[0].matriculation || "",
-          institutes: null,
-        },
-        bodyUsed: false,
-      },
-      context
-    ).catch((err) => {
-      throw err;
+    const token = jwt.sign({
+      id: activity.users[0]._id.toString(),
+      slug: conn.name,
+      roles: IUserRoles.student,
+      permissions: ["response.create"],
+      matriculation: activity.users[0].matriculation || "",
+      institutes: null,
     });
+
+    const HOST = process.env.WEBSITE_HOSTNAME.includes("localhost")
+      ? `http://${process.env.WEBSITE_HOSTNAME}`
+      : `https://${process.env.WEBSITE_HOSTNAME}`;
+
+    const newActivity = await axios.post<{ data: IActivity }>(
+      `${HOST}/api/response/${form_id}/created/${activity_id}/true`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!newActivity || newActivity.status !== 201) {
       throw new Error(
-        "Error creating new ticket" + newActivity?.body?.valueOf()
+        "Error creating new ticket" + newActivity?.data?.valueOf()
       );
     }
 
-    const newActivityObj = JSON.parse(newActivity.body?.toString()) as {
-      data: { _id: string };
-    };
+    const newActivityObj = newActivity.data;
 
     activityStep.data = {
       ...activityStep.data,
-      new_ticket: newActivityObj.data._id,
+      new_ticket: newActivityObj.data._id.toString(),
     };
 
     await sendNextQueue({

@@ -409,6 +409,9 @@
       "change_status": {
         "title": "Alterar status"
       },
+      "new_ticket":{
+        "title": "Criar ticket"
+      },
       "script": {
         "title": "Script"
       }

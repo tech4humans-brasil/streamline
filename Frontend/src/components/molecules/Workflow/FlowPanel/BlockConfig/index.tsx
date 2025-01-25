@@ -254,13 +254,36 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
                 required: true,
               }}
             />
+
+            <Switch
+              input={{
+                label: "Adiar seleção de usuários",
+                id: "canAddParticipants",
+                required: false,
+              }}
+            />
+
+            {watch("canAddParticipants") && (
+              <Select
+                input={{
+                  label:
+                    "Adicione quem pode adicionar usúarios (Usuarios add no 'Destinarario' possuem por padrão)",
+                  id: "permissionAddParticipants",
+                  placeholder: "Selecione um ou mais usuários",
+                  options: formsData?.users ?? [],
+                  required: false,
+                }}
+                isMulti
+              />
+            )}
+
             <Select
               input={{
                 label: "Destinatario",
                 id: "to",
-                placeholder: "Selecione um formulário",
+                placeholder: "Selecione um ou mais usuários",
                 options: formsData?.users ?? [],
-                required: true,
+                required: !watch("canAddParticipants"),
               }}
               isMulti
             />

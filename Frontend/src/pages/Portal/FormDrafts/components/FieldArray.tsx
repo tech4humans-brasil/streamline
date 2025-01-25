@@ -2,14 +2,15 @@ import { Flex, Button, useColorModeValue } from "@chakra-ui/react";
 import Text from "@components/atoms/Inputs/Text";
 import Select from "@components/atoms/Inputs/Select";
 import { formFormSchema } from "../schema";
-import { memo, useEffect } from "react";
+import { memo, useCallback, useEffect } from "react";
 import {
   FieldArrayWithId,
+  UseFieldArrayInsert,
   UseFieldArrayRemove,
   UseFieldArraySwap,
   useFormContext,
 } from "react-hook-form";
-import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaCopy, FaTrash } from "react-icons/fa";
 import FieldArrayOption from "@components/atoms/FieldArrayOption";
 import Switch from "@components/atoms/Inputs/Switch";
 import Number from "@components/atoms/Inputs/NumberInput";
@@ -42,11 +43,12 @@ interface FieldFormsProps {
   index: number;
   remove: UseFieldArrayRemove;
   swap: UseFieldArraySwap;
+  insert: UseFieldArrayInsert<formFormSchema, "fields">;
   isEnd: boolean;
 }
 
 const FieldArray: React.FC<FieldFormsProps> = memo(
-  ({ field, index, remove, swap, isEnd }) => {
+  ({ field, index, remove, swap, isEnd, insert }) => {
     const border = useColorModeValue("gray.200", "gray.600");
 
     const { watch, setValue } = useFormContext<formFormSchema>();
@@ -56,6 +58,12 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
     const haveOptions = ["select", "multiselect", "radio", "checkbox"].includes(
       fieldType
     );
+
+    const handleDuplicate = useCallback(() => {
+      const newField = { ...field };
+      newField.id = "new" + field.id;
+      insert(index + 1, newField);
+    }, [field, insert, index, length]);
 
     useEffect(() => {
       if (fieldType === FieldTypes.placeholder) {
@@ -90,6 +98,16 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
           right="4"
           zIndex="1"
         >
+          <Button
+            colorScheme="blue"
+            variant="outline"
+            size="sm"
+            onClick={handleDuplicate}
+            isDisabled={field.system}
+          >
+            <FaCopy />
+          </Button>
+
           <Button
             colorScheme="blue"
             variant="outline"

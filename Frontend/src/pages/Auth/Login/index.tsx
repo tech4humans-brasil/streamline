@@ -14,8 +14,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import useAuth from "@hooks/useAuth";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import {  FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import InputText from "@components/atoms/Inputs/Text";
@@ -25,7 +24,6 @@ import Icon from "@components/atoms/Icon";
 import SwitchTheme from "@components/molecules/SwitchTheme";
 import { useTranslation } from "react-i18next";
 import LocaleSwap from "@components/atoms/LocaleSwap";
-import { IUserRoles } from "@interfaces/User";
 import GoogleAuth from "@components/molecules/GoogleAuth";
 
 const schema = z.object({
@@ -51,33 +49,14 @@ const Login: React.FC = () => {
   });
 
   const { handleSubmit } = methods;
+  const toast = useToast();
 
-  const toast = useToast({
-    position: "top-right",
-    isClosable: true,
-  });
-  const [, setAuth] = useAuth();
   const navigate = useNavigate();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: login,
     onSuccess: ({ data }) => {
-      toast({
-        title: "Login realizado com sucesso",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        icon: <FaCheckCircle />,
-      });
-      const user = setAuth(data.token);
-      navigate(
-        `${
-          user?.roles.includes(IUserRoles.admin) &&
-          !user.tutorials.includes("first-page")
-            ? "/welcome"
-            : redirect
-        }`
-      );
+      navigate(`/auth/two-step?redirect=${redirect}&token=${data.token}`);
     },
     onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
       toast({

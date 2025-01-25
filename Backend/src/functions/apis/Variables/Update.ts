@@ -2,7 +2,7 @@ import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import ProjectRepository from "../../../repositories/Project";
 import { IVariable } from "../../../models/client/Project";
-import { encrypt } from "../../../utils/crypto";
+import { decrypt, encrypt } from "../../../utils/crypto";
 
 const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params;
@@ -26,10 +26,24 @@ const handler: HttpHandler = async (conn, req) => {
 
     if (exist) {
       exist.name = variable.name ?? exist.name;
-      exist.value =
-        variable.type === "secret" && variable.value
-          ? encrypt(variable.value)
-          : exist.value;
+      exist.value = (() => {
+        if (variable.type === "secret" && variable.value) {
+          const pastValue =
+            exist.type === "secret" ? decrypt(exist.value) : null;
+
+          if (variable.value !== pastValue) {
+            return encrypt(variable.value);
+          }
+
+          return exist.value;
+        }
+
+        if (variable.type === "variable" && variable.value !== exist.value) {
+          return variable.value;
+        }
+
+        return exist.value;
+      })();
       exist.type = variable.type ?? exist.type;
     } else {
       project.variables.push({
@@ -47,7 +61,14 @@ const handler: HttpHandler = async (conn, req) => {
 
   const updateProject = await project.save();
 
-  return res.success(updateProject);
+  const variablesReturn = updateProject.variables.map((variable) => ({
+    _id: variable._id,
+    name: variable.name,
+    value: variable.type === "secret" ? null : variable.value,
+    type: variable.type,
+  }));
+
+  return res.success({ variables: variablesReturn });
 };
 
 export default new Http(handler)

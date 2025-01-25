@@ -3,7 +3,6 @@ import Response from "@interfaces/Response";
 import api from "@services/api";
 
 type ReqProjects = Response<{ variables: IVariable[] }>;
-type ReqProject = Response<IVariable>;
 
 export const getVariables = async ({
   queryKey: [, id],
@@ -18,7 +17,7 @@ export const updateVariable = async (
   id: string,
   data: { variables: (Omit<IVariable, "value"> & { value: string | null })[] }
 ) => {
-  const res = await api.put<ReqProject>(`/projects/${id}/variables`, data);
+  const res = await api.put<ReqProjects>(`/projects/${id}/variables`, data);
 
   return res.data.data;
 };

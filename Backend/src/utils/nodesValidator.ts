@@ -49,6 +49,7 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
           schema.required('waitValue is required when waitType is "custom"'),
         otherwise: (schema) => schema.notRequired(),
       }),
+      canAddParticipants: schema.boolean().default(false),
     });
   }
 

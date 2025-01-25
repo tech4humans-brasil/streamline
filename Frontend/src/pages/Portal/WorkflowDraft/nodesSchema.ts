@@ -31,9 +31,9 @@ const schemas: NodeSchemas = {
   [NodeTypes.Interaction]: z
     .object({
       name: z.string().min(3, { message: "Nome é obrigatório" }),
-      to: z
-        .array(z.string())
-        .min(1, { message: "Selecione pelo menos 1 destinatario" }),
+      to: z.array(z.string()),
+      canAddParticipants: z.boolean().default(false),
+      permissionAddParticipants: z.array(z.string()).default([]),
       form_id: z.string().min(1, { message: "Selecione um formulário" }),
       visible: z.boolean().default(true),
       waitType: z.enum(["all", "any", "custom"]),
@@ -68,6 +68,23 @@ const schemas: NodeSchemas = {
           )
       ),
     })
+    .refine(
+      (data) => {
+        if (
+          data.canAddParticipants &&
+          data.permissionAddParticipants.length === 0 &&
+          data.to.length === 0
+        ) {
+          return false;
+        }
+
+        return true;
+      },
+      {
+        message: "Selecione pelo menos um usuário",
+        path: ["permissionAddParticipants"],
+      }
+    )
     .refine(
       (data) => {
         if (data.waitType === "custom") {

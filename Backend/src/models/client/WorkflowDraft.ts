@@ -87,6 +87,8 @@ export interface IInteraction {
   ];
   waitType: "all" | "any" | "custom";
   waitValue: number | null;
+  canAddParticipants: boolean;
+  permissionAddParticipants: string[];
 }
 
 export interface IScript {

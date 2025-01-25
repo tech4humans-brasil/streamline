@@ -47,3 +47,23 @@ export const alterPassword = async (data: {
   );
   return response.data;
 };
+
+export const twoStepValidate = async (data: {
+  verificationCode: string;
+  token: string | null;
+}): Promise<LoginResponse> => {
+  if (!data.token) {
+    throw new Error("Token not found");
+  }
+
+  const response = await api.post<LoginResponse>(
+    "/auth/two-step-validate",
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${data.token}`,
+      },
+    }
+  );
+  return response.data;
+};
