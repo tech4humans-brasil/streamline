@@ -67,13 +67,16 @@ const handler: HttpHandler = async (conn, req) => {
     <ul>
         <li>O domínio de sua conta é: ${conn.name}</li>
         <li>Defina sua senha aqui: <a href="${
-          admin?.config.domain ?? process.env.FRONTEND_URL
+          admin?.domains.at(0) ?? process.env.FRONTEND_URL
         }/auth/alter-password/${token}">Acessar o painel</a></li>
         <li>Verifique seu e-mail para mais instruções sobre como aproveitar ao máximo nossos serviços.</li>
     </ul>
 `;
 
-  const { html, css } = emailTemplate(content, "", admin?.logo?.url ?? null);
+  const { html, css } = await emailTemplate({
+    content,
+    slug: conn.name,
+  });
 
   await sendEmail(
     user.email,

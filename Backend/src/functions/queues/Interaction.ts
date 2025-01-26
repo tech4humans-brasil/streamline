@@ -19,7 +19,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
   context
 ) => {
   try {
-    const { activity_id, activity_step_id, activity_workflow_id } =
+    const { activity_id, activity_step_id, activity_workflow_id, client } =
       messageQueue;
 
     const activityRepository = new ActivityRepository(conn);
@@ -176,7 +176,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
     <a href="${process.env.FRONTEND_URL}/portal">Acessar o painel</a>
 `;
 
-      const { html, css } = emailTemplate(content);
+      const { html, css } = await emailTemplate({ slug: client, content });
 
       await sendEmail(
         users.map((u) => u.email),

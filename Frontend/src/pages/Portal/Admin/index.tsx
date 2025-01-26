@@ -16,20 +16,34 @@ import { useTranslation } from "react-i18next";
 import Text from "@components/atoms/Inputs/Text";
 import { showAdmin, updateAdmin } from "@apis/admin";
 import File from "@components/atoms/Inputs/File";
+import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
+import Switch from "@components/atoms/Inputs/Switch";
 
 const adminSchema = z.object({
   _id: z.string(),
   name: z.string().min(3, "Name must be at least 3 characters"),
   acronym: z.string().min(2, "Acronym must be at least 2 characters"),
-  logo: z.object({
-    name: z.string(),
-    url: z.string(),
-    mimeType: z.string(),
-    size: z.string(),
-    containerName: z.string(),
-  }),
+  principal: z.boolean().default(true),
+  logo: z
+    .object({
+      name: z.string(),
+      url: z.string(),
+      mimeType: z.string(),
+      size: z.string(),
+      containerName: z.string(),
+    })
+    .nullable(),
+  icon: z
+    .object({
+      name: z.string(),
+      url: z.string(),
+      mimeType: z.string(),
+      size: z.string(),
+      containerName: z.string(),
+    })
+    .nullable(),
+  domains: z.array(z.string().url()).min(1),
   config: z.object({
-    domain: z.string().url().nullable(),
     emailSender: z.string().email().nullable(),
     google: z.object({
       clientId: z.string().nullable(),
@@ -132,14 +146,36 @@ const Admin: React.FC = () => {
                 isDisabled: true,
               }}
             />
-            <Text
-              input={{ id: "config.domain", label: t("admin.fields.domain") }}
+
+            <Switch
+              input={{
+                id: "principal",
+                label: t("admin.fields.principal"),
+              }}
+            />
+
+            <CreatableSelect
+              input={{
+                id: "domains",
+                label: t("admin.fields.domains"),
+                required: true,
+                options: [],
+              }}
+              isMulti
             />
 
             <File
               input={{
                 id: "logo",
                 label: t("admin.fields.logo"),
+                required: true,
+              }}
+            />
+
+            <File
+              input={{
+                id: "icon",
+                label: t("admin.fields.icon"),
                 required: true,
               }}
             />

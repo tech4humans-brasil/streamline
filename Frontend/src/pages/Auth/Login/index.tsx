@@ -17,7 +17,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import InputText from "@components/atoms/Inputs/Text";
 import Password from "@components/atoms/Inputs/Password";
 import { login } from "@apis/auth";
@@ -26,8 +26,8 @@ import SwitchTheme from "@components/molecules/SwitchTheme";
 import { useTranslation } from "react-i18next";
 import LocaleSwap from "@components/atoms/LocaleSwap";
 import GoogleAuth from "@components/molecules/GoogleAuth";
-import { getConfigs } from "@apis/admin";
 import { useConfig } from "@hooks/useConfig";
+import Select from "@components/atoms/Inputs/Select";
 
 const schema = z.object({
   acronym: z
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
-  const { data: configData, isLoading: configLoading } = useConfig();
+  const { data: configData, isLoading: configLoading, isError } = useConfig();
 
   const redirect = searchParams.get("redirect") ?? "/portal";
 
@@ -105,6 +105,12 @@ const Login: React.FC = () => {
     );
   }
 
+  if (isError) {
+    return (
+      <Navigate to="/404" replace />
+    );
+  }
+
   return (
     <Box
       p={4}
@@ -161,9 +167,9 @@ const Login: React.FC = () => {
           <CardBody>
             <Hide above="md">
               <Flex alignItems="center" justifyContent="center" gap="4">
-                {configData?.logo ? (
+                {configData?.icon ? (
                   <img
-                    src={configData.logo.url}
+                    src={configData.icon.url}
                     alt={configData.acronym}
                     width="60px"
                   />
@@ -184,13 +190,19 @@ const Login: React.FC = () => {
 
             <form onSubmit={onSubmit}>
               <Flex direction="column" gap="4">
-                <InputText
+                <Select
                   input={{
                     id: "acronym",
                     label: t("common.fields.slug"),
+                    required: true,
                     placeholder: t("input.enter.male", {
                       field: t("common.fields.slug"),
                     }),
+                    options:
+                      configData?.slugs.map((slug) => ({
+                        label: slug,
+                        value: slug,
+                      })) || [],
                   }}
                 />
 

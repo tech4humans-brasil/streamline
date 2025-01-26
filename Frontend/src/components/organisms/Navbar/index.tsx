@@ -109,8 +109,8 @@ function Sidebar() {
       <List fontSize="xl" spacing={3} overflowY="auto" maxH="100vh">
         <Hide below="md">
           <ListItem>
-            {data?.logo ? (
-              <img src={data?.logo?.url} alt="logo" width="50px" />
+            {data?.icon ? (
+              <img src={data?.icon?.url} alt="logo" width="50px" />
             ) : (
               <Icon w="50px" />
             )}

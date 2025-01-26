@@ -134,7 +134,10 @@ const handler: HttpHandler = async (conn, req, context) => {
   <a href="${process.env.FRONTEND_URL}/portal">Acessar o painel</a>
 `;
 
-  const { html, css } = emailTemplate(content);
+  const { html, css } = await emailTemplate({
+    slug: conn.name,
+    content,
+  });
 
   await sendEmail(
     usersData.map((u) => u.email),

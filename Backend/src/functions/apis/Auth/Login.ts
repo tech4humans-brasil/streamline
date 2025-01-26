@@ -86,7 +86,11 @@ export const handler: HttpHandler = async (_, req, context) => {
     }
   `;
 
-  const { html, css } = emailTemplate(content, contentCss);
+  const { html, css } = await emailTemplate({
+    content,
+    contentCss: contentCss,
+    slug: client.acronym,
+  });
 
   await sendEmail(user.email, "Your verification code", html, css);
 

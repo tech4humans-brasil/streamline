@@ -4,9 +4,11 @@ export interface IAdmin {
   _id: string;
   name: string;
   acronym: string;
-  logo: FileUploaded;
+  logo?: FileUploaded | null;
+  icon?: FileUploaded | null;
+  principal: boolean;
+  domains: string[];
   config: {
-    domain: string | null;
     emailSender: string | null;
     google: {
       clientId: string | null;

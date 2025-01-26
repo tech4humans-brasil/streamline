@@ -8,6 +8,9 @@ interface Body {
   name: string;
   acronym: string;
   logo: FileUploaded;
+  icon: FileUploaded;
+  principal: boolean;
+  domains: string[];
   config: {
     domain: string;
     emailSender: string;
@@ -21,7 +24,7 @@ interface Body {
 }
 
 export const handler: HttpHandler = async (_, req) => {
-  const { name, config, logo } = req.body as Body;
+  const { name, config, logo, icon, domains, principal } = req.body as Body;
 
   const adminConn = await connectAdmin();
   const clientModel = new AdminRepository(adminConn);
@@ -34,13 +37,19 @@ export const handler: HttpHandler = async (_, req) => {
     return res.notFound("Instance not found");
   }
 
+  client.principal = principal;
   if (name) client.name = name;
+  if (domains) client.domains = domains;
   if (config) {
     client.config = config;
   }
 
   if (logo) {
     client.logo = logo;
+  }
+
+  if (icon) {
+    client.icon = icon;
   }
 
   await client.save();
@@ -53,10 +62,11 @@ export default new Http(handler)
     body: schema.object().shape({
       name: schema.string().optional(),
       acronym: schema.string().optional(),
+      domains: schema.array(schema.string()).required(),
+      principal: schema.boolean().required(),
       config: schema
         .object()
         .shape({
-          domain: schema.string().nullable(),
           emailSender: schema.string().nullable(),
           sendgrid: schema
             .object()

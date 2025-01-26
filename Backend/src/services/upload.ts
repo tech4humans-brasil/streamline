@@ -88,13 +88,16 @@ class BlobUploader {
     return fileUploaded;
   }
 
-  async updateSas(file: FileUploaded) {
+  async updateSas(
+    file: FileUploaded,
+    expiresOn = 86400
+  ): Promise<FileUploaded> {
     const containerClient = this.blobServiceClient.getContainerClient(
       file.containerName
     );
     const blockBlobClient = containerClient.getBlockBlobClient(file.name);
     const sas = await blockBlobClient.generateSasUrl({
-      expiresOn: new Date(new Date().valueOf() + 86400),
+      expiresOn: new Date(new Date().valueOf() + expiresOn),
       permissions: BlobSASPermissions.parse("r"),
     });
     file.url = sas;

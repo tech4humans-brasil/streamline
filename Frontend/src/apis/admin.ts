@@ -4,6 +4,8 @@ import { IAdmin } from "@interfaces/admin";
 
 type TemplateResponse = Response<IAdmin>;
 
+type ConfigResponse = Response<IAdmin & { slugs: string[] }>;
+
 export const showAdmin = async () => {
   const response = await api.get<TemplateResponse>("/instance");
   return response.data?.data;
@@ -15,6 +17,6 @@ export const updateAdmin = async (data: IAdmin) => {
 };
 
 export const getConfigs = async () => {
-  const response = await api.get<TemplateResponse>("/config");
+  const response = await api.get<ConfigResponse>("/config");
   return response.data?.data;
 };

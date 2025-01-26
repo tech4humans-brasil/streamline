@@ -1,11 +1,16 @@
+import AdminRepository from "../repositories/Admin";
+import { connectAdmin } from "../services/mongo";
+import BlobUploader from "../services/upload";
+
 const LOGO =
   "https://devforceflowfiles.blob.core.windows.net/email/streamline.png?sp=r&st=2024-10-04T01:17:44Z&se=2031-09-11T09:17:44Z&spr=https&sv=2022-11-02&sr=b&sig=lGg52w4OT2bWpwgxAHa8GmcmWHMGV5Y3dcCOqcz4LNY%3D";
+
+const MAX_TIME = 8640000;
 
 const html = `
 <div class="email-container">
     <div class="header">
         <img src="{{logo}}" alt="Streamline" />
-        <h1>Streamline</h1>
     </div>
     <div class="content">
         {{content}}
@@ -27,7 +32,7 @@ padding: 0;
 color: #333;
 }
 img {
-max-width: 100px;
+width: 50%;
 }
 .email-container {
 margin: 0 auto;
@@ -40,7 +45,7 @@ max-width: 600px;
 .header {
 text-align: center;
 padding-bottom: 20px;
-background-color: #292F45;
+padding-top: 20px;
 border-radius: 8px 8px 0 0;
 margin-bottom: 5px;
 }
@@ -81,20 +86,32 @@ color: #999;
 }
 `;
 
-type renderTemplateType = (
-  content: string,
-  contentCss?: string,
-  logo?: string
-) => {
-  html: string;
-  css: string;
-};
-
-const emailTemplate: renderTemplateType = (
+const emailTemplate = async ({
   content,
   contentCss = "",
-  logo = LOGO
-) => {
+  slug,
+}: {
+  content: string;
+  contentCss?: string;
+  slug?: string;
+}) => {
+  let logo = LOGO;
+  if (slug) {
+    const connAdmin = await connectAdmin();
+    const admin = await new AdminRepository(connAdmin).findOne({
+      where: {
+        acronym: slug,
+      },
+      select: {
+        logo: 1,
+      },
+    });
+
+    logo = admin?.logo?.url?.split("?")[0] ?? LOGO;
+  }
+
+  console.log(logo);
+
   return {
     html: html.replace("{{content}}", content).replace("{{logo}}", logo),
     css: css + contentCss,

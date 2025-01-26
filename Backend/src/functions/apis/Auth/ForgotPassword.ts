@@ -53,7 +53,10 @@ export const handler: HttpHandler = async (_, req, context) => {
     </div>
  `;
 
-  const { html, css } = emailTemplate(content);
+  const { html, css } = await emailTemplate({
+    content,
+    slug: conn.name,
+  });
 
   await sendEmail(email, "Streamline | Redefinição de senha", html, css);
 
