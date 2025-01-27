@@ -23,6 +23,10 @@ const handler: HttpHandler = async (conn, req) => {
       if (!field.value) continue;
       await blobUploader.updateSas(field.value);
     }
+
+    if (!field.visible) {
+      field.value = field.value.replace(/.(?=.{2,}$)/g, "*");
+    }
   }
 
   for (const interactions of activity.interactions) {
