@@ -1,9 +1,22 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import { ClickSignService } from "../../../services/clicksign";
+import { connectAdmin } from "../../../services/mongo";
+import AdminRepository from "../../../repositories/Admin";
 
-const handler: HttpHandler = async () => {
-  const clicksignService = new ClickSignService(process.env.CLICKSIGN_API_KEY);
+const handler: HttpHandler = async (_, req) => {
+  const connAdmin = await connectAdmin();
+  const admin = await new AdminRepository(connAdmin).findOne({
+    where: {
+      acronym: req.user.slug,
+    },
+  });
+
+  if (!admin || !admin.config?.clicksign?.apiKey) {
+    return res.forbidden("Admin not found");
+  }
+
+  const clicksignService = new ClickSignService(admin.config.clicksign.apiKey);
 
   try {
     const response = await clicksignService.listTemplates().catch((err) => {

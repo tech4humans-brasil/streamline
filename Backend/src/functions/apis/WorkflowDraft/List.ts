@@ -1,4 +1,5 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
+import { IWorkflowDraftStatus } from "../../../models/client/WorkflowDraft";
 import WorkflowDraftRepository from "../../../repositories/WorkflowDraft";
 import res from "../../../utils/apiResponse";
 
@@ -23,6 +24,9 @@ const handler: HttpHandler = async (conn, req, context) => {
     ],
     where: {
       parent: id,
+      status: {
+        $ne: IWorkflowDraftStatus.Delete,
+      },
     },
     select: {
       _id: 1,

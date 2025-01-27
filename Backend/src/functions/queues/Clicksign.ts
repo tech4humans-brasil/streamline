@@ -5,8 +5,10 @@ import QueueWrapper, {
 import { IActivityStepStatus } from "../../models/client/Activity";
 import { IClicksign, NodeTypes } from "../../models/client/WorkflowDraft";
 import ActivityRepository from "../../repositories/Activity";
+import AdminRepository from "../../repositories/Admin";
 import UserRepository from "../../repositories/User";
 import { ClickSignService } from "../../services/clicksign";
+import { connectAdmin } from "../../services/mongo";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
 
@@ -64,8 +66,19 @@ const handler: QueueWrapperHandler<TMessage> = async (
       throw new Error("Data not found");
     }
 
+    const connAdmin = await connectAdmin();
+    const admin = await new AdminRepository(connAdmin).findOne({
+      where: {
+        acronym: conn.name,
+      },
+    });
+
+    if (!admin || !admin.config?.clicksign?.apiKey) {
+      throw new Error("Admin not found");
+    }
+
     const clicksignService = new ClickSignService(
-      process.env.CLICKSIGN_API_KEY
+      admin.config.clicksign.apiKey
     );
 
     const { documentKey, name, fields, signers } = data;

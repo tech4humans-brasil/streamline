@@ -13,5 +13,8 @@ export interface IAdmin {
     google: {
       clientId: string | null;
     };
+    clicksign: {
+      apiKey: string | null;
+    };
   };
 }

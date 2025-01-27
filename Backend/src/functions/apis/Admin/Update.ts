@@ -3,28 +3,11 @@ import res from "../../../utils/apiResponse";
 import { connectAdmin } from "../../../services/mongo";
 import AdminRepository from "../../../repositories/Admin";
 import { FileUploaded } from "../../../services/upload";
-
-interface Body {
-  name: string;
-  acronym: string;
-  logo: FileUploaded;
-  icon: FileUploaded;
-  principal: boolean;
-  domains: string[];
-  config: {
-    domain: string;
-    emailSender: string;
-    sendgrid: {
-      apiKey: string;
-    };
-    google: {
-      clientId: string;
-    };
-  };
-}
+import { IAdminClient } from "../../../models/admin/Client";
 
 export const handler: HttpHandler = async (_, req) => {
-  const { name, config, logo, icon, domains, principal } = req.body as Body;
+  const { name, config, logo, icon, domains, principal } =
+    req.body as IAdminClient;
 
   const adminConn = await connectAdmin();
   const clientModel = new AdminRepository(adminConn);
@@ -80,6 +63,12 @@ export default new Http(handler)
               clientId: schema.string().nullable(),
               clientSecret: schema.string().nullable(),
               redirectUri: schema.string().nullable(),
+            })
+            .nullable(),
+          clicksign: schema
+            .object()
+            .shape({
+              apiKey: schema.string().nullable(),
             })
             .nullable(),
         })

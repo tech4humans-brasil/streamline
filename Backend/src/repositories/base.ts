@@ -118,6 +118,10 @@ class BaseRepository<T extends Document> {
     });
   }
 
+  async countEstimate({ where }: { where: FilterQuery<T> }): Promise<number> {
+    return this.model.estimatedDocumentCount(where).exec();
+  }
+
   async delete({ where }: { where: FilterQuery<T> }) {
     return this.model.deleteMany(where).exec();
   }

@@ -186,6 +186,7 @@ export type IStep = {
 export enum IWorkflowDraftStatus {
   Draft = "draft",
   Published = "published",
+  Delete = "delete",
 }
 
 export type IWorkflowDraft = {

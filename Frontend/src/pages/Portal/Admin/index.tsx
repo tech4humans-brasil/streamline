@@ -48,6 +48,9 @@ const adminSchema = z.object({
     google: z.object({
       clientId: z.string().nullable(),
     }),
+    clicksign: z.object({
+      apiKey: z.string().nullable(),
+    }),
   }),
 });
 
@@ -190,6 +193,13 @@ const Admin: React.FC = () => {
               input={{
                 id: "config.google.clientId",
                 label: t("admin.fields.googleClientId"),
+              }}
+            />
+
+            <Text
+              input={{
+                id: "config.clicksign.apiKey",
+                label: t("admin.fields.clicksignApiKey"),
               }}
             />
 

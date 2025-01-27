@@ -1,6 +1,6 @@
 import api from "@services/api";
 import Response from "@interfaces/Response";
-import { IAdmin } from "@interfaces/admin";
+import { IAdmin } from "@interfaces/Admin";
 
 type TemplateResponse = Response<IAdmin>;
 

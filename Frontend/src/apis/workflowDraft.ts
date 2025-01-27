@@ -86,3 +86,9 @@ export const getWorkflowDraftForms = async ({
 
   return res.data.data;
 };
+
+export const deleteWorkflowDraft = async (id: string) => {
+  const res = await api.delete<ReqWorkflow>(`/workflow-draft/${id}`);
+
+  return res.data.data;
+};

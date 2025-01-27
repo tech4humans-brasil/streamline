@@ -567,6 +567,7 @@
       "acronym": "Sigla",
       "principal": "Principal",
       "domains": "Domínios",
+      "clicksignApiKey": "Chave API Clicksign",
       "icon": "Ícone",
       "emailSender": "Remetente do Email",
       "sendgridApiKey": "Chave API Sendgrid",

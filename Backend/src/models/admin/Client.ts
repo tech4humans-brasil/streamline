@@ -17,6 +17,9 @@ export interface IAdminClient extends mongoose.Document {
     google: {
       clientId: string | null;
     };
+    clicksign: {
+      apiKey: string | null;
+    };
   };
 }
 
@@ -36,6 +39,9 @@ export const schema = new Schema<IAdminClient>(
       },
       google: {
         clientId: { type: String, required: false, default: null },
+      },
+      clicksign: {
+        apiKey: { type: String, required: false, default: null },
       },
     },
   },
