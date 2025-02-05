@@ -13,6 +13,13 @@ export enum NodeTypes {
   Clicksign = "clicksign",
 }
 
+export enum NodeCategory {
+  Flow = 'flow',
+  Communication = 'communication',
+  Integration = 'integration',
+  Automation = 'automation'
+}
+
 export interface ISendEmail {
   name: string;
   email_id: string;

@@ -77,6 +77,7 @@ export default new Http(handler)
   }))
   .configure({
     name: "InstanceUpdate",
+    permission: "admin.update",
     options: {
       methods: ["PUT"],
       route: "instance",

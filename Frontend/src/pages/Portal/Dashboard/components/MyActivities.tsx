@@ -5,6 +5,7 @@ import {
   Divider,
   Flex,
   Heading,
+  IconButton,
   Tab,
   TabList,
   TabPanel,
@@ -17,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { FaEye, FaPen } from "react-icons/fa";
+import { FaEye, FaPen, FaSync } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const columns = [
@@ -76,7 +77,7 @@ const MyActivities: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["my-activities"],
     queryFn: getMyActivities,
   });
@@ -135,10 +136,16 @@ const MyActivities: React.FC = () => {
 
   return (
     <Box p={4} mb={4} bg="bg.card" borderRadius="md" id="my-activities">
-      <Heading size="md" mb="5">
-        {t("dashboard.title.myActivities")}
-      </Heading>
-      <Divider mb={4} />
+      <Flex align="center" mb="5">
+        <Heading size="md">{t("dashboard.title.myActivities")}</Heading>
+        <IconButton
+          ml="auto"
+          aria-label={t("common.refresh")}
+          icon={<FaSync />}
+          onClick={() => refetch()}
+          isLoading={isLoading}
+        />
+      </Flex>
 
       <Tabs>
         <TabList>

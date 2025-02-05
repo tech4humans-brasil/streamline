@@ -50,6 +50,7 @@ export default new Http(handler)
   }))
   .configure({
     name: "InstanceShow",
+    permission: "admin.read",
     options: {
       methods: ["GET"],
       route: "instance",

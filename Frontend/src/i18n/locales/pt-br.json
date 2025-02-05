@@ -25,9 +25,7 @@
     "create": "Criar",
     "fields": {
       "name": "Nome",
-      "yes": "Sim",
       "allocation": "Alocação",
-      "no": "Não",
       "url": "URL",
       "serial": "Nº Serial",
       "sla": "SLA",
@@ -415,6 +413,12 @@
       "script": {
         "title": "Script"
       }
+    },
+    "categories": {
+      "flow": "Fluxo",
+      "communication": "Comunicação",
+      "integration": "Integração",
+      "automation": "Automação"
     }
   },
   "workflow-draft": {
@@ -562,6 +566,7 @@
     "title": "Administração",
     "updated": "Administração atualizada com sucesso",
     "error": "Erro ao atualizar administração",
+    "button": "Administração",
     "fields": {
       "name": "Nome",
       "acronym": "Sigla",
