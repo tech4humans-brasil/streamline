@@ -24,7 +24,7 @@ const handler: HttpHandler = async (conn, req) => {
       await blobUploader.updateSas(field.value);
     }
 
-    if (!field.visible) {
+    if (!field.visible && field.value && typeof field.value === "string") {
       field.value = field.value.replace(/.(?=.{2,}$)/g, "*");
     }
   }
