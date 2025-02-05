@@ -2,7 +2,6 @@ import { getMyActivities } from "@apis/dashboard";
 import {
   Box,
   Button,
-  Divider,
   Flex,
   Heading,
   IconButton,
