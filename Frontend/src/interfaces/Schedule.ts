@@ -15,8 +15,8 @@ export type ISchedule = {
   project: string;
   workflow: string;
   form: string;
-  start: Date | string;
-  end: Date | null | string;
+  start: string;
+  end: null | string;
   expression: string;
   repeat: number | null;
   active: boolean;

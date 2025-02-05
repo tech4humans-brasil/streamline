@@ -52,7 +52,6 @@ export const updateSchedule = async (data: Omit<Schedule, "scheduled">) => {
 export const createOrUpdateSchedule = async (
   data: Omit<Schedule, "_id" | "scheduled"> & { _id?: string }
 ) => {
-  data.end = data.end ? new Date(data.end) : null;
   if (data?._id) {
     return updateSchedule(data as Schedule);
   }
