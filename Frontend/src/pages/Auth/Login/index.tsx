@@ -14,7 +14,7 @@ import {
   Divider,
   Spinner,
 } from "@chakra-ui/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
