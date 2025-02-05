@@ -23,6 +23,8 @@ import DraftItem from "@components/molecules/DraftItem";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft } from "react-icons/fa";
+import { getProjects } from "@apis/project";
+import Select from "@components/atoms/Inputs/Select";
 
 const statusSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
@@ -50,6 +52,13 @@ export default function Workflow() {
     queryFn: getWorkflow,
     enabled: isEditing,
   });
+
+  const { data: { projects = [] } = {}, isFetching: isFetchingProjects } =
+    useQuery({
+      queryKey: ["projects"],
+      queryFn: getProjects,
+      staleTime: 1000 * 60 * 5,
+    });
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createOrUpdateWorkflow,
@@ -152,6 +161,21 @@ export default function Workflow() {
                 label: t("common.fields.active"),
               }}
             />
+
+            {!project && (
+              <Select
+                input={{
+                  id: "project",
+                  label: t("common.fields.project"),
+                  required: true,
+                  options: projects?.map((project) => ({
+                    label: project.name,
+                    value: project._id,
+                  })),
+                }}
+                isLoading={isFetchingProjects}
+              />
+            )}
 
             <Flex justify="flex-end" gap="4">
               <Button
