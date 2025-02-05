@@ -23,11 +23,7 @@ export const handler: HttpHandler = async (_, req) => {
       acronym: 1,
       logo: 1,
       icon: 1,
-      config: {
-        google: {
-          clientId: 1,
-        },
-      },
+      config: 1,
     },
   });
 
@@ -62,6 +58,11 @@ export const handler: HttpHandler = async (_, req) => {
 
   return res.success({
     ...client.toObject(),
+    config: {
+      google: {
+        clientId: client.config.google.clientId,
+      },
+    },
     slugs: slugs.map((slug) => slug.acronym),
   });
 };
