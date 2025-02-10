@@ -70,6 +70,8 @@ export async function connectAdmin(): Promise<Connection> {
     newConn.model(key, adminModels[key]);
   });
 
+  connectionMap.set(MONGO_ADMIN_DB, newConn);
+
   return newConn;
 }
 
