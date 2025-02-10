@@ -46,6 +46,11 @@ export const extraOutputsNewTicket = output.serviceBusQueue({
   connection: "AZURE_SERVICE_BUS_CONNECTION_STRING",
 });
 
+export const extraOutputsClicksign = output.serviceBusQueue({
+  queueName: "clicksign",
+  connection: "AZURE_SERVICE_BUS_CONNECTION_STRING",
+});
+
 const extraOutputs = {
   swap_workflow: extraOutputsSwapWorkflow,
   send_email: extraOutputsSendEmail,
@@ -56,6 +61,7 @@ const extraOutputs = {
   web_request: extraOutputsWebRequest,
   script: extraOutputsScript,
   new_ticket: extraOutputsNewTicket,
+  clicksign: extraOutputsClicksign,
 };
 
 const sbusOutputs = Object.values(extraOutputs);

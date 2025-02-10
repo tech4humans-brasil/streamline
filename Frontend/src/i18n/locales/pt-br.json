@@ -26,8 +26,8 @@
     "fields": {
       "name": "Nome",
       "yes": "Sim",
-      "allocation": "Alocação",
       "no": "Não",
+      "allocation": "Alocação",
       "url": "URL",
       "serial": "Nº Serial",
       "sla": "SLA",
@@ -391,6 +391,12 @@
       "conditional": {
         "title": "Condicional"
       },
+      "new_ticket": {
+        "title": "Criar Novo ticket"
+      },
+      "clicksign": {
+        "title": "Assinatura Clicksign"
+      },
       "web_request": {
         "title": "Requisição Web"
       },
@@ -403,12 +409,18 @@
       "change_status": {
         "title": "Alterar status"
       },
-      "new_ticket":{
+      "new_ticket": {
         "title": "Criar ticket"
       },
       "script": {
         "title": "Script"
       }
+    },
+    "categories": {
+      "flow": "Fluxo",
+      "communication": "Comunicação",
+      "integration": "Integração",
+      "automation": "Automação"
     }
   },
   "workflow-draft": {
@@ -551,5 +563,27 @@
   },
   "physicalDamages": {
     "additionalInformation": "Informações adicionais"
+  },
+  "admin": {
+    "title": "Administração",
+    "updated": "Administração atualizada com sucesso",
+    "error": "Erro ao atualizar administração",
+    "button": "Administração",
+    "fields": {
+      "name": "Nome",
+      "acronym": "Sigla",
+      "principal": "Principal",
+      "domains": "Domínios",
+      "clicksignApiKey": "Chave API Clicksign",
+      "icon": "Ícone",
+      "emailSender": "Remetente do Email",
+      "sendgridApiKey": "Chave API Sendgrid",
+      "googleClientId": "ID do Cliente Google",
+      "googleClientSecret": "Segredo do Cliente Google",
+      "googleRedirectUri": "URI de Redirecionamento Google",
+      "logo": "Logo"
+    },
+    "cancel": "Cancelar",
+    "submit": "Salvar"
   }
 }

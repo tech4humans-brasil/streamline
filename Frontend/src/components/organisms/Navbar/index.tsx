@@ -29,6 +29,7 @@ import Icon from "@components/atoms/Icon";
 import Tutorial, { JoyrideSteps } from "@components/molecules/Tutorial";
 import { useTranslation } from "react-i18next";
 import { BiTime } from "react-icons/bi";
+import { useConfig } from "@hooks/useConfig";
 
 const steps: JoyrideSteps = [
   {
@@ -70,7 +71,7 @@ const steps: JoyrideSteps = [
   {
     target: "#reportings",
     content: "navbar.joyride.reportings",
-  }
+  },
 ];
 
 const CustomCard = React.forwardRef<HTMLSpanElement, TagProps>(
@@ -100,6 +101,7 @@ const CustomCard = React.forwardRef<HTMLSpanElement, TagProps>(
 
 function Sidebar() {
   const location = useLocation();
+  const { data } = useConfig();
 
   return (
     <div>
@@ -107,7 +109,11 @@ function Sidebar() {
       <List fontSize="xl" spacing={3} overflowY="auto" maxH="100vh">
         <Hide below="md">
           <ListItem>
-            <Icon w="50px" />
+            {data?.icon ? (
+              <img src={data?.icon?.url} alt="logo" width="50px" />
+            ) : (
+              <Icon w="50px" />
+            )}
           </ListItem>
         </Hide>
 

@@ -5,43 +5,84 @@ import { ConditionalIcon } from "@components/atoms/Workflow/Nodes/Conditional";
 import { SendEmailIcon } from "@components/atoms/Workflow/Nodes/SendEmail";
 import { ChangeStatusIcon } from "@components/atoms/Workflow/Nodes/ChangeStatus";
 import { WebRequestIcon } from "@components/atoms/Workflow/Nodes/WebRequest";
+import { NewTicketIcon } from "@components/atoms/Workflow/Nodes/NewTicket";
+import { ClicksignIcon } from "@components/atoms/Workflow/Nodes/Clicksign";
+import { ScriptIcon } from "@components/atoms/Workflow/Nodes/Script";
 
 const data = [
   {
-    icon: <SendEmailIcon />,
-    title: "Envio de Email",
-    description:
-      "Gerencia o envio de emails automáticos para requisição de informações e comunicações gerais.",
+    category: "Fluxo",
+    nodes: [
+      {
+        icon: <ConditionalIcon />,
+        title: "Condicional",
+        description:
+          "Avalia condições e direciona o fluxo com base em critérios configuráveis.",
+      },
+      {
+        icon: <ChangeStatusIcon />,
+        title: "Mudança de Status",
+        description:
+          "Atualiza o status atual de uma atividade para indicar em qual etapa do fluxo ela está.",
+      },
+      {
+        icon: <SwapWorkflowIcon />,
+        title: "Mudança de Fluxo",
+        description:
+          "Permite a alternância entre diferentes fluxos de trabalho, reutilizando fluxos existentes.",
+      },
+    ],
   },
   {
-    icon: <ChangeStatusIcon />,
-    title: "Mudança de Status",
-    description:
-      "Atualiza o status atual de uma atividade para indicar em qual etapa do fluxo ela está.",
+    category: "Comunicação",
+    nodes: [
+      {
+        icon: <SendEmailIcon />,
+        title: "Envio de Email",
+        description:
+          "Gerencia o envio de emails automáticos para requisição de informações e comunicações gerais.",
+      },
+      {
+        icon: <InteractionIcon />,
+        title: "Interação",
+        description:
+          "Solicita informações específicas de um destinatário, como entregas parciais ou envio final de documentos.",
+      },
+    ],
   },
   {
-    icon: <SwapWorkflowIcon />,
-    title: "Mudança de Fluxo",
-    description:
-      "Permite a alternância entre diferentes fluxos de trabalho, reutilizando fluxos existentes.",
+    category: "Integração",
+    nodes: [
+      {
+        icon: <WebRequestIcon />,
+        title: "Requisição Web",
+        description:
+          "Realiza solicitações HTTP para integração com sistemas externos, como jira, discord...",
+      },
+      {
+        icon: <ClicksignIcon />,
+        title: "Assinatura Clicksign",
+        description:
+          "Integra com a plataforma Clicksign para gerenciamento e coleta de assinaturas digitais.",
+      },
+    ],
   },
   {
-    icon: <InteractionIcon />,
-    title: "Interação",
-    description:
-      "Solicita informações específicas de um destinatário, como entregas parciais ou envio final de documentos.",
-  },
-  {
-    icon: <ConditionalIcon />,
-    title: "Condicional",
-    description:
-      "Avalia o desempenho do aluno em diferentes fases do TCC, com critérios configuráveis.",
-  },
-  {
-    icon: <WebRequestIcon />,
-    title: "Requisição Web",
-    description:
-      "Realiza solicitações HTTP para integração com sistemas externos, como jira, discord...",
+    category: "Automação",
+    nodes: [
+      {
+        icon: <NewTicketIcon />,
+        title: "Criar Novo Ticket",
+        description:
+          "Cria automaticamente um novo ticket baseado em um formulário pré-definido.",
+      },
+      {
+        icon: <ScriptIcon />,
+        title: "Script",
+        description:
+          "Executa scripts personalizados para automação de tarefas específicas.",
+      },
+    ],
   },
 ];
 
@@ -60,25 +101,29 @@ const HelpFlowAutomation = () => {
       </Heading>
 
       <Box maxW="800px" mx="auto">
-        <Heading as="h2" fontSize="lg" mb={3}>
-          Componentes de Fluxo de Trabalho
-        </Heading>
         <Text mb={5}>
           Abaixo estão listados os componentes principais que podem ser
-          utilizados no fluxo de trabalho do TCC:
+          utilizados para construir fluxos de trabalho automatizados:
         </Text>
 
-        {data.map((item, index) => (
-          <Box key={index} mb={5}>
-            <Flex alignItems="center" gap={3}>
-              {item.icon}
-              <Heading as="h3" size="md">
-                {item.title}
-              </Heading>
-            </Flex>
-            <Text>{item.description}</Text>
-
-            <Divider my={3} />
+        {data.map((category, categoryIndex) => (
+          <Box key={categoryIndex} mb={8}>
+            <Heading as="h2" size="md" mb={4} color="blue.500">
+              {category.category}
+            </Heading>
+            
+            {category.nodes.map((node, nodeIndex) => (
+              <Box key={nodeIndex} mb={5}>
+                <Flex alignItems="center" gap={3}>
+                  {node.icon}
+                  <Heading as="h3" size="sm">
+                    {node.title}
+                  </Heading>
+                </Flex>
+                <Text mt={2}>{node.description}</Text>
+                {nodeIndex < category.nodes.length - 1 && <Divider my={3} />}
+              </Box>
+            ))}
           </Box>
         ))}
       </Box>
@@ -88,10 +133,11 @@ const HelpFlowAutomation = () => {
       </Heading>
       <Text mb={5}>
         Esses componentes são utilizados para criar e gerenciar fluxos de
-        trabalho automáticos dentro do sistema, garantindo que todas as etapas
-        do TCC sejam seguidas conforme o planejado. Selecione os componentes
-        adequados ao configurar seu fluxo para atender às necessidades
-        específicas do processo.
+        trabalho automáticos dentro do sistema. Cada bloco possui uma função
+        específica e pode ser combinado com outros blocos para criar fluxos
+        complexos e personalizados. Arraste e solte os blocos desejados no
+        editor de fluxo e configure suas propriedades para atender às
+        necessidades do seu processo.
       </Text>
     </Flex>
   );

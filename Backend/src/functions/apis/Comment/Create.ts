@@ -65,7 +65,10 @@ const handler: HttpHandler = async (conn, req) => {
     },
   });
 
-  const { html, css } = emailTemplate(content);
+  const { html, css } = await emailTemplate({
+    content,
+    slug: conn.name,
+  });
 
   await sendEmail(
     users.map((user) => user.email).concat(req.user.email),

@@ -163,6 +163,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
     activity,
   }).catch((error) => {
     console.error("Error sending to queue", error);
+    activity.deleteOne();
     throw new Error(error);
   });
 
@@ -178,7 +179,10 @@ export const handler: HttpHandler = async (conn, req, context) => {
     <a href="${process.env.FRONTEND_URL}/portal/activity/${activity._id}">Acessar o painel</a>
 `;
 
-  const { html, css } = emailTemplate(content);
+  const { html, css } = await emailTemplate({
+    content,
+    slug: conn.name,
+  });
 
   await sendEmail(
     user.email,

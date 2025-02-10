@@ -27,6 +27,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { IFormType } from "@interfaces/Form";
 import NumberInput from "@components/atoms/Inputs/NumberInput";
+import { getProjects } from "@apis/project";
 
 const statusSchema = z
   .object({
@@ -189,6 +190,13 @@ export default function Workflow() {
     defaultValues: form ?? {},
   });
 
+  const { data: { projects = [] } = {}, isFetching: isFetchingProjects } =
+    useQuery({
+      queryKey: ["projects"],
+      queryFn: getProjects,
+      staleTime: 1000 * 60 * 5,
+    });
+
   const {
     handleSubmit,
     reset,
@@ -304,6 +312,21 @@ export default function Workflow() {
                     options: formsData?.status ?? [],
                   }}
                   isLoading={isLoadingForms}
+                />
+              )}
+
+              {!project && (
+                <Select
+                  input={{
+                    id: "project",
+                    label: t("common.fields.project"),
+                    required: true,
+                    options: projects?.map((project) => ({
+                      label: project.name,
+                      value: project._id,
+                    })),
+                  }}
+                  isLoading={isFetchingProjects}
                 />
               )}
 

@@ -22,6 +22,8 @@ import Can from "@components/atoms/Can";
 import HelpArea from "@components/organisms/HelpArea";
 import HelpSmartValues from "@docs/smart-values";
 import { useTranslation } from "react-i18next";
+import { getProjects } from "@apis/project";
+import Select from "@components/atoms/Inputs/Select";
 
 const emailSchema = z.object({
   slug: z
@@ -60,6 +62,13 @@ const EmailTemplate: React.FC = () => {
     html: email?.htmlTemplate,
     css: email?.cssTemplate,
   });
+
+  const { data: { projects = [] } = {}, isFetching: isFetchingProjects } =
+    useQuery({
+      queryKey: ["projects"],
+      queryFn: getProjects,
+      staleTime: 1000 * 60 * 5,
+    });
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createOrUpdateEmail,
@@ -204,6 +213,21 @@ const EmailTemplate: React.FC = () => {
               }),
             }}
           />
+
+          {!project && (
+            <Select
+              input={{
+                id: "project",
+                label: t("common.fields.project"),
+                required: true,
+                options: projects?.map((project) => ({
+                  label: project.name,
+                  value: project._id,
+                })),
+              }}
+              isLoading={isFetchingProjects}
+            />
+          )}
 
           <Box mt="4">{isLoading ? <Spinner /> : <MdxEditor />}</Box>
         </Box>

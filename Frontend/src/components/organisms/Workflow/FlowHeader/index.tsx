@@ -1,4 +1,4 @@
-import { publishUnpublish } from "@apis/workflowDraft";
+import { deleteWorkflowDraft, publishUnpublish } from "@apis/workflowDraft";
 import { Button, Flex, Heading, useToast } from "@chakra-ui/react";
 import Can from "@components/atoms/Can";
 import HelpArea from "@components/organisms/HelpArea";
@@ -7,7 +7,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft, FaPushed, FaSave, FaEye, FaPen } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaPushed,
+  FaSave,
+  FaEye,
+  FaPen,
+  FaTrash,
+} from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { Panel } from "reactflow";
 
@@ -55,6 +62,31 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
       });
     },
   });
+
+  const { mutateAsync: mutateAsyncDelete, isPending: isPendingDelete } =
+    useMutation({
+      mutationFn: deleteWorkflowDraft,
+      onSuccess: () => {
+        toast({
+          title: t("workflowDraft.deleted"),
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+        navigate(-1);
+      },
+      onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
+        toast({
+          title: t("workflowDraft.error"),
+          description: error?.response?.data?.message ?? error.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+      },
+    });
 
   const handlePublish = React.useCallback(() => {
     mutateAsync({
@@ -150,6 +182,24 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
               </Button>
             </Can>
           )}
+
+          {
+            <Can permission="workflowDraft.delete">
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  mutateAsyncDelete(id);
+                }}
+                variant="outline"
+                size="sm"
+                isLoading={isPendingDelete}
+                title={t("workflowDraft.delete")}
+                isDisabled={status === "published"}
+              >
+                <FaTrash />
+              </Button>
+            </Can>
+          }
 
           <HelpArea>
             <HelpFlowAutomation />

@@ -1,9 +1,26 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
+import { FileUploaded } from "../../services/upload";
 
 export interface IAdminClient extends mongoose.Document {
   _id: ObjectId;
   name: string;
   acronym: string;
+  logo: FileUploaded | null;
+  icon: FileUploaded | null;
+  domains: string[];
+  principal: boolean;
+  config: {
+    emailSender: string | null;
+    sendgrid: {
+      apiKey: string | null;
+    };
+    google: {
+      clientId: string | null;
+    };
+    clicksign: {
+      apiKey: string | null;
+    };
+  };
 }
 
 export const schema = new Schema<IAdminClient>(
@@ -11,6 +28,22 @@ export const schema = new Schema<IAdminClient>(
     _id: { type: Schema.Types.ObjectId, auto: true },
     name: { type: String, required: true },
     acronym: { type: String, required: true },
+    logo: { type: Object, required: false, default: null },
+    icon: { type: Object, required: false, default: null },
+    domains: [{ type: String, required: false, default: null, index: 1 }],
+    principal: { type: Boolean, required: false, default: true },
+    config: {
+      emailSender: { type: String, required: false, default: null },
+      sendgrid: {
+        apiKey: { type: String, required: false, default: null },
+      },
+      google: {
+        clientId: { type: String, required: false, default: null },
+      },
+      clicksign: {
+        apiKey: { type: String, required: false, default: null },
+      },
+    },
   },
   {
     timestamps: true,

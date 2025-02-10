@@ -53,7 +53,7 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
         <a href="${process.env.FRONTEND_URL}">Acessar o painel</a>
       `;
 
-      const { html, css } = emailTemplate(content);
+      const { html, css } = await emailTemplate({ content, slug: conn.name });
 
       sendEmail(
         emailAddress,

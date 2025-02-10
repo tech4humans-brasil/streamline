@@ -52,3 +52,9 @@ export const createOrUpdateFormDraft = async (
 ) => {
   return createFormDraft(data);
 };
+
+export const deleteFormDraft = async (id: string) => {
+  const res = await api.delete<ReqFormDraft>(`/form-draft/${id}`);
+
+  return res.data.data;
+};

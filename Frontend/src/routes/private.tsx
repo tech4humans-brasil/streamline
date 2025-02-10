@@ -34,6 +34,7 @@ import Schedule from "@pages/Portal/Schedules/Schedule";
 import Equipments from "@pages/Equipment/Equipments";
 import Equipment from "@pages/Equipment/Equipments/Equipment";
 import Allocations from "@pages/Equipment/Allocations";
+import Admin from "@pages/Portal/Admin";
 
 const routes: RouteType = [
   {
@@ -206,14 +207,22 @@ const routes: RouteType = [
       {
         path: "/portal/equipments",
         element: <Equipments />,
+        permission: "equipment.view",
       },
       {
         path: "/portal/equipment/:id?",
         element: <Equipment />,
+        permission: "equipment.create",
       },
       {
         path: "/portal/allocations/:id",
         element: <Allocations />,
+        permission: "allocation.view",
+      },
+      {
+        path: "/portal/admin",
+        element: <Admin />,
+        permission: "admin.view",
       },
     ],
   },

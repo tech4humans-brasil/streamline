@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,11 +12,12 @@ import {
   Text,
   Flex,
   Divider,
+  Spinner,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import {  FaExclamationCircle } from "react-icons/fa";
+import { FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import InputText from "@components/atoms/Inputs/Text";
 import Password from "@components/atoms/Inputs/Password";
 import { login } from "@apis/auth";
@@ -25,6 +26,8 @@ import SwitchTheme from "@components/molecules/SwitchTheme";
 import { useTranslation } from "react-i18next";
 import LocaleSwap from "@components/atoms/LocaleSwap";
 import GoogleAuth from "@components/molecules/GoogleAuth";
+import { useConfig } from "@hooks/useConfig";
+import Select from "@components/atoms/Inputs/Select";
 
 const schema = z.object({
   acronym: z
@@ -41,6 +44,8 @@ type FormData = z.infer<typeof schema>;
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+
+  const { data: configData, isLoading: configLoading, isError } = useConfig();
 
   const redirect = searchParams.get("redirect") ?? "/portal";
 
@@ -78,6 +83,34 @@ const Login: React.FC = () => {
     await mutateAsync(data);
   });
 
+  useEffect(() => {
+    if (configData) {
+      methods.setValue("acronym", configData.acronym);
+    }
+  }, [configData]);
+
+  if (configLoading) {
+    return (
+      <Box
+        p={4}
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-around"
+        height="100vh"
+        bg={"bg.page"}
+      >
+        <Spinner />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Navigate to="/404" replace />
+    );
+  }
+
   return (
     <Box
       p={4}
@@ -92,7 +125,16 @@ const Login: React.FC = () => {
         <Hide below="md">
           <Flex direction="column" gap="4" alignItems="center">
             <Flex alignItems="center" justifyContent="center">
-              <Icon w="150px" />
+              {configData?.logo ? (
+                <img
+                  src={configData.logo.url}
+                  alt={configData.acronym}
+                  width="250px"
+                  height="150px"
+                />
+              ) : (
+                <Icon w="150px" />
+              )}
             </Flex>
 
             <Text
@@ -125,14 +167,22 @@ const Login: React.FC = () => {
           <CardBody>
             <Hide above="md">
               <Flex alignItems="center" justifyContent="center" gap="4">
-                <Icon w="60px" />
+                {configData?.icon ? (
+                  <img
+                    src={configData.icon.url}
+                    alt={configData.acronym}
+                    width="60px"
+                  />
+                ) : (
+                  <Icon w="60px" />
+                )}
                 <Text
                   fontSize="xl"
                   fontWeight="bold"
                   textAlign="center"
                   color="text.primary"
                 >
-                  Bem-vindo ao Edu Flow
+                  {t("welcome.title")}
                 </Text>
               </Flex>
               <Divider my="5" />
@@ -140,13 +190,19 @@ const Login: React.FC = () => {
 
             <form onSubmit={onSubmit}>
               <Flex direction="column" gap="4">
-                <InputText
+                <Select
                   input={{
                     id: "acronym",
                     label: t("common.fields.slug"),
+                    required: true,
                     placeholder: t("input.enter.male", {
                       field: t("common.fields.slug"),
                     }),
+                    options:
+                      configData?.slugs.map((slug) => ({
+                        label: slug,
+                        value: slug,
+                      })) || [],
                   }}
                 />
 
@@ -194,7 +250,9 @@ const Login: React.FC = () => {
               </Text>
             </Box>
             <Box mt={4}>
-              <GoogleAuth />
+              <GoogleAuth
+                clientId={configData?.config?.google?.clientId || null}
+              />
             </Box>
           </CardBody>
         </Card>

@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import useAuth from "@hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import Can from "@components/atoms/Can";
 
 const AvatarMenu: React.FC = () => {
   const { t } = useTranslation();
@@ -99,6 +100,17 @@ const AvatarMenu: React.FC = () => {
             <Button colorScheme="blue" size="sm" onClick={handleLogout}>
               {t("button.logout")}
             </Button>
+            <Can permission={"admin.read"}>
+              <Button
+                colorScheme="blue"
+                variant="outline"
+                ml={2}
+                size="sm"
+                onClick={() => navigate("/portal/admin")}
+              >
+                {t("admin.button")}
+              </Button>
+            </Can>
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -4,6 +4,7 @@ import { IStatus } from "./Status";
 import { IFormDraft, schema as schemaFormDraft } from "./FormDraft";
 import { IWorkflowDraft } from "./WorkflowDraft";
 import { IForm } from "./Form";
+import { FileUploaded } from "../../services/upload";
 
 export enum IActivityState {
   finished = "finished",
@@ -79,20 +80,24 @@ export type IActivityInteractions = {
   finished: boolean;
 };
 
-export type IActivityEvaluations = {
+export type IActivityDocument = {
   _id: ObjectId;
   activity_workflow_id: ObjectId;
   activity_step_id: ObjectId;
-  form: IForm;
-  final_grade: number | null;
-  not_defined_board: boolean;
-  answers: mongoose.Types.DocumentArray<{
-    _id: ObjectId;
-    status: IActivityStepStatus;
-    user: Omit<IUser, "password">;
-    grade: number | null;
-    data: IFormDraft | null;
-  }> | null;
+  envelope_id: string;
+  documents: mongoose.Types.DocumentArray<{
+    id: string;
+    name: string;
+    closed: boolean;
+    file: FileUploaded | null;
+    users: mongoose.Types.DocumentArray<{
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      signed: boolean;
+    }>;
+  }>;
   finished: boolean;
 };
 
@@ -112,7 +117,7 @@ export type IActivity = {
   comments: IComment[];
   workflows: mongoose.Types.DocumentArray<ActivityWorkflow>;
   interactions: mongoose.Types.DocumentArray<IActivityInteractions>;
-  evaluations: mongoose.Types.DocumentArray<IActivityEvaluations>;
+  documents: mongoose.Types.DocumentArray<IActivityDocument>;
   description: string;
   createdAt: string;
   updatedAt: string;
@@ -156,24 +161,26 @@ const interactionSchema = new Schema<IActivityInteractions>({
   finished: { type: Boolean, default: false },
 }).index({ "answers.user._id": 1, "answers.status": 1 }, { unique: false });
 
-const evaluationsSchema = new Schema<IActivityEvaluations>({
+const documentSchema = new Schema<IActivityDocument>({
   _id: { type: Schema.Types.ObjectId, auto: true },
   activity_workflow_id: { type: Schema.Types.ObjectId, required: true },
   activity_step_id: { type: Schema.Types.ObjectId, required: true },
-  form: { type: Object, required: true },
-  final_grade: { type: Number, default: null },
-  not_defined_board: { type: Boolean, default: false, index: true },
-  answers: [
+  envelope_id: { type: String, required: true },
+  documents: [
     {
-      _id: { type: Schema.Types.ObjectId, auto: true },
-      status: {
-        type: String,
-        required: true,
-        enum: Object.values(IActivityStepStatus),
-      },
-      grade: { type: Number, default: null },
-      user: { type: userSchema, required: true },
-      data: { type: Object, default: null },
+      id: { type: String, required: true },
+      name: { type: String, required: true },
+      closed: { type: Boolean, required: true },
+      file: { type: Object, required: false, default: null },
+      users: [
+        {
+          id: { type: String, required: true },
+          name: { type: String, required: true },
+          email: { type: String, required: true },
+          role: { type: String, required: true },
+          signed: { type: Boolean, required: false, default: false },
+        },
+      ],
     },
   ],
   finished: { type: Boolean, default: false },
@@ -249,7 +256,7 @@ export const schema: Schema = new Schema<IActivity>(
     finished_at: { type: Date, required: false, default: null },
     status: { type: statusSchema, required: true },
     interactions: [{ type: interactionSchema, required: false, default: [] }],
-    evaluations: [{ type: evaluationsSchema, required: false, default: [] }],
+    documents: [{ type: documentSchema, required: false, default: [] }],
     workflows: [
       {
         type: ActivityWorkflowSchema,

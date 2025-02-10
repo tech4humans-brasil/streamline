@@ -14,10 +14,11 @@ import { StatusType } from "../../../models/client/Status";
 interface Body {
   name: string;
   acronym: string;
-  email?: string;
+  email: string;
+  domain: string;
 }
 export const handler: HttpHandler = async (_, req, context) => {
-  const { name, acronym, email } = req.body as Body;
+  const { name, acronym, email, domain } = req.body as Body;
 
   const adminConn = await connectAdmin();
 
@@ -32,6 +33,7 @@ export const handler: HttpHandler = async (_, req, context) => {
   const instance = await new AdminClient(adminConn).model().create({
     acronym,
     name,
+    domain,
   });
 
   const conn = connect(instance.acronym);
@@ -57,11 +59,11 @@ export const handler: HttpHandler = async (_, req, context) => {
 
   await conn.model("Status").insertMany([
     {
-      name: "Aprovado",
-      type: StatusType.DONE,
+      name: "Em andamento",
+      type: StatusType.PROGRESS,
     },
     {
-      name: "Reprovado",
+      name: "Finalizado",
       type: StatusType.DONE,
     },
   ]);
@@ -88,7 +90,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     </ul>
 `;
 
-  const { html, css } = emailTemplate(content);
+  const { html, css } = await emailTemplate({ content });
 
   await sendEmail(
     user.email,
@@ -112,7 +114,8 @@ export default new Http(handler)
         .string()
         .matches(/^[a-z0-9_-]+$/)
         .required(),
-      email: schema.string().email().optional(),
+      email: schema.string().email(),
+      domain: schema.string().url(),
     }),
   }))
   .configure({

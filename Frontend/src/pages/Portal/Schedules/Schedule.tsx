@@ -30,6 +30,7 @@ import Switch from "@components/atoms/Inputs/Switch";
 import { convertFromCron, convertToCron } from "@utils/convertCronExpression";
 import { FaArrowLeft } from "react-icons/fa";
 import ExecutionList from "./components/ExecutionItem";
+import { getProjects } from "@apis/project";
 
 const Schema = z
   .object({
@@ -44,8 +45,8 @@ const Schema = z
     day: z.string().nullable().optional(),
     advanced: z.boolean().optional().default(false),
     form: z.string().min(3, { message: "Formulário é obrigatório" }),
-    start: z.coerce.date(),
-    end: z.union([z.null(), z.coerce.date()]).default(null),
+    start: z.string().min(3, { message: "Data de início é obrigatória" }),
+    end: z.string().nullable(),
     timezone: z.string().default("America/Sao_Paulo"),
     project: z.string().min(3, { message: "Projeto é obrigatório" }),
     active: z.boolean().default(true),
@@ -124,6 +125,13 @@ export default function Schedule() {
     queryKey: ["schedule", "forms", project ?? ""],
     queryFn: getScheduleForms,
   });
+
+  const { data: { projects = [] } = {}, isFetching: isFetchingProjects } =
+    useQuery({
+      queryKey: ["projects"],
+      queryFn: getProjects,
+      staleTime: 1000 * 60 * 5,
+    });
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createOrUpdateSchedule,
@@ -298,6 +306,22 @@ export default function Schedule() {
                 }}
               />
             </Flex>
+
+            {!project && (
+              <Select
+                input={{
+                  id: "project",
+                  label: t("common.fields.project"),
+                  required: true,
+                  options: projects?.map((project) => ({
+                    label: project.name,
+                    value: project._id,
+                  })),
+                }}
+                isLoading={isFetchingProjects}
+              />
+            )}
+
             <Select
               input={{
                 id: "workflow",

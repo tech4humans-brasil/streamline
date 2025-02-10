@@ -30,12 +30,12 @@ const columns = [
     label: "common.fields.users",
   },
   {
-    key: "actions",
-    label: "common.fields.actions",
-  },
-  {
     key: "finished_at",
     label: "common.fields.finished",
+  },
+  {
+    key: "actions",
+    label: "common.fields.actions",
   },
 ];
 

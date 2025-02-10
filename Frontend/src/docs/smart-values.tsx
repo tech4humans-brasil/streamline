@@ -15,12 +15,14 @@ import {
   Text,
   Button,
   useToast,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCopy } from "react-icons/fa";
 
-const data = [
+const smartValuesData = [
   { field: "activity.name", description: "Nome da atividade" },
   { field: "activity.description", description: "Descrição da atividade" },
   { field: "activity.#users.name", description: "Nome do Usuário" },
@@ -40,6 +42,25 @@ const data = [
   { field: "activity.status.name", description: "Nome do Status" },
   { field: "activity.status.type", description: "Tipo do Status" },
   { field: "activity.protocol", description: "Protocolo do Sistema" },
+];
+
+const jsExamples = [
+  {
+    example: "${new Date().toLocaleDateString()}",
+    description: "Data atual formatada",
+  },
+  {
+    example: "${activity.#users.name.toUpperCase()}",
+    description: "Nome do usuário em maiúsculas",
+  },
+  {
+    example: "${activity.protocol.padStart(6, '0')}",
+    description: "Protocolo com 6 dígitos preenchido com zeros à esquerda",
+  },
+  {
+    example: "${activity.#users.length > 1 ? 'Usuários' : 'Usuário'}",
+    description: "Texto condicional baseado na quantidade de usuários",
+  },
 ];
 
 const HelpSmartValues = () => {
@@ -82,29 +103,53 @@ const HelpSmartValues = () => {
       gap={2}
     >
       <Heading as="h1" size="md" mb={5}>
-        Guia do Usuário para Utilização do Smart Values
+        Guia do Smart Values
       </Heading>
-
-      <Heading as="h2" fontSize="lg" mb={3}>
-        O que é o Smart Values?
-      </Heading>
-      <Text mb={5}>
-        O Smart Values é uma funcionalidade que permite a substituição
-        automática de variáveis em textos, usando dados específicos de uma
-        atividade. Isso é útil para personalizar mensagens, e-mails e outros
-        conteúdos sem precisar fazer isso manualmente.
-      </Text>
 
       <Box maxW="800px" mx="auto">
-        <Heading as="h1" size="mb" mb={5}>
-          Campos Disponíveis para Smart Values
+        <Heading as="h2" fontSize="lg" mb={3}>
+          O que é o Smart Values?
         </Heading>
         <Text mb={5}>
-          Abaixo estão listados os campos que podem ser utilizados no Smart
-          Values para personalizar suas mensagens:
+          O Smart Values é uma funcionalidade que permite a substituição
+          dinâmica de variáveis em textos, usando dados específicos de uma
+          atividade. Existem duas formas de utilizar o Smart Values:
         </Text>
-        <TableContainer>
-          <Table variant="striped" colorScheme="blue" size={"sm"}>
+
+        <List spacing={4} mb={8}>
+          <ListItem>
+            <Text fontWeight="bold">
+              1. Substituição Simples ({"${{variavel}}"}):
+            </Text>
+            <Text>
+              Substitui diretamente o valor da variável sem modificações.
+            </Text>
+            <Code p={2} mt={2} display="block">
+              Olá, ${"{{activity.#users.name}}"}, seu protocolo é $
+              {"{{activity.protocol}}"}
+            </Code>
+          </ListItem>
+
+          <ListItem>
+            <Text fontWeight="bold">
+              2. Expressões JavaScript (${"{"}expressao{"}"}):
+            </Text>
+            <Text>
+              Permite executar código JavaScript para manipular os valores.
+            </Text>
+            <Code p={2} mt={2} display="block">
+              Olá, {"${activity.#users.name.toUpperCase()}"}, hoje é{" "}
+              {"${new Date().toLocaleDateString()}"}
+            </Code>
+          </ListItem>
+        </List>
+
+        <Heading as="h2" size="md" mb={4}>
+          Campos Disponíveis
+        </Heading>
+
+        <TableContainer mb={8}>
+          <Table variant="striped" colorScheme="blue" size="sm">
             <Thead>
               <Tr>
                 <Th>Campo</Th>
@@ -113,14 +158,14 @@ const HelpSmartValues = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {data.map((item, index) => (
+              {smartValuesData.map((item, index) => (
                 <Tr key={index}>
                   <Td>
                     <Code>{item.field}</Code>
                   </Td>
                   <Td>{item.description}</Td>
                   <Td>
-                    <Button onClick={() => handleCopy(item.field)}>
+                    <Button size="sm" onClick={() => handleCopy(item.field)}>
                       <FaCopy />
                     </Button>
                   </Td>
@@ -129,161 +174,80 @@ const HelpSmartValues = () => {
             </Tbody>
           </Table>
         </TableContainer>
+
+        <Heading as="h2" size="md" mb={4}>
+          Exemplos de Expressões JavaScript
+        </Heading>
+
+        <Alert status="info" mb={4}>
+          <AlertIcon />
+          Use chaves simples {"${}"} para incluir expressões JavaScript que
+          serão avaliadas em tempo real.
+        </Alert>
+
+        <TableContainer mb={8}>
+          <Table variant="striped" colorScheme="blue" size="sm">
+            <Thead>
+              <Tr>
+                <Th>Exemplo</Th>
+                <Th>Descrição</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {jsExamples.map((item, index) => (
+                <Tr key={index}>
+                  <Td>
+                    <Code>{item.example}</Code>
+                  </Td>
+                  <Td>{item.description}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+
+        <Heading as="h2" size="md" mb={4}>
+          Dicas e Boas Práticas
+        </Heading>
+
+        <List spacing={3} mb={8}>
+          <ListItem>
+            <Text as="span" fontWeight="bold">
+              • Verificação de Valores Nulos:
+            </Text>
+            <Text>
+              Use operador opcional para evitar erros com valores indefinidos:
+            </Text>
+            <Code p={2} mt={2} display="block">
+              {"${activity.#users?.[0]?.name ?? 'Usuário'}"}
+            </Code>
+          </ListItem>
+
+          <ListItem>
+            <Text as="span" fontWeight="bold">
+              • Formatação de Datas:
+            </Text>
+            <Text>Use os métodos de Date para formatar datas:</Text>
+            <Code p={2} mt={2} display="block">
+              {"${new Date(activity.createdAt).toLocaleDateString()}"}
+            </Code>
+          </ListItem>
+
+          <ListItem>
+            <Text as="span" fontWeight="bold">
+              • Arrays e Listas:
+            </Text>
+            <Text>Use # para acessar arrays e seus métodos:</Text>
+            <Code p={2} mt={2} display="block">
+              {"${{activity.#users.name}}"}
+            </Code>
+            <Text>
+              Essa funcionalidade é extremamente útil pois ela já percorre o
+              array realizando uma junção com o "," automática.
+            </Text>
+          </ListItem>
+        </List>
       </Box>
-
-      <Heading as="h2" fontSize="lg" mb={3}>
-        Como Funciona?
-      </Heading>
-      <Text mb={5}>
-        Imagine que você tem uma atividade com várias informações, como o nome
-        do cliente, a data da atividade, etc. Com o Smart Values, você pode
-        criar templates de texto que serão automaticamente preenchidos com esses
-        dados.
-      </Text>
-
-      <Heading as="h2" fontSize="lg" mb={3}>
-        Exemplos de Uso
-      </Heading>
-
-      <Heading as="h3" size="sm" mb={3}>
-        1. Template Simples
-      </Heading>
-      <Text mb={2}>
-        Você pode criar um template de texto com variáveis que serão
-        substituídas. Por exemplo:
-      </Text>
-      <Code
-        p={2}
-        mb={2}
-        display="block"
-        whiteSpace="pre"
-        maxW="100%"
-        overflowX="auto"
-      >
-        Olá, ${"{{'activity.#users.name'}}"}! Seu protocolo é $
-        {"{{'activity.protocol'}}"}.
-      </Code>
-      <Text mb={2}>
-        Se você tiver uma atividade com o nome do cliente como "João" e
-        protocolo 123456, o texto será automaticamente convertido para:
-      </Text>
-      <Code p={2} mb={5} display="block" whiteSpace="pre">
-        Olá, João! Seu protocolo é 123456.
-      </Code>
-
-      <Heading as="h3" size="sm" mb={3}>
-        2. Listas e Arrays
-      </Heading>
-      <Text mb={2}>
-        O Smart Values também lida com listas e arrays. Por exemplo:
-      </Text>
-      <Code p={2} mb={2} display="block" whiteSpace="pre">
-        Participantes: ${"{{'activity.#users.name'}}"}.
-      </Code>
-      <Text mb={2}>
-        Se a atividade tiver itens com os nomes "João", "Maria" e "Pedro", o
-        texto será convertido para:
-      </Text>
-      <Code p={2} mb={5} display="block" whiteSpace="pre">
-        Participantes: João, Maria, Pedro.
-      </Code>
-
-      <Heading as="h2" fontSize="lg" mb={3}>
-        Como Usar
-      </Heading>
-      <List spacing={3} mb={5}>
-        <ListItem>
-          1.{" "}
-          <Text as="span" fontWeight="bold">
-            Identifique as variáveis que você quer substituir
-          </Text>
-          : Estas variáveis devem estar dentro de <Code>${"{{}}"}</Code>.
-        </ListItem>
-        <ListItem>
-          2.{" "}
-          <Text as="span" fontWeight="bold">
-            Crie seu template de texto
-          </Text>
-          : Use as variáveis dentro do template. Por exemplo:{" "}
-          <Code>Olá, ${"{{'activity.summary'}}"}!</Code>
-        </ListItem>
-        <ListItem>
-          3.{" "}
-          <Text as="span" fontWeight="bold">
-            Utilize a função Smart Values para fazer a substituição
-          </Text>
-          : A função cuidará de substituir as variáveis pelos valores corretos
-          da atividade.
-        </ListItem>
-      </List>
-
-      <Heading as="h2" fontSize="lg" my={3}>
-        Campos Customizados
-      </Heading>
-
-      <Text mb={2}>
-        Além dos campos padrão, você também pode acessar campos customizados
-        criados nos formulários da atividade. Por exemplo:
-      </Text>
-
-      <Text mb={2}>
-        Se você tiver um campo customizado com id "custom_field", você pode
-        acessá-lo da seguinte forma:
-      </Text>
-
-      <Code p={2} mb={2} display="block" whiteSpace="pre">
-        Nome do Campo: ${"{{'activity.custom_field'}}"}
-      </Code>
-
-      <Heading as="h2" fontSize="lg" mb={3}>
-        Dicas Úteis
-      </Heading>
-      <List spacing={3} mb={5}>
-        <ListItem>
-          <Text as="span" fontWeight="bold">
-            Verifique os nomes das variáveis
-          </Text>
-          : As variáveis devem corresponder exatamente aos nomes dos dados na
-          atividade.
-        </ListItem>
-        <ListItem>
-          <Text as="span" fontWeight="bold">
-            Use sempre <Code>${"{{}}"}</Code>
-          </Text>
-          : Isso ajuda a identificar claramente as variáveis que devem ser
-          substituídas.
-        </ListItem>
-        <ListItem>
-          <Text as="span" fontWeight="bold">
-            Arrays e Listas
-          </Text>
-          : Use <Code>#</Code> para indicar que está lidando com listas ou
-          arrays. Por exemplo, <Code>${"{{activity.#user.name}}"}</Code>.
-        </ListItem>
-      </List>
-
-      <Heading as="h2" fontSize="lg" mb={3}>
-        Perguntas Frequentes
-      </Heading>
-      <Text mb={2}>
-        <Text as="span" fontWeight="bold">
-          P: O que acontece se a variável não existir?
-        </Text>
-      </Text>
-      <Text mb={5}>
-        R: Se a variável não for encontrada, será substituída por um hífen{" "}
-        <Code>-</Code>.
-      </Text>
-
-      <Text mb={2}>
-        <Text as="span" fontWeight="bold">
-          P: Posso usar múltiplas variáveis em um único texto?
-        </Text>
-      </Text>
-      <Text mb={5}>
-        R: Sim! Você pode usar quantas variáveis precisar dentro do seu
-        template.
-      </Text>
     </Flex>
   );
 };

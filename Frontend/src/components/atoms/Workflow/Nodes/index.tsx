@@ -7,6 +7,7 @@ import Conditional from "./Conditional";
 import WebRequest from "./WebRequest";
 import Script from "./Script";
 import NewTicket from "./NewTicket";
+import Clicksign from "./Clicksign";
 
 export default {
   circle: CircleNode,
@@ -18,4 +19,5 @@ export default {
   web_request: WebRequest,
   script: Script,
   new_ticket: NewTicket,
+  clicksign: Clicksign,
 };
