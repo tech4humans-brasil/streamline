@@ -31,6 +31,7 @@ const Navbar: React.FC = () => {
   } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+    staleTime: 1000 * 60 * 5,
   });
 
   const handleCreate = useCallback(() => {

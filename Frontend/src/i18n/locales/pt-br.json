@@ -25,6 +25,8 @@
     "create": "Criar",
     "fields": {
       "name": "Nome",
+      "yes": "Sim",
+      "no": "Não",
       "allocation": "Alocação",
       "url": "URL",
       "serial": "Nº Serial",

@@ -17,6 +17,7 @@ export const handler: HttpHandler = async (_, req) => {
           $eq: host,
         },
       },
+      principal: true,
     },
     select: {
       name: 1,
@@ -34,7 +35,6 @@ export const handler: HttpHandler = async (_, req) => {
           $eq: host,
         },
       },
-      principal: true,
     },
     select: {
       acronym: 1,

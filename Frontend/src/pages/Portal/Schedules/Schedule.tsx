@@ -30,6 +30,7 @@ import Switch from "@components/atoms/Inputs/Switch";
 import { convertFromCron, convertToCron } from "@utils/convertCronExpression";
 import { FaArrowLeft } from "react-icons/fa";
 import ExecutionList from "./components/ExecutionItem";
+import { getProjects } from "@apis/project";
 
 const Schema = z
   .object({
@@ -124,6 +125,13 @@ export default function Schedule() {
     queryKey: ["schedule", "forms", project ?? ""],
     queryFn: getScheduleForms,
   });
+
+  const { data: { projects = [] } = {}, isFetching: isFetchingProjects } =
+    useQuery({
+      queryKey: ["projects"],
+      queryFn: getProjects,
+      staleTime: 1000 * 60 * 5,
+    });
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createOrUpdateSchedule,
@@ -298,6 +306,22 @@ export default function Schedule() {
                 }}
               />
             </Flex>
+
+            {!project && (
+              <Select
+                input={{
+                  id: "project",
+                  label: t("common.fields.project"),
+                  required: true,
+                  options: projects?.map((project) => ({
+                    label: project.name,
+                    value: project._id,
+                  })),
+                }}
+                isLoading={isFetchingProjects}
+              />
+            )}
+
             <Select
               input={{
                 id: "workflow",
