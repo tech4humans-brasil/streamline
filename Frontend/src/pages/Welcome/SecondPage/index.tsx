@@ -21,9 +21,8 @@ const steps = [
 
         <Text fontSize="lg" mb={4}>
           Os formulários são a base do sistema e são utilizados para capturar as
-          informações necessárias ao longo do fluxo de TCC. Eles permitem a
-          definição de atividades, submissão de informações e avaliação do
-          desempenho dos alunos.
+          informações necessárias ao longo do fluxo de processo. Eles permitem a
+          definição de atividades, submissão de informações.
         </Text>
 
         <Divider my={4} />
@@ -74,11 +73,11 @@ const steps = [
         </Heading>
 
         <Text fontSize="lg" mb={4}>
-          Com base no mapeamento do processo, o fluxo de TCC pode ser modelado
+          Com base no mapeamento do processo, o fluxo pode ser modelado
           utilizando cinco componentes parametrizáveis. Esses componentes são
           fundamentais para garantir a flexibilidade e a adaptabilidade do
           sistema, permitindo que ele seja configurado conforme as necessidades
-          específicas de diferentes cursos e instituições.
+          específicas de diferentes organizações.
         </Text>
 
         <Divider my={4} />
@@ -167,9 +166,8 @@ const steps = [
           diferentes etapas do fluxo.
         </Text>
         <Text mt={2}>
-          <b>Exemplo de Uso:</b> O sistema pode solicitar ao aluno que envie a
-          versão final do TCC para avaliação, ou pode solicitar a um membro da
-          banca que forneça feedback sobre uma apresentação.
+          <b>Exemplo de Uso:</b> O sistema pode solicitar ao colaborador novas
+          informações para o andamento do processo.
         </Text>
 
         <Divider my={4} />
@@ -192,19 +190,10 @@ const steps = [
 
         <Divider my={4} />
         <Flex align="center" mb={4}>
-          <Icon as={BiGitRepoForked} boxSize={6} color="green.500" mr={4} />
-          <Heading size="sm">Condicional</Heading>
+          <Heading size="md">
+            Veja mais acessando a tela de Fluxos no sistema
+          </Heading>
         </Flex>
-        <Text>
-          Utilizado para realizar ações condicionais com base em informações
-          fornecidas pelo usuário ou por sistemas externos. Com isso é possível
-          criar ramificações no fluxo de trabalho, permitindo que diferentes
-          ações sejam tomadas com base em critérios específicos.
-        </Text>
-        <Text mt={2}>
-          <b>Exemplo de Uso:</b> Se um campo específico for preenchido com
-          "Sim", enviar um email de notificação para o responsável.
-        </Text>
       </Box>
     ),
   },
