@@ -35,6 +35,7 @@ import Equipments from "@pages/Equipment/Equipments";
 import Equipment from "@pages/Equipment/Equipments/Equipment";
 import Allocations from "@pages/Equipment/Allocations";
 import Admin from "@pages/Portal/Admin";
+import Reports from "@pages/Portal/Reports";
 
 const routes: RouteType = [
   {
@@ -223,6 +224,10 @@ const routes: RouteType = [
         path: "/portal/admin",
         element: <Admin />,
         permission: "admin.view",
+      },
+      {
+        path: "/portal/reports",
+        element: <Reports />,
       },
     ],
   },
