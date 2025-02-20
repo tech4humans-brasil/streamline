@@ -135,6 +135,10 @@ class BaseRepository<T extends Document> {
   }): Promise<any[]> {
     return this.model.distinct(field, where).exec();
   }
+
+  async aggregate(pipeline: any[]) {
+    return this.model.aggregate(pipeline).exec();
+  }
 }
 
 export default BaseRepository;
