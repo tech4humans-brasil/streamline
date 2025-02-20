@@ -236,6 +236,17 @@ function Sidebar() {
             active={location.pathname === "/portal/equipment"}
           />
         </Can>
+
+        <Can permission="report.view">
+          <NavLink
+            id="reports"
+            to="/portal/reports"
+            label="title.reports"
+            icon={BsPostcardFill}
+            active={location.pathname === "/portal/reports"}
+          />
+        </Can>
+        
       </List>
     </div>
   );
