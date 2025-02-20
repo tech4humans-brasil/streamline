@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Box, Flex, Text, Heading, Divider, Icon } from "@chakra-ui/react";
 import { FaTasks, FaFileAlt, FaWpforms } from "react-icons/fa";
 import { GoTag, GoWorkflow } from "react-icons/go";
-import { BiGitRepoForked, BiMailSend } from "react-icons/bi";
+import { BiMailSend } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { updateTutorials } from "@apis/users";
 import useAuth from "@hooks/useAuth";
