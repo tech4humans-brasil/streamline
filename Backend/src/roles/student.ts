@@ -71,6 +71,10 @@ export const StudentRole: Role = {
     {
       name: "schedule",
       permissions: ["read", "create", "update", "delete"],
-    }
+    },
+    {
+      name: "report",
+      permissions: ["view", "read", "create", "update", "delete"],
+    },
   ],
 };
