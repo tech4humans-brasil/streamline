@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { getActivitiesDashboard } from "@apis/reports";
 import Filters from "./components/Filters";
 import MetricsCards from "./components/MetricsCards";
-import { PieChart, BarChart, LineChart, HorizontalBarChart } from "./components/Charts";
+import { PieChart, LineChart, HorizontalBarChart } from "./components/Charts";
 
 const Reports: React.FC = () => {
   const { t } = useTranslation();
@@ -125,7 +125,7 @@ const Reports: React.FC = () => {
           data={formTypeChartData}
         />
         <PieChart
-          title="Distribuição por Instituto"
+          title="Distribuição por Time"
           data={{
             labels: metrics.instituteDistribution.map(inst => inst.name),
             series: metrics.instituteDistribution.map(inst => inst.count),
