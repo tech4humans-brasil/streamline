@@ -120,15 +120,18 @@ const Reports: React.FC = () => {
       />
 
       <Flex direction={["column", "row"]} w="100%" mb={6} justifyContent="space-between">
-        <PieChart
+        <HorizontalBarChart
           title="Distribuição por Tipo de Formulário"
-          data={formTypeChartData}
+          data={{
+            categories: formTypeChartData.labels,
+            series: formTypeChartData.series
+          }}
         />
-        <PieChart
+        <HorizontalBarChart
           title="Distribuição por Time"
           data={{
-            labels: metrics.instituteDistribution.map(inst => inst.name),
-            series: metrics.instituteDistribution.map(inst => inst.count),
+            categories: metrics.instituteDistribution.map(inst => inst.name),
+            series: metrics.instituteDistribution.map(inst => inst.count)
           }}
         />
       </Flex>
