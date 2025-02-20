@@ -23,6 +23,7 @@
     "@uiw/codemirror-theme-github": "^4.23.6",
     "@uiw/codemirror-theme-vscode": "^4.23.6",
     "@uiw/react-codemirror": "^4.23.6",
+    "apexcharts": "^4.5.0",
     "axios": "^1.7.2",
     "cronstrue": "^2.50.0",
     "framer-motion": "^11.2.11",
