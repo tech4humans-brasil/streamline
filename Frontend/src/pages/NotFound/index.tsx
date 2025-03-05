@@ -9,6 +9,12 @@ export function NotFoundPage() {
   const navigate = useNavigate();
 
   const handleBack = useCallback(() => {
+
+    if(window.location.pathname === "/404") {
+      navigate("/");
+      return;
+    }
+
     navigate(-1);
   }, [navigate]);
 

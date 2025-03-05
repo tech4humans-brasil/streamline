@@ -87,7 +87,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
     <p>A atividade "${activity.name}" mudou de status para "${status.name}".</p>
     <p>Anteriormente, o status era "${lastStatus.name}".</p>
     <p>Para mais informações, acesse o sistema.</p>
-    <a href="${process.env.FRONTEND_URL}/portal/atividades/${
+    <a href="${process.env.FRONTEND_URL}/portal/activity/${
       activity._id
     }">Acessar o painel</a>
 `;

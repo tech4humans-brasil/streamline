@@ -10,6 +10,11 @@ jest.mock("../../../services/jwt", () => ({
   sign: jest.fn(() => "token"),
 }));
 
+beforeEach(() => {
+  process.env.MONGO_URI = "mongodb://localhost:27017/test"; // Ensure this is set
+  process.env.JWT_SECRET = "mocked_jwt_secret"; // Add this line
+});
+
 describe("Login", () => {
   it("should return 404 when user not found", async () => {
     const conn = {
@@ -93,7 +98,7 @@ describe("Login", () => {
 
     const result = await handler(conn as any, req as any, context as any);
 
-    const body = JSON.parse(result?.body.toString());
+    const body = result?.body ? JSON.parse(result.body.toString()) : {};
 
     expect(body.data.token).toEqual("token");
   });

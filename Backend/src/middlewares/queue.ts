@@ -14,6 +14,7 @@ import { sendDiscordBlockError } from "../services/discord";
 const IS_IDLE_BLOCK = [
   NodeTypes.Interaction,
   NodeTypes.WebRequest,
+  NodeTypes.Script,
   //NodeTypes.Clicksign,
 ];
 
@@ -156,11 +157,15 @@ export default class QueueWrapper<TMessage> {
               activityStepIndex
             ].status = IActivityStepStatus.error;
 
+            activity.workflows[activityWorkflowIndex].steps[
+              activityStepIndex
+            ].data["error"] = error.message;
+
             return activity.save();
           });
       }
 
-      sendDiscordBlockError({
+      await sendDiscordBlockError({
         error,
         name: this.name,
         activity,

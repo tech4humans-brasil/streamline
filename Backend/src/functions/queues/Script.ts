@@ -13,6 +13,7 @@ import { decrypt } from "../../utils/crypto";
 import sendNextQueue from "../../utils/sendNextQueue";
 import axios from "axios";
 import runJavaScriptCode from "../../services/vm";
+import { IActivityStepStatus } from "../../models/client/Activity";
 
 interface TMessage extends GenericMessage {}
 
@@ -21,52 +22,51 @@ const handler: QueueWrapperHandler<TMessage> = async (
   messageQueue,
   context
 ) => {
+  const { activity_id, activity_step_id, activity_workflow_id } = messageQueue;
+
+  const activityRepository = new ActivityRepository(conn);
+
+  const activity = await activityRepository.findById({ id: activity_id });
+
+  if (!activity) {
+    throw new Error("Activity not found");
+  }
+
+  const activityWorkflowIndex = activity.workflows.findIndex(
+    (workflow) => workflow._id.toString() === activity_workflow_id
+  );
+
+  if (activityWorkflowIndex === -1) {
+    throw new Error("Workflow not found");
+  }
+
+  const activityWorkflow = activity.workflows[activityWorkflowIndex];
+
+  const {
+    workflow_draft: { steps },
+  } = activityWorkflow;
+
+  const activityStepIndex = activityWorkflow.steps.findIndex(
+    (step) => step._id.toString() === activity_step_id
+  );
+
+  if (activityStepIndex === -1) {
+    throw new Error("Step not found");
+  }
+
+  const activityStep = activityWorkflow.steps[activityStepIndex];
+
+  const stepIndex = steps.findIndex(
+    (step) => step._id.toString() === activityStep.step.toString()
+  );
+
+  if (stepIndex === -1) {
+    throw new Error("Step not found");
+  }
+
+  const step = steps[stepIndex];
+
   try {
-    const { activity_id, activity_step_id, activity_workflow_id } =
-      messageQueue;
-
-    const activityRepository = new ActivityRepository(conn);
-
-    const activity = await activityRepository.findById({ id: activity_id });
-
-    if (!activity) {
-      throw new Error("Activity not found");
-    }
-
-    const activityWorkflowIndex = activity.workflows.findIndex(
-      (workflow) => workflow._id.toString() === activity_workflow_id
-    );
-
-    if (activityWorkflowIndex === -1) {
-      throw new Error("Workflow not found");
-    }
-
-    const activityWorkflow = activity.workflows[activityWorkflowIndex];
-
-    const {
-      workflow_draft: { steps },
-    } = activityWorkflow;
-
-    const activityStepIndex = activityWorkflow.steps.findIndex(
-      (step) => step._id.toString() === activity_step_id
-    );
-
-    if (activityStepIndex === -1) {
-      throw new Error("Step not found");
-    }
-
-    const activityStep = activityWorkflow.steps[activityStepIndex];
-
-    const stepIndex = steps.findIndex(
-      (step) => step._id.toString() === activityStep.step.toString()
-    );
-
-    if (stepIndex === -1) {
-      throw new Error("Step not found");
-    }
-
-    const step = steps[stepIndex];
-
     const { data } = step as { data: IScript };
 
     if (!data) {
@@ -152,10 +152,29 @@ const handler: QueueWrapperHandler<TMessage> = async (
       context,
     });
 
+    activityStep.status = IActivityStepStatus.finished;
+
     await activity.save();
   } catch (err) {
-    console.error(err);
-    throw err;
+    console.error(err.message);
+    if (!step.next["alternative-source"]) {
+      throw err;
+    }
+
+    await sendNextQueue({
+      conn,
+      activity,
+      context,
+      path: "alternative-source",
+    });
+
+    activityStep.status = IActivityStepStatus.error;
+    activityStep.data = {
+      ...(activityStep.data || {}),
+      error: err.message,
+    };
+
+    await activity.save();
   }
 };
 
