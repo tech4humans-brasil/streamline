@@ -130,6 +130,9 @@ jobs:
     name: "Azure Functions Deploy"
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     outputs:
       url: ${{ steps.deployFunctionApp.outputs.app-url }}
     environment: 
@@ -140,6 +143,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
             name: ${{ env.ARTIFACT_NAME }}
+
+      - name: "Login to Azure"
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: "Unzip Artifact"
         shell: bash
@@ -154,4 +164,3 @@ jobs:
           app-name: ${{ vars.FUNCTION_NAME }}
           slot-name: "production"
           package: .
-          publish-profile: ${{ secrets.PUBLISH_PROFILE }}
