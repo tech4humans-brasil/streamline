@@ -1,5 +1,9 @@
 import { handler } from "./Create";
 
+beforeEach(() => {
+  process.env.JWT_SECRET = "mocked_jwt_secret"; // Ensure this is set
+});
+
 describe("Email/Create", () => {
   it("should return 201", async () => {
     const conn = {

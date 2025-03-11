@@ -1,8 +1,9 @@
 import { Box, Flex, useColorModeValue, Text } from "@chakra-ui/react";
-import { NodeProps } from "reactflow";
+import { NodeProps, Position } from "reactflow";
 import WrapperNode from "./Wrapper";
 import { BiLogoJavascript } from "react-icons/bi";
 import { IScript } from "@interfaces/WorkflowDraft";
+import CustomHandle from "../CustomHandle";
 
 interface ScriptProps extends NodeProps {
   data: IScript;
@@ -19,6 +20,13 @@ const Script: React.FC<ScriptProps> = (props) => {
       <Text fontSize="xs" textAlign="center" noOfLines={1}>
         {props.data?.name}
       </Text>
+      <CustomHandle
+        type="source"
+        position={Position.Bottom}
+        handleId="alternative-source"
+        style={{ background: "red", bottom: "-10px" }}
+        title="Conexão Alternativa"
+      />
     </WrapperNode>
   );
 };

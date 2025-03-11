@@ -1,8 +1,9 @@
 import { Box, Flex, useColorModeValue, Text } from "@chakra-ui/react";
-import { NodeProps } from "reactflow";
+import { NodeProps, Position } from "reactflow";
 import WrapperNode from "./Wrapper";
 import { RiWebhookLine } from "react-icons/ri";
 import { IWebRequest } from "@interfaces/WorkflowDraft";
+import CustomHandle from "../CustomHandle";
 
 interface WebRequestProps extends NodeProps {
   data: IWebRequest;
@@ -19,6 +20,13 @@ const WebRequest: React.FC<WebRequestProps> = (props) => {
       <Text fontSize="xs" textAlign="center" noOfLines={1}>
         {props.data?.name}
       </Text>
+      <CustomHandle
+        type="source"
+        position={Position.Bottom}
+        handleId="alternative-source"
+        style={{ background: "red", bottom: "-10px" }}
+        title="Conexão Alternativa"
+      />
     </WrapperNode>
   );
 };

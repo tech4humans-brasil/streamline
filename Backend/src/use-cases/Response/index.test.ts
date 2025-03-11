@@ -66,7 +66,7 @@ describe("ResponseUseCases", () => {
       blobUploader.uploadFileToBlob.mockResolvedValueOnce({
         name: "file.txt",
         mimeType: "text/plain",
-        url: "https://example.com/file.txt",
+        base64: "base64data",
       });
 
       userRepository.find.mockResolvedValueOnce([
@@ -81,7 +81,7 @@ describe("ResponseUseCases", () => {
       expect(formDraft.fields[2].value).toEqual({
         name: "file.txt",
         mimeType: "text/plain",
-        url: "https://example.com/file.txt",
+        base64: "base64data",
       });
       expect(formDraft.fields[3].value).toEqual([
         { _id: "1", name: "John", email: "john@example.com" },
@@ -130,7 +130,7 @@ describe("ResponseUseCases", () => {
       blobUploader.uploadFileToBlob.mockResolvedValueOnce({
         name: "file.txt",
         mimeType: "text/plain",
-        url: "https://example.com/file.txt",
+        base64: "base64data",
       });
 
       await responseUseCases["processFields"](field, value);
@@ -138,7 +138,7 @@ describe("ResponseUseCases", () => {
       expect(field.value).toEqual({
         name: "file.txt",
         mimeType: "text/plain",
-        url: "https://example.com/file.txt",
+        base64: "base64data",
       });
     });
 

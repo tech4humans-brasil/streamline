@@ -43,6 +43,20 @@ const handler: HttpHandler = async (conn, req) => {
     }
   }
 
+  if (activity.workflows?.length) {
+    for (const workflow of activity.workflows) {
+      for (const step of workflow.workflow_draft.steps) {
+        if (step.data) {
+          // @ts-ignore0
+          step.data = {
+            name: step.data.name,
+            visible: step.data.visible,
+          };
+        }
+      }
+    }
+  }
+
   return res.success(activity);
 };
 

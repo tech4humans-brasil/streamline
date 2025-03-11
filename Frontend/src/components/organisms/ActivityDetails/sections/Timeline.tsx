@@ -209,6 +209,9 @@ const TimelineStepItem = ({
           </Text>
         </Flex>
         <Divider my={2} />
+
+        {data.data?.error && <Text fontSize="sm">{data.data?.error}</Text>}
+
         {interaction && (
           <Box w="100%">
             {open?.map((answer) => (
