@@ -11,7 +11,7 @@ import { sendEmail } from "../../services/email";
 import InteractionHelper from "../../use-cases/InteractionHelper";
 import emailTemplate from "../../utils/emailTemplate";
 
-interface TMessage extends GenericMessage {}
+interface TMessage extends GenericMessage { }
 
 const handler: QueueWrapperHandler<TMessage> = async (
   conn,
@@ -130,16 +130,12 @@ const handler: QueueWrapperHandler<TMessage> = async (
         },
         select: {
           _id: 1,
+          name: 1,
+          email: 1,
         },
       });
 
-      const usersSet = new Set(users.map((u) => u._id.toString()));
-
-      usersP.forEach((u) => {
-        usersSet.add(u._id.toString());
-      });
-
-      return [...usersSet];
+      return usersP;
     })();
 
     if (users.length === 0 && permissionAddParticipantsResult.length === 0) {
@@ -151,7 +147,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       activity_step_id,
       form: form.toObject(),
       canAddParticipants,
-      permissionAddParticipants: permissionAddParticipantsResult,
+      permissionAddParticipants: permissionAddParticipantsResult.map((u) => u._id.toString()),
       waitFor,
       answers: users.map((u) => ({
         status: "idle",
@@ -165,22 +161,41 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     if (users.length > 0) {
       const content = `
-    <p>Olá, ${users.map((u) => u.name).join(", ")}!</p>
-    <p>O formulário "${form.name}" foi enviado para você.</p>
-    <p>Acesse o painel para responder.</p> 
-    ${
-      waitForOne
-        ? "<p>Este formulário é necessário resposta de pelo menos um usuário.</p>"
-        : "Este formulário é necessário resposta de todos os usuários."
-    }
-    <a href="${process.env.FRONTEND_URL}/portal">Acessar o painel</a>
-`;
+        <p>Olá, ${users.map((u) => u.name).join(", ")}!</p>
+        <p>O formulário "${form.name}" foi enviado para você.</p>
+        <p>Acesse o painel para responder.</p> 
+        ${waitForOne
+          ? "<p>Este formulário é necessário resposta de pelo menos um usuário.</p>"
+          : "Este formulário é necessário resposta de todos os usuários."
+        }
+        <a href="${process.env.FRONTEND_URL}/portal">Acessar o painel</a>
+      `;
 
       const { html, css } = await emailTemplate({ slug: client, content });
 
       await sendEmail(
         users.map((u) => u.email),
         `[${activity.protocol}] - Você possui uma nova pendência!`,
+        html,
+        css
+      );
+    }
+
+    if (permissionAddParticipantsResult.length > 0 && canAddParticipants) {
+
+      const content = `
+        <p>Olá, ${permissionAddParticipantsResult.map((u) => u.name).join(", ")}!</p>
+        <p>O formulário "${form.name}" está pendente para que você selecione os participantes.</p>
+        <div class="button-container">
+          <a class="button" href="${process.env.FRONTEND_URL}/portal/activity/${activity._id}">Acessar o ticket</a>
+        </div>
+      `;
+
+      const { html, css } = await emailTemplate({ slug: client, content });
+
+      await sendEmail(
+        permissionAddParticipantsResult.map((u) => u.email),
+        `[${activity.protocol}] - Você precisa selecionar os participantes!`,
         html,
         css
       );

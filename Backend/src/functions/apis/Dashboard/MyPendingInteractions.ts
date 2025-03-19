@@ -13,7 +13,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
 
   const activityRepository = new ActivityRepository(conn);
 
-  const pendingActivities = await activityRepository.find({
+  const pendingActivitiesPromisse = activityRepository.find({
     where: {
       interactions: {
         $elemMatch: {
@@ -36,6 +36,36 @@ export const handler: HttpHandler = async (conn, req, context) => {
       due_date: 1,
     },
   });
+
+  const pendingSelectedParticipantsPromisse = activityRepository.find({
+    where: {
+      interactions: {
+        $elemMatch: {
+          "canAddParticipants": true,
+          "permissionAddParticipants": {
+            $in: [req.user.id],
+          },
+          answers: {
+            $size: 0
+          },
+        },
+      },
+    },
+    select: {
+      _id: 1,
+      name: 1,
+      description: 1,
+      protocol: 1,
+      due_date: 1,
+      users: 1,
+    },
+    sort: {
+      due_date: 1,
+    },
+  });
+
+  const [pendingActivities, pendingSelectedParticipants] = await Promise
+    .all([pendingActivitiesPromisse, pendingSelectedParticipantsPromisse]);
 
   const myPendingActivities = pendingActivities
     .map((activity) => {
@@ -65,7 +95,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
     })
     .filter((activity) => activity !== null);
 
-  return res.success(myPendingActivities);
+  return res.success([...myPendingActivities, ...pendingSelectedParticipants]);
 };
 
 export default new Http(handler)
