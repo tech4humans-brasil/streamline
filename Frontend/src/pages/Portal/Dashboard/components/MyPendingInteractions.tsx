@@ -85,9 +85,11 @@ const PendingInteractions: React.FC = () => {
           <Button mr={2} onClick={() => handleView(activity)} size="sm">
             <FaEye />
           </Button>
-          <Button size="sm" onClick={() => handleResponse(activity)}>
-            <FaPen />
-          </Button>
+          {
+            activity.form && (<Button size="sm" onClick={() => handleResponse(activity)}>
+              <FaPen />
+            </Button>)
+          }
         </Flex>
       ),
     }));

@@ -1,22 +1,24 @@
 {
   "folders": [
     {
-      "path": "Backend",
+      "path": "Backend"
     },
     {
-      "path": "Frontend",
+      "path": "Frontend"
     },
- {
-      "path": "IaC",
+    {
+      "path": "IaC"
     },
- {
-      "path": "Assistant",
+    {
+      "path": "Assistant"
     },
- {
-	"name": "Actions",
-      "path": ".github/workflows",
+    {
+      "name": "Actions",
+      "path": ".github/workflows"
+    },
+    {
+      "path": "scripts"
     }
-
   ],
   "settings": {
     "atlascode.bitbucket.enabled": false

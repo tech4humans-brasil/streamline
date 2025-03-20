@@ -159,7 +159,16 @@ const interactionSchema = new Schema<IActivityInteractions>({
     },
   ],
   finished: { type: Boolean, default: false },
-}).index({ "answers.user._id": 1, "answers.status": 1 }, { unique: false });
+}).index({ "answers.user._id": 1, "answers.status": 1 },
+  { unique: false, partialFilterExpression: { "answers.status": IActivityStepStatus.idle }, })
+  .index({
+    "canAddParticipants": 1,
+    "permissionAddParticipants": 1,
+    "answers": 1
+  }, {
+    partialFilterExpression: { canAddParticipants: true },
+    sparse: true
+  });
 
 const documentSchema = new Schema<IActivityDocument>({
   _id: { type: Schema.Types.ObjectId, auto: true },

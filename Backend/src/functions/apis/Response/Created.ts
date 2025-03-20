@@ -176,7 +176,9 @@ export const handler: HttpHandler = async (conn, req, context) => {
     <p>Seu ticket foi criada com sucesso.</p>
     <p>Protocolo: ${activity.protocol}</p>
     <p>Descrição: ${activity.description}</p>
-    <a href="${process.env.FRONTEND_URL}/portal/activity/${activity._id}">Acessar o painel</a>
+    <div class="button-container">
+      <a class="button" href="${process.env.FRONTEND_URL}/portal/activity/${activity._id}">Acessar o ticket</a>
+    </div>
 `;
 
   const { html, css } = await emailTemplate({

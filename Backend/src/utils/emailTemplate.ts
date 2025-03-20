@@ -18,7 +18,7 @@ const html = `
         <p>Equipe Streamline</p>
     </div>
     <div class="footer">
-        <p>&copy; 2024 Streamline. Todos os direitos reservados.</p>
+        <p>&copy; 2025 Streamline. Todos os direitos reservados.</p>
     </div>
 </div>
 `;

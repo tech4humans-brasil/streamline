@@ -49,11 +49,9 @@
     "typescript": "^5.4.5"
   },
   "pnpm": {
-    "ignoredBuiltDependencies": [
-      "azure-functions-core-tools"
-    ],
     "onlyBuiltDependencies": [
-      "azure-functions-core-tools"
+      "azure-functions-core-tools",
+      "bcrypt"
     ]
   }
 }
