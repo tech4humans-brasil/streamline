@@ -1,16 +1,14 @@
-import IInstitute from "@interfaces/Institute";
+
 import api from "@services/api";
 import Response from "@interfaces/Response";
 import IForm from "@interfaces/Form";
 import IUser from "@interfaces/User";
 import { FileUploaded } from "@interfaces/Answer";
+import IActivity from "@interfaces/Activitiy";
 
-type Institute = Pick<
-  IInstitute,
-  "_id" | "name" | "acronym" | "active"
->;
+type Activitiy = IActivity
 
-type ReqInstitute = Response<Institute[]>;
+type ReqActivity = Response<Activitiy>;
 
 export const responseForm = async ({
   form,
@@ -33,7 +31,7 @@ const createAnswer = async ({
   data: Record<string, string | { file: string }>;
   activity_id?: string;
 }) => {
-  const res = await api.post<ReqInstitute>(
+  const res = await api.post<ReqActivity>(
     `/response/${form._id}/${form.type}${activity_id ? "/" + activity_id : ""}`,
     data
   );
@@ -48,7 +46,7 @@ export const updateResponseForm = async ({
   activity_id: string;
   data: Record<string, string | FileUploaded | Pick<IUser, "_id" | "name" | "matriculation" | "email"> | null>;
 }) => {
-  const res = await api.post<ReqInstitute>(
+  const res = await api.post<ReqActivity>(
     `/response/${activity_id}/edit`,
     data
   );

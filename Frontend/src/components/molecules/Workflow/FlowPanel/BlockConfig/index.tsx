@@ -265,6 +265,29 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
               }}
             />
 
+            <NumberInput
+              input={{
+                label: "SLA",
+                id: "sla_value",
+                placeholder: "SLA",
+                type: "number",
+              }}
+            />
+
+            <Select
+              input={{
+                label: "Unidade de tempo",
+                id: "sla_unit",
+                placeholder: "Unidade de tempo",
+                options: [
+                  { label: "Minutos", value: "minutes" },
+                  { label: "Horas", value: "hours" },
+                  { label: "Dias", value: "days" },
+                ],
+                required: true,
+              }}
+            />
+
             {watch("canAddParticipants") && (
               <Select
                 input={{

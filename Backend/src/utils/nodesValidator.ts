@@ -50,6 +50,9 @@ const nodeValidator = (type: string, schema: typeof import("yup")) => {
         otherwise: (schema) => schema.notRequired(),
       }),
       canAddParticipants: schema.boolean().default(false),
+      permissionAddParticipants: schema.array().of(schema.string()).required(),
+      sla_value: schema.number().optional().nullable(),
+      sla_unit: schema.mixed().oneOf(["minutes", "hours", "days"]).optional().nullable(),
     });
   }
 

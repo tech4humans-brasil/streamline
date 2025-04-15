@@ -68,6 +68,8 @@ export interface IInteraction {
   form_id: string;
   to: string;
   visible: boolean;
+  sla_value: number;
+  sla_unit: "minutes" | "hours" | "days";
   waitForOne: boolean;
   conditional: Array<{
     field: string;

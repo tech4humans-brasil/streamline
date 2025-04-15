@@ -65,13 +65,15 @@ const handler: HttpHandler = async (conn, req) => {
     },
   });
 
+  const interactionUsers = comment.interactions.map((interaction) => interaction.answers.map((answer) => answer.user.email)).flat();
+
   const { html, css } = await emailTemplate({
     content,
     slug: conn.name,
   });
 
   await sendEmail(
-    users.map((user) => user.email).concat(req.user.email),
+    [...new Set([...users.map((user) => user.email), ...interactionUsers])],
     `[${comment.protocol}] | ${req.user.name} adicionou um comentário em seu ticket`,
     html,
     css

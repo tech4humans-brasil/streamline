@@ -70,6 +70,7 @@ export type IActivityInteractions = {
   waitForOne?: boolean;
   canAddParticipants?: boolean;
   permissionAddParticipants?: string[];
+  dueDate?: Date | null;
   answers: mongoose.Types.DocumentArray<{
     _id: ObjectId;
     status: IActivityStepStatus;
@@ -145,6 +146,7 @@ const interactionSchema = new Schema<IActivityInteractions>({
   waitForOne: { type: Boolean, required: false },
   canAddParticipants: { type: Boolean, required: false },
   permissionAddParticipants: [{ type: Schema.Types.ObjectId, required: false }],
+  dueDate: { type: Date, required: false, default: null },
   answers: [
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
@@ -168,6 +170,12 @@ const interactionSchema = new Schema<IActivityInteractions>({
   }, {
     partialFilterExpression: { canAddParticipants: true },
     sparse: true
+  })
+  .index({
+    "answers.dueDate": 1
+  }, {
+    unique: false,
+    partialFilterExpression: { "answers.dueDate": { $exists: true }, "answers.status": IActivityStepStatus.idle },
   });
 
 const documentSchema = new Schema<IActivityDocument>({

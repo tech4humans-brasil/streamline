@@ -58,7 +58,7 @@ const Response: React.FC<ResponseProps> = memo(() => {
 
   const { mutateAsync, isPending: isSubmitting } = useMutation({
     mutationFn: responseForm,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: `Formulário respondido com sucesso`,
         status: "success",
@@ -66,7 +66,7 @@ const Response: React.FC<ResponseProps> = memo(() => {
         isClosable: true,
         position: "top-right",
       });
-      navigate(-1);
+      navigate(`/portal/activity/${data._id}`);
     },
     onError: () => {
       toast({
