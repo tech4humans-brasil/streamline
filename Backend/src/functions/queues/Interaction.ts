@@ -8,6 +8,7 @@ import ActivityRepository from "../../repositories/Activity";
 import FormRepository from "../../repositories/Form";
 import UserRepository from "../../repositories/User";
 import { sendEmail } from "../../services/email";
+import Holiday from "../../services/holliday";
 import InteractionHelper from "../../use-cases/InteractionHelper";
 import emailTemplate from "../../utils/emailTemplate";
 
@@ -74,6 +75,8 @@ const handler: QueueWrapperHandler<TMessage> = async (
       waitValue = null,
       canAddParticipants = false,
       permissionAddParticipants = [],
+      sla_value = null,
+      sla_unit = null,
     } = data;
 
     let destination: string[] = to.flatMap((t) => {
@@ -112,6 +115,14 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const form = await formRepository.findById({ id: form_id });
 
+    let interactionDueDate: Date | null = null;
+
+    if (sla_value) {
+      const slaCalculator = new Holiday();
+
+      interactionDueDate = await slaCalculator.calculateDueDate(new Date(), sla_value, sla_unit);
+    }
+
     const waitFor = InteractionHelper.calculateWaitFor(users.length, data);
 
     const permissionAddParticipantsResult = await (async () => {
@@ -149,6 +160,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       canAddParticipants,
       permissionAddParticipants: permissionAddParticipantsResult.map((u) => u._id.toString()),
       waitFor,
+      dueDate: interactionDueDate,
       answers: users.map((u) => ({
         status: "idle",
         user: u,
@@ -164,6 +176,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
         <p>Olá, ${users.map((u) => u.name).join(", ")}!</p>
         <p>O formulário "${form.name}" foi enviado para você.</p>
         <p>Acesse o painel para responder.</p> 
+        ${interactionDueDate ? `<p>O prazo para responder é até ${interactionDueDate.toLocaleString("pt-BR")}.</p>` : ""}
         ${waitForOne
           ? "<p>Este formulário é necessário resposta de pelo menos um usuário.</p>"
           : "Este formulário é necessário resposta de todos os usuários."

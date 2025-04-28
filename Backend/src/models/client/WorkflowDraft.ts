@@ -79,6 +79,8 @@ export interface IInteraction {
   name: string;
   form_id: string;
   to: string[];
+  sla_value: number | null;
+  sla_unit: "minutes" | "hours" | "days" | null;
   visible: boolean;
   waitForOne?: boolean;
   conditional: [
@@ -141,47 +143,47 @@ export type IStep = {
     ["alternative-source"]: string | null;
   };
 } & (
-  | {
+    | {
       type: NodeTypes.SendEmail;
       data: ISendEmail;
     }
-  | {
+    | {
       type: NodeTypes.ChangeStatus;
       data: IChangeStatus;
     }
-  | {
+    | {
       type: NodeTypes.Circle;
       data: ICircle;
     }
-  | {
+    | {
       type: NodeTypes.SwapWorkflow;
       data: ISwapWorkflow;
     }
-  | {
+    | {
       type: NodeTypes.Interaction;
       data: IInteraction;
     }
-  | {
+    | {
       type: NodeTypes.Conditional;
       data: IConditional;
     }
-  | {
+    | {
       type: NodeTypes.WebRequest;
       data: IWebRequest;
     }
-  | {
+    | {
       type: NodeTypes.Script;
       data: IScript;
     }
-  | {
+    | {
       type: NodeTypes.NewTicket;
       data: INewTicket;
     }
-  | {
+    | {
       type: NodeTypes.Clicksign;
       data: IClicksign;
     }
-);
+  );
 
 export enum IWorkflowDraftStatus {
   Draft = "draft",

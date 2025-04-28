@@ -33,6 +33,7 @@ export type IActivityInteractions = {
   form: IForm;
   canAddParticipants?: boolean;
   permissionAddParticipants?: string[];
+  dueDate?: Date | null;
   answers: Array<{
     _id: string;
     status: IActivityStepStatus;

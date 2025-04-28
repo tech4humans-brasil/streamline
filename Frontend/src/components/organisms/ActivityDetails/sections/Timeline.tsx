@@ -32,6 +32,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AddInteractionUser from "./AddInteractionUser";
 import { AiFillSignature } from "react-icons/ai";
 import { ClicksignRequirements } from "@utils/clicksign";
+import { convertDateTime } from "@utils/date";
 
 const statusMap = {
   idle: "Aguardando Resposta",
@@ -41,7 +42,7 @@ const statusMap = {
   in_queue: "Em Fila",
 };
 
-interface MilestoneItemProps {}
+interface MilestoneItemProps { }
 
 const Timeline: React.FC<MilestoneItemProps> = () => {
   const { activity } = useActivity();
@@ -280,6 +281,12 @@ const TimelineStepItem = ({
             )}
 
             <AddInteractionUser interaction={interaction} />
+
+            {interaction.dueDate && (
+              <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
+                {`Prazo: ${convertDateTime(interaction.dueDate)}`}
+              </Tag>
+            )}
           </Box>
         )}
         {step.type === NodeTypes.NewTicket && !!data.data?.new_ticket && (

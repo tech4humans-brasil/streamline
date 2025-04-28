@@ -37,7 +37,9 @@ const schemas: NodeSchemas = {
       form_id: z.string().min(1, { message: "Selecione um formulário" }),
       visible: z.boolean().default(true),
       waitType: z.enum(["all", "any", "custom"]),
-      waitValue: z.number().optional().nullable(),
+      waitValue: z.coerce.number().optional().nullable(),
+      sla_value: z.coerce.number().optional().nullable(),
+      sla_unit: z.enum(["minutes", "hours", "days"]).optional().nullable(),
       conditional: z.array(
         z
           .object({

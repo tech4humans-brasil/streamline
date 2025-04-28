@@ -66,22 +66,41 @@ class Holiday {
   // Calcula a data de vencimento ignorando finais de semana e feriados
   public async calculateDueDate(
     startDate: Date,
-    slaDays: number
+    slaDays: number,
+    slaUnit: "minutes" | "hours" | "days" = "days"
   ): Promise<Date> {
     const year = moment(startDate).year();
     const holidays = await this.getHolidays(year);
 
     let currentDate = moment(startDate);
-    let daysAdded = 0;
 
-    while (daysAdded < slaDays) {
-      currentDate = currentDate.add(1, "days");
+    if (slaUnit === "minutes") {
+      currentDate = currentDate.add(slaDays, "minutes");
+    } else if (slaUnit === "hours") {
+      let hoursAdded = 0;
+      while (hoursAdded < slaDays) {
+        currentDate = currentDate.add(1, "hours");
 
-      if (
-        ![6, 7].includes(currentDate.isoWeekday()) && // Ignora finais de semana
-        !holidays.includes(currentDate.format("YYYY-MM-DD")) // Ignora feriados
-      ) {
-        daysAdded++;
+        if (
+          ![6, 7].includes(currentDate.isoWeekday()) && // Ignora finais de semana
+          !holidays.includes(currentDate.format("YYYY-MM-DD")) && // Ignora feriados
+          !currentDate.isAfter(moment().hour(18).minute(0).second(0)) && // ignora se a passar das 18:00
+          !currentDate.isBefore(moment().hour(8).minute(0).second(0)) // ignora se a antes das 8:00
+        ) {
+          hoursAdded++;
+        }
+      }
+    } else if (slaUnit === "days") {
+      let daysAdded = 0;
+      while (daysAdded < slaDays) {
+        currentDate = currentDate.add(1, "days");
+
+        if (
+          ![6, 7].includes(currentDate.isoWeekday()) && // Ignora finais de semana
+          !holidays.includes(currentDate.format("YYYY-MM-DD")) // Ignora feriados
+        ) {
+          daysAdded++;
+        }
       }
     }
 
