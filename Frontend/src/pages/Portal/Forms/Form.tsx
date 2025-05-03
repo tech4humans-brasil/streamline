@@ -142,8 +142,6 @@ export default function Workflow() {
   const queryClient = useQueryClient();
   const location = useLocation();
 
-  const project = location.state?.project as string | undefined;
-
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
 
@@ -153,8 +151,10 @@ export default function Workflow() {
     enabled: isEditing,
   });
 
+  const project = location.state?.project || form?.project as string | undefined;
+
   const { data: formsData, isLoading: isLoadingForms } = useQuery({
-    queryKey: ["forms", "forms"],
+    queryKey: ["forms", "forms", project],
     queryFn: getFormForms,
     retryOnMount: false,
     staleTime: 1000 * 60 * 60,
