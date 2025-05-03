@@ -108,8 +108,16 @@ type ReqFormForms = Response<{
   workflows: { label: string; value: string }[];
   institutes: { label: string; value: string }[];
 }>;
-export const getFormForms = async () => {
-  const res = await api.get<ReqFormForms>("/form/forms");
+export const getFormForms = async ({
+  queryKey: [, ,project],
+}: {
+  queryKey: string[];
+}) => {
+  const res = await api.get<ReqFormForms>("/form/forms", {
+    params: {
+      project,
+    },
+  });
 
   return res.data.data;
 };

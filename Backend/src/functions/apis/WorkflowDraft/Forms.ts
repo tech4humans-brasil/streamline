@@ -7,11 +7,38 @@ import Form, { IFormType } from "../../../models/client/Form";
 import InstituteRepository from "../../../repositories/Institute";
 import UserRepository from "../../../repositories/User";
 import WorkflowRepository from "../../../repositories/Workflow";
+import { IUserRoles } from "../../../models/client/User";
+import ProjectRepository from "../../../repositories/Project";
 
 const handler: HttpHandler = async (conn, req) => {
   const { workflow } = req.query as { workflow: string };
 
   const workflowRepository = new WorkflowRepository(conn);
+  const projectRepository = new ProjectRepository(conn);
+
+  const whereUser = req.user.roles.includes(IUserRoles.admin)
+    ? {}
+    : {
+      $and: [
+        {
+          $or: [
+            { "permissions.user": req.user.id },
+            {
+              "permissions.institute": {
+                $in: req.user.institutes.map((institute) => institute._id),
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+  const projects = await projectRepository.find({
+    where: whereUser,
+    select: {
+      _id: 1,
+    },
+  });
 
   const workflowData = await workflowRepository.findById({
     id: workflow,
@@ -84,10 +111,12 @@ const handler: HttpHandler = async (conn, req) => {
     .find({
       active: true,
       published: { $exists: true },
+      project: { $in: projects.map((project) => project._id) },
     })
     .select({
       _id: 1,
       name: 1,
+      project: 1,
     });
 
   const getFormsInteraction = new Form(conn)
@@ -195,6 +224,7 @@ const handler: HttpHandler = async (conn, req) => {
   const workflows = workflowsResponse.map((workflow) => ({
     label: workflow.name,
     value: workflow._id,
+    project: workflow.project,
   }));
 
   const formsInteraction = formsInteractionResponse.map((form) => ({

@@ -4,7 +4,9 @@ import Status, { StatusType } from "../../../models/client/Status";
 import Workflow from "../../../models/client/Workflow";
 import Institute from "../../../models/client/Institute";
 
-const handler: HttpHandler = async (conn) => {
+const handler: HttpHandler = async (conn, req) => {
+  const { project } = req.query as { project: string };
+
   const status = (
     await new Status(conn).model().find().where({
       type: StatusType.PROGRESS,
@@ -25,6 +27,7 @@ const handler: HttpHandler = async (conn) => {
       .where({
         active: true,
         published: { $exists: true },
+        project,
       })
   ).map((w) => ({
     value: w._id,
@@ -54,11 +57,17 @@ const handler: HttpHandler = async (conn) => {
   });
 };
 
-export default new Http(handler).configure({
-  name: "FormForms",
-  permission: "form.read",
-  options: {
-    methods: ["GET"],
-    route: "form/forms",
-  },
-});
+export default new Http(handler)
+  .setSchemaValidator((schema) => ({
+    query: schema.object({
+      workflow: schema.string().required(),
+    }),
+  }))
+  .configure({
+    name: "FormForms",
+    permission: "form.read",
+    options: {
+      methods: ["GET"],
+      route: "form/forms",
+    },
+  });

@@ -51,6 +51,7 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
           );
           if (allFinished) {
             interaction.finished = true;
+            activity.finished_at = new Date();
           }
         }
       });
@@ -66,7 +67,7 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
 
       const content = `
         <p>Olá, ${name}!</p>
-        <p>Uma ou mais atividades que você estava participando tiveram seu prazo expirado.</p>
+        <p>Uma ou mais tickets que você estava participando tiveram seu prazo expirado.</p>
         <p>As pendências foram automaticamente fechadas no domínio <strong>${conn.name}</strong>.</p>
         <p>Acesse o painel clicando no link abaixo para verificar:</p>
         <a href="${process.env.FRONTEND_URL}">Acessar o painel</a>
@@ -76,7 +77,7 @@ const handler: CronWrapperHandler = async (conn, myTimer, context) => {
 
       sendEmail(
         emailAddress,
-        `Streamline | Prazo de atividades expirado`,
+        `Streamline | Prazo de resposta expirado`,
         html,
         css
       );
