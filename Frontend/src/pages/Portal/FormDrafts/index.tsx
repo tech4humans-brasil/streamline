@@ -41,7 +41,7 @@ export default function FormDraft() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const params = useParams<{ id?: string; form_id: string }>();
+  const params = useParams<{ id?: string; form_id: string; project: string }>();
   const [isPreview, setPreview] = useState<boolean>(false);
 
   const formType = location.state?.formType as
@@ -82,7 +82,7 @@ export default function FormDraft() {
         position: "top-right",
       });
       queryClient.invalidateQueries({ queryKey: ["form-drafts"] });
-      navigate(`/portal/form-draft/${data.parent}/${data._id}`, {
+      navigate(`/portal/project/${params.project}/form-draft/${data.parent}/${data._id}`, {
         state: { formType },
       });
     },

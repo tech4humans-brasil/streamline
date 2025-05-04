@@ -33,7 +33,7 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const params = useParams<{ id?: string; workflow_id: string }>();
+  const params = useParams<{ id?: string; workflow_id: string; project: string }>();
   const id = params?.id ?? "";
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -96,16 +96,15 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
   }, [mutateAsync, id, status]);
 
   const handleBack = React.useCallback(() => {
-    navigate(`/portal/workflow/${params.workflow_id}`);
-  }, [navigate, params.workflow_id]);
+    navigate(`/portal/project/${params.project}/workflow/${params.workflow_id}`);
+  }, [navigate, params.workflow_id, params.project]);
 
   const handleNavigate = React.useCallback(() => {
     navigate(
-      `/portal/workflow-draft/${params.workflow_id}/${id}/${
-        isView ? "edit" : "view"
+      `/portal/project/${params.project}/workflow-draft/${params.workflow_id}/${id}/${isView ? "edit" : "view"
       }`
     );
-  }, [navigate, id, isView, params.workflow_id]);
+  }, [navigate, id, isView, params.workflow_id, params.project]);
 
   return (
     <Panel position="top-center" style={{ width: "100%", margin: 0 }}>

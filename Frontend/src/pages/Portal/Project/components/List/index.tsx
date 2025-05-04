@@ -1,5 +1,4 @@
-import { Box, Button, Flex, Tag } from "@chakra-ui/react";
-import Accordion from "@components/atoms/Accordion";
+import { Box, Button, Flex, Tag, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import ProjectItem from "@components/molecules/ProjectItem";
 import Pagination from "@components/organisms/Pagination";
 import useProject from "@hooks/useProject";
@@ -8,12 +7,19 @@ import { useTranslation } from "react-i18next";
 import { BsFileEarmarkTextFill } from "react-icons/bs";
 import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
 import { GoWorkflow } from "react-icons/go";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import cronstrue from "cronstrue/i18n";
 
 const List: React.FC = () => {
   const project = useProject();
   const { t, i18n } = useTranslation();
+  const projectId = project?.project;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedTab = searchParams.get('tab') || '0';
+
+  const handleTabChange = useCallback((index: number) => {
+    setSearchParams({ tab: index.toString() });
+  }, [setSearchParams]);
 
   const cronTranslation = useCallback(
     (expression: string) => {
@@ -27,14 +33,21 @@ const List: React.FC = () => {
 
   return (
     <Box w="full" p={[4, 2]}>
-      <Accordion.Container
-        defaultIndex={[0, 1, 2, 3]}
-        allowToggle
-        allowMultiple
+      <Tabs
+        variant="enclosed"
+        index={parseInt(selectedTab)}
+        onChange={handleTabChange}
       >
-        <Accordion.Item>
-          <Accordion.Button>{t("workflows.title")}</Accordion.Button>
-          <Accordion.Panel>
+        <TabList>
+          <Tab>{t("workflows.title")}</Tab>
+          <Tab>{t("forms.title")}</Tab>
+          <Tab>{t("emails.title")}</Tab>
+          <Tab>{t("statuses.title")}</Tab>
+          <Tab>{t("schedule.title")}</Tab>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel>
             <ProjectItem.List>
               <Create route="workflow" />
               {project?.workflows?.map((workflow) => (
@@ -59,19 +72,19 @@ const List: React.FC = () => {
                         ? t("common.fields.active")
                         : t("common.fields.inactive")}
                     </Tag>
-                    <Edit route="workflow" id={workflow._id} />
+                    <Edit
+                      route="workflow"
+                      id={workflow._id}
+                      projectId={projectId}
+                    />
                   </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
-
             <Pagination pagination={project?.pagination?.workflows} />
-          </Accordion.Panel>
-        </Accordion.Item>
+          </TabPanel>
 
-        <Accordion.Item>
-          <Accordion.Button>{t("forms.title")}</Accordion.Button>
-          <Accordion.Panel>
+          <TabPanel>
             <ProjectItem.List>
               <Create route="form" />
               {project?.forms?.map((form) => (
@@ -98,18 +111,15 @@ const List: React.FC = () => {
                         ? t("common.fields.active")
                         : t("common.fields.inactive")}
                     </Tag>
-                    <Edit route="form" id={form._id} />
+                    <Edit route="form" id={form._id} projectId={projectId} />
                   </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
             <Pagination pagination={project?.pagination?.forms} />
-          </Accordion.Panel>
-        </Accordion.Item>
+          </TabPanel>
 
-        <Accordion.Item>
-          <Accordion.Button>{t("emails.title")}</Accordion.Button>
-          <Accordion.Panel>
+          <TabPanel>
             <Create route="email" />
             <ProjectItem.List>
               {project?.emails?.map((email) => (
@@ -127,19 +137,15 @@ const List: React.FC = () => {
                     gap={4}
                     p={2}
                   >
-                    <Edit route="email" id={email._id} />
+                    <Edit route="email" id={email._id} projectId={projectId} />
                   </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
-
             <Pagination pagination={project?.pagination?.emails} />
-          </Accordion.Panel>
-        </Accordion.Item>
+          </TabPanel>
 
-        <Accordion.Item>
-          <Accordion.Button>{t("statuses.title")}</Accordion.Button>
-          <Accordion.Panel>
+          <TabPanel>
             <Create route="status" />
             <ProjectItem.List>
               {project?.statuses?.map((status) => (
@@ -154,18 +160,15 @@ const List: React.FC = () => {
                     gap={4}
                     p={2}
                   >
-                    <Edit route="status" id={status._id} />
+                    <Edit route="status" id={status._id} projectId={projectId} />
                   </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
             <Pagination pagination={project?.pagination?.statuses} />
-          </Accordion.Panel>
-        </Accordion.Item>
+          </TabPanel>
 
-        <Accordion.Item>
-          <Accordion.Button>{t("schedule.title")}</Accordion.Button>
-          <Accordion.Panel>
+          <TabPanel>
             <ProjectItem.List>
               <Create route="schedule" />
               {project?.schedules?.map((schedule) => (
@@ -192,15 +195,15 @@ const List: React.FC = () => {
                         ? t("common.fields.active")
                         : t("common.fields.inactive")}
                     </Tag>
-                    <Edit route="schedule" id={schedule._id} />
+                    <Edit route="schedule" id={schedule._id} projectId={projectId} />
                   </Flex>
                 </ProjectItem.Container>
               ))}
             </ProjectItem.List>
             <Pagination pagination={project?.pagination?.schedules} />
-          </Accordion.Panel>
-        </Accordion.Item>
-      </Accordion.Container>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };
@@ -216,7 +219,7 @@ const Create: React.FC<{
   const project = params.project ?? "";
 
   const handleClick = useCallback(() => {
-    navigate(`/portal/${route}`, { state: { project } });
+    navigate(`/portal/project/${project}/${route}`);
   }, [navigate, project, route]);
 
   if (!project) return null;
@@ -233,17 +236,15 @@ const Create: React.FC<{
 const Edit: React.FC<{
   route: "email" | "workflow" | "status" | "form" | "schedule";
   id: string;
-}> = memo(({ route, id }) => {
+  projectId: string;
+}> = memo(({ route, id, projectId }) => {
   const navigate = useNavigate();
-  const params = useParams<{ project: string }>();
-
-  const project = params.project ?? "";
 
   const handleClick = useCallback(() => {
-    navigate(`/portal/${route}/${id}`, { state: { project } });
-  }, [navigate, project, route]);
+    navigate(`/portal/project/${projectId}/${route}/${id}`);
+  }, [navigate, projectId, route]);
 
-  if (!project) return null;
+  if (!projectId) return null;
 
   return (
     <Box textAlign="right">
