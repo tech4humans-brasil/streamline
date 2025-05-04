@@ -1,35 +1,21 @@
-import { Box, Button, Flex, Tag, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import ProjectItem from "@components/molecules/ProjectItem";
-import Pagination from "@components/organisms/Pagination";
-import useProject from "@hooks/useProject";
-import React, { memo, useCallback } from "react";
+import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BsFileEarmarkTextFill } from "react-icons/bs";
-import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
-import { GoWorkflow } from "react-icons/go";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import cronstrue from "cronstrue/i18n";
+import { useCallback } from "react";
+import WorkflowsTab from "../Tabs/Workflows";
+import FormsTab from "../Tabs/Forms";
+import EmailsTab from "../Tabs/Emails";
+import StatusesTab from "../Tabs/Statuses";
+import SchedulesTab from "../Tabs/Schedules";
 
 const List: React.FC = () => {
-  const project = useProject();
-  const { t, i18n } = useTranslation();
-  const projectId = project?.project;
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedTab = searchParams.get('tab') || '0';
 
   const handleTabChange = useCallback((index: number) => {
     setSearchParams({ tab: index.toString() });
   }, [setSearchParams]);
-
-  const cronTranslation = useCallback(
-    (expression: string) => {
-      return cronstrue.toString(expression, {
-        locale: i18n.language.replace("-", "_"),
-        throwExceptionOnParseError: false,
-      });
-    },
-    [i18n.language]
-  );
 
   return (
     <Box w="full" p={[4, 2]}>
@@ -48,159 +34,23 @@ const List: React.FC = () => {
 
         <TabPanels>
           <TabPanel>
-            <ProjectItem.List>
-              <Create route="workflow" />
-              {project?.workflows?.map((workflow) => (
-                <ProjectItem.Container key={workflow._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>
-                      <GoWorkflow />
-                    </ProjectItem.Icon>
-
-                    <div>
-                      <ProjectItem.Title>{workflow.name}</ProjectItem.Title>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Tag colorScheme={workflow.active ? "green" : "red"}>
-                      {workflow.active
-                        ? t("common.fields.active")
-                        : t("common.fields.inactive")}
-                    </Tag>
-                    <Edit
-                      route="workflow"
-                      id={workflow._id}
-                      projectId={projectId}
-                    />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.workflows} />
+            <WorkflowsTab />
           </TabPanel>
 
           <TabPanel>
-            <ProjectItem.List>
-              <Create route="form" />
-              {project?.forms?.map((form) => (
-                <ProjectItem.Container key={form._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>
-                      <BsFileEarmarkTextFill />
-                    </ProjectItem.Icon>
-                    <div>
-                      <ProjectItem.Title>{form.name}</ProjectItem.Title>
-                      <ProjectItem.Text>
-                        {t(`forms.type.${form.type}`)}
-                      </ProjectItem.Text>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Tag colorScheme={form.active ? "green" : "red"}>
-                      {form.active
-                        ? t("common.fields.active")
-                        : t("common.fields.inactive")}
-                    </Tag>
-                    <Edit route="form" id={form._id} projectId={projectId} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.forms} />
+            <FormsTab />
           </TabPanel>
 
           <TabPanel>
-            <Create route="email" />
-            <ProjectItem.List>
-              {project?.emails?.map((email) => (
-                <ProjectItem.Container key={email._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>{<FaRegEnvelope />}</ProjectItem.Icon>
-                    <div>
-                      <ProjectItem.Title>{email.slug}</ProjectItem.Title>
-                      <ProjectItem.Text>{email.subject}</ProjectItem.Text>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Edit route="email" id={email._id} projectId={projectId} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.emails} />
+            <EmailsTab />
           </TabPanel>
 
           <TabPanel>
-            <Create route="status" />
-            <ProjectItem.List>
-              {project?.statuses?.map((status) => (
-                <ProjectItem.Container key={status._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>{<FaTags />}</ProjectItem.Icon>
-                    <ProjectItem.Title>{status.name}</ProjectItem.Title>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Edit route="status" id={status._id} projectId={projectId} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.statuses} />
+            <StatusesTab />
           </TabPanel>
 
           <TabPanel>
-            <ProjectItem.List>
-              <Create route="schedule" />
-              {project?.schedules?.map((schedule) => (
-                <ProjectItem.Container key={schedule._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>
-                      <BsFileEarmarkTextFill />
-                    </ProjectItem.Icon>
-                    <div>
-                      <ProjectItem.Title>{schedule.name}</ProjectItem.Title>
-                      <ProjectItem.Text>
-                        {cronTranslation(schedule.expression)}
-                      </ProjectItem.Text>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Tag colorScheme={schedule.active ? "green" : "red"}>
-                      {schedule.active
-                        ? t("common.fields.active")
-                        : t("common.fields.inactive")}
-                    </Tag>
-                    <Edit route="schedule" id={schedule._id} projectId={projectId} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.schedules} />
+            <SchedulesTab />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -209,48 +59,3 @@ const List: React.FC = () => {
 };
 
 export default List;
-
-const Create: React.FC<{
-  route: "email" | "workflow" | "status" | "form" | "schedule";
-}> = memo(({ route }) => {
-  const navigate = useNavigate();
-  const params = useParams<{ project: string }>();
-
-  const project = params.project ?? "";
-
-  const handleClick = useCallback(() => {
-    navigate(`/portal/project/${project}/${route}`);
-  }, [navigate, project, route]);
-
-  if (!project) return null;
-
-  return (
-    <Box w="full" p={[4, 2]} textAlign="right" mb={4}>
-      <Button onClick={handleClick} variant="outline">
-        <FaPlusCircle />
-      </Button>
-    </Box>
-  );
-});
-
-const Edit: React.FC<{
-  route: "email" | "workflow" | "status" | "form" | "schedule";
-  id: string;
-  projectId: string;
-}> = memo(({ route, id, projectId }) => {
-  const navigate = useNavigate();
-
-  const handleClick = useCallback(() => {
-    navigate(`/portal/project/${projectId}/${route}/${id}`);
-  }, [navigate, projectId, route]);
-
-  if (!projectId) return null;
-
-  return (
-    <Box textAlign="right">
-      <Button onClick={handleClick} variant="outline">
-        <FaPen />
-      </Button>
-    </Box>
-  );
-});
