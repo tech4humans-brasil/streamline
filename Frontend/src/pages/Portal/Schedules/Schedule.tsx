@@ -14,7 +14,7 @@ import {
   Heading,
   useToast,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
@@ -108,10 +108,9 @@ export default function Schedule() {
   const { t, i18n } = useTranslation();
   const toast = useToast();
   const navigate = useNavigate();
-  const params = useParams<{ id?: string }>();
-  const location = useLocation();
+  const params = useParams<{ id?: string; project: string }>();
+  const project = params?.project as string;
   const queryClient = useQueryClient();
-  const project = location.state?.project as string | undefined;
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
 
