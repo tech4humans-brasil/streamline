@@ -109,7 +109,7 @@ type ReqFormForms = Response<{
   institutes: { label: string; value: string }[];
 }>;
 export const getFormForms = async ({
-  queryKey: [, , project],
+  queryKey: [, ,project],
 }: {
   queryKey: string[];
 }) => {

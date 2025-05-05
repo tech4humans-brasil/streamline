@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { createOrUpdateEmail, getEmail } from "@apis/email";
 import EmailTemplateHook from "@components/organisms/EmailTemplate/hook";
@@ -44,9 +44,11 @@ const EmailTemplate: React.FC = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const navigate = useNavigate();
-  const params = useParams<{ id?: string; project: string }>();
+  const params = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
-  const project = params?.project as string;
+  const location = useLocation();
+
+  const project = location.state?.project as string | undefined;
 
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
@@ -115,7 +117,7 @@ const EmailTemplate: React.FC = () => {
     });
   });
 
-  useEffect(() => { }, [errors]);
+  useEffect(() => {}, [errors]);
 
   useEffect(() => {
     reset(email);

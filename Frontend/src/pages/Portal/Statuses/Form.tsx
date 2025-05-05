@@ -11,16 +11,14 @@ import {
   CardHeader,
   CardProps,
   Flex,
-  Heading,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getStatus, createOrUpdateStatus } from "@apis/status";
 import Text from "@components/atoms/Inputs/Text";
 import Select from "@components/atoms/Inputs/Select";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft } from "react-icons/fa";
 
 const statusSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
@@ -44,8 +42,9 @@ const StatusForm: React.FC<StatusFormProps> = ({
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const params = useParams<{ project: string }>();
-  const project = params?.project as string;
+  const location = useLocation();
+
+  const project = location.state?.project as string | undefined;
 
   const isEditing = !!id;
 
@@ -105,7 +104,7 @@ const StatusForm: React.FC<StatusFormProps> = ({
     }
   }, [status, reset]);
 
-  useEffect(() => { }, [errors]);
+  useEffect(() => {}, [errors]);
 
   useEffect(() => {
     methods.setValue("project", project);
@@ -123,23 +122,9 @@ const StatusForm: React.FC<StatusFormProps> = ({
         {...props}
       >
         <CardHeader>
-          <Flex align="center" justify="space-between">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              w="fit-content"
-            >
-              <FaArrowLeft />
-            </Button>
-            <Heading
-              fontSize="2xl"
-              fontWeight="bold"
-              w="100%"
-              textAlign="center"
-            >
-              {t(`status.${isEditing ? "edit" : "create"}`)}
-            </Heading>
-          </Flex>
+          <Box textAlign="center" fontSize="lg" fontWeight="bold">
+            {t(`status.${isEditing ? "edit" : "create"}`)}
+          </Box>
         </CardHeader>
         <CardBody display="flex" flexDirection="column" gap="4">
           <Text
