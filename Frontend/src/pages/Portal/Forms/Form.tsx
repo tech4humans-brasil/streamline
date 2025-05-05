@@ -14,7 +14,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
 import Switch from "@components/atoms/Inputs/Switch";
 import DraftItem from "@components/molecules/DraftItem";
