@@ -14,7 +14,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
 import { createOrUpdateWorkflow, getWorkflow } from "@apis/workflows";
 import Switch from "@components/atoms/Inputs/Switch";
@@ -38,11 +38,9 @@ export default function Workflow() {
   const { t } = useTranslation();
   const toast = useToast();
   const navigate = useNavigate();
-  const params = useParams<{ id?: string }>();
+  const params = useParams<{ id?: string; project: string }>();
   const queryClient = useQueryClient();
-  const location = useLocation();
-
-  const project = location.state?.project as string | undefined;
+  const project = params?.project as string;
 
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
@@ -110,7 +108,7 @@ export default function Workflow() {
     }
   }, [workflow, reset]);
 
-  useEffect(() => {}, [errors]);
+  useEffect(() => { }, [errors]);
 
   useEffect(() => {
     methods.setValue("project", project);
@@ -216,6 +214,8 @@ interface WorkflowVersionsProps {
 const WorkflowVersions: React.FC<WorkflowVersionsProps> = memo(({ id }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const params = useParams<{ project: string }>();
+  const project = params?.project as string;
 
   const { data: workflowDrafts, isLoading: isLoadingDrafts } = useQuery({
     queryKey: ["workflow-draft", id],
@@ -223,12 +223,12 @@ const WorkflowVersions: React.FC<WorkflowVersionsProps> = memo(({ id }) => {
   });
 
   const handleNewDraft = useCallback(() => {
-    navigate(`/portal/workflow-draft/${id}`);
+    navigate(`/portal/project/${project}/workflow-draft/${id}`);
   }, [navigate, id]);
 
   const handleEditDraft = useCallback(
     (draftId: string) => {
-      navigate(`/portal/workflow-draft/${id}/${draftId}/view`);
+      navigate(`/portal/project/${project}/workflow-draft/${id}/${draftId}/view`);
     },
     [navigate, id]
   );
