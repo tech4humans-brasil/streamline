@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
 
   const methods = useForm({
     defaultValues: {
-      project: params.project ?? sessionStorage.getItem('lastSelectedProject') ?? "",
+      project: params.project ?? "",
     },
   });
 
@@ -45,10 +45,8 @@ const Navbar: React.FC = () => {
   const handleAlterProject = useCallback(
     (e: { project: string }) => {
       if (e.project) {
-        sessionStorage.setItem('lastSelectedProject', e.project);
         navigate(`/portal/projects/${e.project}`);
       } else {
-        sessionStorage.removeItem('lastSelectedProject');
         navigate(`/portal/projects`);
       }
     },

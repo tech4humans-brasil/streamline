@@ -14,17 +14,21 @@ import { Link as ReactRouterLink, useLocation } from "react-router-dom";
 import {
   BsHouse,
   BsPerson,
+  BsTag,
+  BsFileEarmarkText,
   BsPostcardFill,
   BsActivity,
   BsFolder,
 } from "react-icons/bs";
 import { AiOutlineTeam } from "react-icons/ai";
-import { FaLaptop } from "react-icons/fa";
+import { FaLaptop, FaRegEnvelope } from "react-icons/fa";
+import { GoWorkflow } from "react-icons/go";
 import React from "react";
 import Can from "@components/atoms/Can";
 import Icon from "@components/atoms/Icon";
 import Tutorial, { JoyrideSteps } from "@components/molecules/Tutorial";
 import { useTranslation } from "react-i18next";
+import { BiTime } from "react-icons/bi";
 import { useConfig } from "@hooks/useConfig";
 
 const steps: JoyrideSteps = [
@@ -43,6 +47,22 @@ const steps: JoyrideSteps = [
   {
     target: "#institutes",
     content: "navbar.joyride.institutes",
+  },
+  {
+    target: "#statuses",
+    content: "navbar.joyride.statuses",
+  },
+  {
+    target: "#emails",
+    content: "navbar.joyride.emails",
+  },
+  {
+    target: "#forms",
+    content: "navbar.joyride.forms",
+  },
+  {
+    target: "#workflows",
+    content: "navbar.joyride.workflows",
   },
   {
     target: "#projects",
@@ -147,6 +167,56 @@ function Sidebar() {
           />
         </Can>
 
+        <Can permission="status.view">
+          <NavLink
+            id="statuses"
+            to="/portal/statuses"
+            label="title.statuses"
+            icon={BsTag}
+            active={location.pathname === "/portal/statuses"}
+          />
+        </Can>
+
+        <Can permission="email.view">
+          <NavLink
+            id="emails"
+            to="/portal/emails"
+            label="title.emails"
+            icon={FaRegEnvelope}
+            active={location.pathname === "/portal/emails"}
+          />
+        </Can>
+
+        <Can permission="form.view">
+          <NavLink
+            id="forms"
+            to="/portal/forms"
+            label="title.forms"
+            icon={BsFileEarmarkText}
+            active={location.pathname === "/portal/forms"}
+          />
+        </Can>
+
+        <Can permission="workflow.view">
+          <NavLink
+            id="workflows"
+            to="/portal/workflows"
+            label="title.workflows"
+            icon={GoWorkflow}
+            active={location.pathname === "/portal/workflows"}
+          />
+        </Can>
+
+        <Can permission="schedule.view">
+          <NavLink
+            id="schedules"
+            to="/portal/schedules"
+            label="title.schedules"
+            icon={BiTime}
+            active={location.pathname === "/portal/schedules"}
+          />
+        </Can>
+
         <Can permission="reporting.view">
           <NavLink
             id="reportings"
@@ -176,7 +246,7 @@ function Sidebar() {
             active={location.pathname === "/portal/reports"}
           />
         </Can>
-
+        
       </List>
     </div>
   );

@@ -138,8 +138,9 @@ export default function Workflow() {
   const { t } = useTranslation();
   const toast = useToast();
   const navigate = useNavigate();
-  const params = useParams<{ id?: string; project: string }>();
+  const params = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
+  const location = useLocation();
 
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
@@ -150,7 +151,7 @@ export default function Workflow() {
     enabled: isEditing,
   });
 
-  const project = params?.project as string;
+  const project = location.state?.project || form?.project as string | undefined;
 
   const { data: formsData, isLoading: isLoadingForms } = useQuery({
     queryKey: ["forms", "forms", project],
@@ -218,7 +219,7 @@ export default function Workflow() {
     }
   }, [form, reset]);
 
-  useEffect(() => { }, [errors]);
+  useEffect(() => {}, [errors]);
 
   useEffect(() => {
     methods.setValue("project", project);
@@ -459,8 +460,6 @@ interface FormVersionsProps {
 const FormVersions: React.FC<FormVersionsProps> = memo(({ id, formType }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const params = useParams<{ project: string }>();
-  const project = params?.project as string;
 
   const { data: formDrafts, isLoading: isLoadingDrafts } = useQuery({
     queryKey: ["form-drafts", id],
@@ -468,18 +467,18 @@ const FormVersions: React.FC<FormVersionsProps> = memo(({ id, formType }) => {
   });
 
   const handleNewDraft = useCallback(() => {
-    navigate(`/portal/project/${project}/form-draft/${id}`, {
+    navigate(`/portal/form-draft/${id}`, {
       state: { formType },
     });
-  }, [navigate, id, formType, project]);
+  }, [navigate, id, formType]);
 
   const handleEditDraft = useCallback(
     (draftId: string) => {
-      navigate(`/portal/project/${project}/form-draft/${id}/${draftId}`, {
+      navigate(`/portal/form-draft/${id}/${draftId}`, {
         state: { formType },
       });
     },
-    [navigate, id, formType, project]
+    [navigate, id, formType]
   );
   return (
     <Flex mt="8" justify="center" align="center" direction="column" gap="5">

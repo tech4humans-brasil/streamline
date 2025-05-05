@@ -83,7 +83,7 @@ interface FlowBoardProps {
 const FlowBoard: React.FC<FlowBoardProps> = memo(({ isView }) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const params = useParams<{ id?: string; workflow_id: string; project: string }>();
+  const params = useParams<{ id?: string; workflow_id: string }>();
   const id = params?.id ?? "";
   const isEditing = !!id;
   const workflow_id = params.workflow_id ?? "";
@@ -114,7 +114,7 @@ const FlowBoard: React.FC<FlowBoardProps> = memo(({ isView }) => {
         isClosable: true,
         position: "top-right",
       });
-      navigate(`/portal/project/${params.project}/workflow-draft/${data.parent}/${data._id}/view`);
+      navigate(`/portal/workflow-draft/${data.parent}/${data._id}/view`);
     },
     onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
       console.log(error);
@@ -138,7 +138,7 @@ const FlowBoard: React.FC<FlowBoardProps> = memo(({ isView }) => {
       const flow = reactFlowInstance.toObject();
 
       const formState = workflowSchema.safeParse(flow);
-
+      
 
       if (!formState.success) {
         toast({

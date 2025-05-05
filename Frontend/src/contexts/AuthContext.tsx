@@ -31,7 +31,7 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
 
   const setTokenValue = useCallback((token: string | null) => {
     if (!token) {
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
       setToken(null);
       api.defaults.headers["Authorization"] = "";
       queryClient.clear();
@@ -41,7 +41,7 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
 
     const decodedToken = jwtDecode<JwtData>(token);
 
-    sessionStorage.setItem("token", token);
+    localStorage.setItem("token", token);
 
     api.defaults.headers["Authorization"] = `Bearer ${token}`;
     assistant.defaults.headers["Authorization"] = `Bearer ${token}`;
@@ -52,7 +52,7 @@ function AuthProvider({ children }: Readonly<AuthProviderProps>) {
   }, []);
 
   useLayoutEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token) {
       setTokenValue(token);
     } else if (
