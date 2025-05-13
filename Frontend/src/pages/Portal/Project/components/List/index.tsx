@@ -1,255 +1,61 @@
-import { Box, Button, Flex, Tag } from "@chakra-ui/react";
-import Accordion from "@components/atoms/Accordion";
-import ProjectItem from "@components/molecules/ProjectItem";
-import Pagination from "@components/organisms/Pagination";
-import useProject from "@hooks/useProject";
-import React, { memo, useCallback } from "react";
+import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BsFileEarmarkTextFill } from "react-icons/bs";
-import { FaPen, FaPlusCircle, FaRegEnvelope, FaTags } from "react-icons/fa";
-import { GoWorkflow } from "react-icons/go";
-import { useNavigate, useParams } from "react-router-dom";
-import cronstrue from "cronstrue/i18n";
+import { useCallback } from "react";
+import WorkflowsTab from "../Tabs/Workflows";
+import FormsTab from "../Tabs/Forms";
+import EmailsTab from "../Tabs/Emails";
+import StatusesTab from "../Tabs/Statuses";
+import SchedulesTab from "../Tabs/Schedules";
 
 const List: React.FC = () => {
-  const project = useProject();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedTab = searchParams.get('tab') || '0';
 
-  const cronTranslation = useCallback(
-    (expression: string) => {
-      return cronstrue.toString(expression, {
-        locale: i18n.language.replace("-", "_"),
-        throwExceptionOnParseError: false,
-      });
-    },
-    [i18n.language]
-  );
+  const handleTabChange = useCallback((index: number) => {
+    setSearchParams({ ...searchParams, tab: index.toString() });
+  }, [setSearchParams]);
 
   return (
     <Box w="full" p={[4, 2]}>
-      <Accordion.Container
-        defaultIndex={[0, 1, 2, 3]}
-        allowToggle
-        allowMultiple
+      <Tabs
+        variant="enclosed"
+        index={parseInt(selectedTab)}
+        onChange={handleTabChange}
       >
-        <Accordion.Item>
-          <Accordion.Button>{t("workflows.title")}</Accordion.Button>
-          <Accordion.Panel>
-            <ProjectItem.List>
-              <Create route="workflow" />
-              {project?.workflows?.map((workflow) => (
-                <ProjectItem.Container key={workflow._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>
-                      <GoWorkflow />
-                    </ProjectItem.Icon>
+        <TabList>
+          <Tab>{t("workflows.title")}</Tab>
+          <Tab>{t("forms.title")}</Tab>
+          <Tab>{t("emails.title")}</Tab>
+          <Tab>{t("statuses.title")}</Tab>
+          <Tab>{t("schedule.title")}</Tab>
+        </TabList>
 
-                    <div>
-                      <ProjectItem.Title>{workflow.name}</ProjectItem.Title>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Tag colorScheme={workflow.active ? "green" : "red"}>
-                      {workflow.active
-                        ? t("common.fields.active")
-                        : t("common.fields.inactive")}
-                    </Tag>
-                    <Edit route="workflow" id={workflow._id} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
+        <TabPanels>
+          <TabPanel>
+            <WorkflowsTab />
+          </TabPanel>
 
-            <Pagination pagination={project?.pagination?.workflows} />
-          </Accordion.Panel>
-        </Accordion.Item>
+          <TabPanel>
+            <FormsTab />
+          </TabPanel>
 
-        <Accordion.Item>
-          <Accordion.Button>{t("forms.title")}</Accordion.Button>
-          <Accordion.Panel>
-            <ProjectItem.List>
-              <Create route="form" />
-              {project?.forms?.map((form) => (
-                <ProjectItem.Container key={form._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>
-                      <BsFileEarmarkTextFill />
-                    </ProjectItem.Icon>
-                    <div>
-                      <ProjectItem.Title>{form.name}</ProjectItem.Title>
-                      <ProjectItem.Text>
-                        {t(`forms.type.${form.type}`)}
-                      </ProjectItem.Text>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Tag colorScheme={form.active ? "green" : "red"}>
-                      {form.active
-                        ? t("common.fields.active")
-                        : t("common.fields.inactive")}
-                    </Tag>
-                    <Edit route="form" id={form._id} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.forms} />
-          </Accordion.Panel>
-        </Accordion.Item>
+          <TabPanel>
+            <EmailsTab />
+          </TabPanel>
 
-        <Accordion.Item>
-          <Accordion.Button>{t("emails.title")}</Accordion.Button>
-          <Accordion.Panel>
-            <Create route="email" />
-            <ProjectItem.List>
-              {project?.emails?.map((email) => (
-                <ProjectItem.Container key={email._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>{<FaRegEnvelope />}</ProjectItem.Icon>
-                    <div>
-                      <ProjectItem.Title>{email.slug}</ProjectItem.Title>
-                      <ProjectItem.Text>{email.subject}</ProjectItem.Text>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Edit route="email" id={email._id} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
+          <TabPanel>
+            <StatusesTab />
+          </TabPanel>
 
-            <Pagination pagination={project?.pagination?.emails} />
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        <Accordion.Item>
-          <Accordion.Button>{t("statuses.title")}</Accordion.Button>
-          <Accordion.Panel>
-            <Create route="status" />
-            <ProjectItem.List>
-              {project?.statuses?.map((status) => (
-                <ProjectItem.Container key={status._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>{<FaTags />}</ProjectItem.Icon>
-                    <ProjectItem.Title>{status.name}</ProjectItem.Title>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Edit route="status" id={status._id} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.statuses} />
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        <Accordion.Item>
-          <Accordion.Button>{t("schedule.title")}</Accordion.Button>
-          <Accordion.Panel>
-            <ProjectItem.List>
-              <Create route="schedule" />
-              {project?.schedules?.map((schedule) => (
-                <ProjectItem.Container key={schedule._id}>
-                  <ProjectItem.Body>
-                    <ProjectItem.Icon>
-                      <BsFileEarmarkTextFill />
-                    </ProjectItem.Icon>
-                    <div>
-                      <ProjectItem.Title>{schedule.name}</ProjectItem.Title>
-                      <ProjectItem.Text>
-                        {cronTranslation(schedule.expression)}
-                      </ProjectItem.Text>
-                    </div>
-                  </ProjectItem.Body>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={4}
-                    p={2}
-                  >
-                    <Tag colorScheme={schedule.active ? "green" : "red"}>
-                      {schedule.active
-                        ? t("common.fields.active")
-                        : t("common.fields.inactive")}
-                    </Tag>
-                    <Edit route="schedule" id={schedule._id} />
-                  </Flex>
-                </ProjectItem.Container>
-              ))}
-            </ProjectItem.List>
-            <Pagination pagination={project?.pagination?.schedules} />
-          </Accordion.Panel>
-        </Accordion.Item>
-      </Accordion.Container>
+          <TabPanel>
+            <SchedulesTab />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };
 
 export default List;
-
-const Create: React.FC<{
-  route: "email" | "workflow" | "status" | "form" | "schedule";
-}> = memo(({ route }) => {
-  const navigate = useNavigate();
-  const params = useParams<{ project: string }>();
-
-  const project = params.project ?? "";
-
-  const handleClick = useCallback(() => {
-    navigate(`/portal/${route}`, { state: { project } });
-  }, [navigate, project, route]);
-
-  if (!project) return null;
-
-  return (
-    <Box w="full" p={[4, 2]} textAlign="right" mb={4}>
-      <Button onClick={handleClick} variant="outline">
-        <FaPlusCircle />
-      </Button>
-    </Box>
-  );
-});
-
-const Edit: React.FC<{
-  route: "email" | "workflow" | "status" | "form" | "schedule";
-  id: string;
-}> = memo(({ route, id }) => {
-  const navigate = useNavigate();
-  const params = useParams<{ project: string }>();
-
-  const project = params.project ?? "";
-
-  const handleClick = useCallback(() => {
-    navigate(`/portal/${route}/${id}`, { state: { project } });
-  }, [navigate, project, route]);
-
-  if (!project) return null;
-
-  return (
-    <Box textAlign="right">
-      <Button onClick={handleClick} variant="outline">
-        <FaPen />
-      </Button>
-    </Box>
-  );
-});

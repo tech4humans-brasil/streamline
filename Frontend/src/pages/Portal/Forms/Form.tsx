@@ -14,7 +14,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Text from "@components/atoms/Inputs/Text";
 import Switch from "@components/atoms/Inputs/Switch";
 import DraftItem from "@components/molecules/DraftItem";
@@ -138,9 +138,8 @@ export default function Workflow() {
   const { t } = useTranslation();
   const toast = useToast();
   const navigate = useNavigate();
-  const params = useParams<{ id?: string }>();
+  const params = useParams<{ id?: string; project: string }>();
   const queryClient = useQueryClient();
-  const location = useLocation();
 
   const isEditing = !!params?.id;
   const id = params?.id ?? "";
@@ -151,7 +150,7 @@ export default function Workflow() {
     enabled: isEditing,
   });
 
-  const project = location.state?.project || form?.project as string | undefined;
+  const project = params?.project as string;
 
   const { data: formsData, isLoading: isLoadingForms } = useQuery({
     queryKey: ["forms", "forms", project],
@@ -219,7 +218,7 @@ export default function Workflow() {
     }
   }, [form, reset]);
 
-  useEffect(() => {}, [errors]);
+  useEffect(() => { }, [errors]);
 
   useEffect(() => {
     methods.setValue("project", project);
@@ -460,6 +459,8 @@ interface FormVersionsProps {
 const FormVersions: React.FC<FormVersionsProps> = memo(({ id, formType }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const params = useParams<{ project: string }>();
+  const project = params?.project as string;
 
   const { data: formDrafts, isLoading: isLoadingDrafts } = useQuery({
     queryKey: ["form-drafts", id],
@@ -467,18 +468,18 @@ const FormVersions: React.FC<FormVersionsProps> = memo(({ id, formType }) => {
   });
 
   const handleNewDraft = useCallback(() => {
-    navigate(`/portal/form-draft/${id}`, {
+    navigate(`/portal/project/${project}/form-draft/${id}`, {
       state: { formType },
     });
-  }, [navigate, id, formType]);
+  }, [navigate, id, formType, project]);
 
   const handleEditDraft = useCallback(
     (draftId: string) => {
-      navigate(`/portal/form-draft/${id}/${draftId}`, {
+      navigate(`/portal/project/${project}/form-draft/${id}/${draftId}`, {
         state: { formType },
       });
     },
-    [navigate, id, formType]
+    [navigate, id, formType, project]
   );
   return (
     <Flex mt="8" justify="center" align="center" direction="column" gap="5">
