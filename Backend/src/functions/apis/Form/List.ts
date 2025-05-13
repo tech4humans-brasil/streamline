@@ -25,7 +25,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
 });
 
 const handler: HttpHandler = async (conn, req) => {
-  const { page = 1, limit = 10, ...filters } = req.query as Query;
+  const { page = 1, limit = 20, ...filters } = req.query as Query;
 
   const formRepository = new FormRepository(conn);
 

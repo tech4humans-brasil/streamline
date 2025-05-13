@@ -14,7 +14,7 @@ const List: React.FC = () => {
   const selectedTab = searchParams.get('tab') || '0';
 
   const handleTabChange = useCallback((index: number) => {
-    setSearchParams({ tab: index.toString() });
+    setSearchParams({ ...searchParams, tab: index.toString() });
   }, [setSearchParams]);
 
   return (

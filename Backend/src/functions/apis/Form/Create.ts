@@ -11,6 +11,15 @@ const handler: HttpHandler = async (conn, req) => {
 
   const formRepository = new FormRepository(conn);
 
+  const isSlugExists = await formRepository.findOne({
+    select: { slug: 1 },
+    where: { slug: formData.slug, }
+  });
+
+  if (isSlugExists) {
+    return res.badRequest("Slug already exists");
+  }
+
   const form = await formRepository.create({
     ...formData,
     slug: !formData.slug ? null : formData.slug,

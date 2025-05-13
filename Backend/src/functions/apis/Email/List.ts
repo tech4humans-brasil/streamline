@@ -15,7 +15,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
 
 
 export const handler: HttpHandler = async (conn, req, context) => {
-  const { page = 1, limit = 10, ...filter } = req.query as Query;
+  const { page = 1, limit = 20, ...filter } = req.query as Query;
   const emailRepository = new EmailRepository(conn);
 
   const where = filterQueryBuilder.build(filter);
@@ -24,6 +24,10 @@ export const handler: HttpHandler = async (conn, req, context) => {
     where,
     skip: (page - 1) * limit,
     limit,
+    select: {
+      htmlTemplate: 0,
+      cssTemplate: 0,
+    },
   });
 
   const total = await emailRepository.count({ where });

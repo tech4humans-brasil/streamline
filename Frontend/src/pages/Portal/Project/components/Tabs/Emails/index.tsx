@@ -1,4 +1,4 @@
-import { Box, Flex, Button } from "@chakra-ui/react";
+import { Box, Flex, Button, Spinner } from "@chakra-ui/react";
 import ProjectItem from "@components/molecules/ProjectItem";
 import Pagination from "@components/organisms/Pagination";
 import { useQuery } from "@tanstack/react-query";
@@ -25,7 +25,6 @@ const EmailsTab: React.FC = () => {
     gcTime: FIVE_MINUTES,
   });
 
-  if (isLoading) return <Box>Loading...</Box>;
   if (isError) return <Box>Error loading emails</Box>;
 
   return (
@@ -37,6 +36,11 @@ const EmailsTab: React.FC = () => {
         </Flex>
       </Box>
       <ProjectItem.List>
+        {isLoading && (
+          <Flex justifyContent="center" alignItems="center" h="100%">
+            <Spinner />
+          </Flex>
+        )}
         {data?.emails?.map((email) => (
           <ProjectItem.Container key={email._id}>
             <ProjectItem.Body>

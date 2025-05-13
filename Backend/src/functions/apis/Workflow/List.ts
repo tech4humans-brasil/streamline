@@ -16,7 +16,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
 });
 
 const handler: HttpHandler = async (conn, req, context) => {
-  const { page = 1, limit = 10, ...filter } = req.query as Query;
+  const { page = 1, limit = 20, ...filter } = req.query as Query;
   const workflowRepository = new WorkflowRepository(conn);
 
   const where = filterQueryBuilder.build(filter);

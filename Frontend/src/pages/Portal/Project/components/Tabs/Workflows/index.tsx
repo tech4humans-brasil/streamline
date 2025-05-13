@@ -1,4 +1,4 @@
-import { Box, Flex, Tag, Button } from "@chakra-ui/react";
+import { Box, Flex, Tag, Button, Spinner } from "@chakra-ui/react";
 import ProjectItem from "@components/molecules/ProjectItem";
 import Pagination from "@components/organisms/Pagination";
 import { useQuery } from "@tanstack/react-query";
@@ -28,7 +28,6 @@ const WorkflowsTab: React.FC = () => {
     gcTime: FIVE_MINUTES,
   });
 
-  if (isLoading) return <Box>Loading...</Box>;
   if (isError) return <Box>Error loading workflows</Box>;
 
   return (
@@ -40,6 +39,11 @@ const WorkflowsTab: React.FC = () => {
         </Flex>
       </Box>
       <ProjectItem.List>
+        {isLoading && (
+          <Flex justifyContent="center" alignItems="center" h="100%">
+            <Spinner />
+          </Flex>
+        )}
         {data?.workflows?.map((workflow) => (
           <ProjectItem.Container key={workflow._id}>
             <ProjectItem.Body>

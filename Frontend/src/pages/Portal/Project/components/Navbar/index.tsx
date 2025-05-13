@@ -67,7 +67,9 @@ const Navbar: React.FC = () => {
   }, [projects]);
 
   useEffect(() => {
-    handleAlterProject({ project });
+    if (project !== params.project) {
+      handleAlterProject({ project });
+    }
   }, [project]);
 
   const projectData = useMemo(() => {

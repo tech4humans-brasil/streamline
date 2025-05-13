@@ -1,4 +1,4 @@
-import { Box, Flex, Tag, Button } from "@chakra-ui/react";
+import { Box, Flex, Tag, Button, Spinner } from "@chakra-ui/react";
 import ProjectItem from "@components/molecules/ProjectItem";
 import Pagination from "@components/organisms/Pagination";
 import { useQuery } from "@tanstack/react-query";
@@ -39,7 +39,6 @@ const SchedulesTab: React.FC = () => {
     [i18n.language]
   );
 
-  if (isLoading) return <Box>Loading...</Box>;
   if (isError) return <Box>Error loading schedules</Box>;
 
   return (
@@ -51,6 +50,11 @@ const SchedulesTab: React.FC = () => {
         </Flex>
       </Box>
       <ProjectItem.List>
+        {isLoading && (
+          <Flex justifyContent="center" alignItems="center" h="100%">
+            <Spinner />
+          </Flex>
+        )}
         {data?.schedules?.map((schedule) => (
           <ProjectItem.Container key={schedule._id}>
             <ProjectItem.Body>
