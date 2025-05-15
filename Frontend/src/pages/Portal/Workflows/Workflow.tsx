@@ -70,7 +70,7 @@ export default function Workflow() {
       });
       queryClient.invalidateQueries({ queryKey: ["workflows"] });
       queryClient.invalidateQueries({ queryKey: ["forms"] });
-      navigate(`/portal/workflow/${data._id}`);
+      navigate(`/portal/project/${project}/workflow/${data._id}`);
     },
     onError: () => {
       toast({
