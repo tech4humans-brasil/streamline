@@ -380,6 +380,9 @@
     "cancel": "Cancelar",
     "submit": "Salvar Alterações",
     "error": "Erro ao salvar fluxo",
+    "panel": {
+      "add_block": "Adicionar bloco"
+    },
     "status": {
       "draft": "Rascunho",
       "published": "Publicado"
@@ -387,34 +390,44 @@
     "versions": "Versões",
     "nodes": {
       "send_email": {
-        "title": "Enviar e-mail"
+        "title": "Enviar e-mail",
+        "description": "Envia um email para um ou mais destinatários"
       },
       "conditional": {
-        "title": "Condicional"
+        "title": "Condicional",
+        "description": "Cria uma ramificação baseada em uma condição",
+        "yes": "Sim",
+        "no": "Não"
       },
       "new_ticket": {
-        "title": "Criar Novo ticket"
+        "title": "Criar Novo ticket",
+        "description": "Cria um novo ticket no sistema"
       },
       "clicksign": {
-        "title": "Assinatura Clicksign"
+        "title": "Assinatura Clicksign",
+        "description": "Solicita assinatura digital via ClickSign",
+        "signers": "Assinantes"
       },
       "web_request": {
-        "title": "Requisição Web"
+        "title": "Requisição Web",
+        "description": "Faz uma requisição HTTP para uma API externa"
       },
       "interaction": {
-        "title": "Interação"
+        "title": "Interação",
+        "description": "Solicita interação manual de um usuário"
       },
       "swap_workflow": {
-        "title": "Trocar fluxo"
+        "title": "Trocar fluxo",
+        "description": "Redireciona para outro fluxo de automação"
       },
       "change_status": {
-        "title": "Alterar status"
-      },
-      "new_ticket": {
-        "title": "Criar ticket"
+        "title": "Alterar status",
+        "description": "Altera o status do processo atual"
       },
       "script": {
-        "title": "Script"
+        "title": "Script",
+        "description": "Executa um script personalizado",
+        "script": "Código do script"
       }
     },
     "categories": {

@@ -1,9 +1,8 @@
 import {
   Flex,
-  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
-import React, { useMemo } from "react";
+import React from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import CustomHandle from "../CustomHandle";
 
@@ -17,24 +16,20 @@ interface CircleNodeProps extends NodeProps {
   };
 }
 
-const CircleNode: React.FC<CircleNodeProps> = ({ data, selected }) => {
-  const theme = useColorMode();
+const CircleNode: React.FC<CircleNodeProps> = ({ data }) => {
 
-  const borderColor = useMemo(() => {
-    if (selected) return "black.500";
-    if (theme.colorMode === "light") return "gray.400";
-    return "gray.500";
-  }, [selected, theme.colorMode]);
+  const borderColor = useColorModeValue("gray.400", "gray.500");
+  const iconBgColor = useColorModeValue("gray.100", "gray.700");
 
   return (
     <Flex
-      bg={useColorModeValue("gray.300", "gray.700")}
+      align="center"
+      justify="center"
       width="50px"
       height="50px"
       borderRadius="50%"
-      alignItems="center"
-      justifyContent="center"
-      border="1px solid"
+      bg={iconBgColor}
+      border="2px solid"
       borderColor={borderColor}
     >
       <div>{data.label}</div>

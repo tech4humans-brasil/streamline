@@ -9,7 +9,7 @@ interface WorkflowDraftProps {
 
 export default function WorkflowDraft({ isView }: WorkflowDraftProps) {
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ height: "100%", width: "100%" }}>
       <ReactFlowProvider>
         <DrawerContext>
           <FlowBoard isView={isView} />

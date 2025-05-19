@@ -1,32 +1,29 @@
 import { Flex, Text, Box, Heading, Divider } from "@chakra-ui/react";
-import { SwapWorkflowIcon } from "@components/atoms/Workflow/Nodes/SwapWorkflow";
-import { InteractionIcon } from "@components/atoms/Workflow/Nodes/Interaction";
-import { ConditionalIcon } from "@components/atoms/Workflow/Nodes/Conditional";
-import { SendEmailIcon } from "@components/atoms/Workflow/Nodes/SendEmail";
-import { ChangeStatusIcon } from "@components/atoms/Workflow/Nodes/ChangeStatus";
-import { WebRequestIcon } from "@components/atoms/Workflow/Nodes/WebRequest";
-import { NewTicketIcon } from "@components/atoms/Workflow/Nodes/NewTicket";
-import { ClicksignIcon } from "@components/atoms/Workflow/Nodes/Clicksign";
-import { ScriptIcon } from "@components/atoms/Workflow/Nodes/Script";
+import { BiMailSend, BiLogoJavascript } from "react-icons/bi";
+import { GoTag, GoWorkflow } from "react-icons/go";
+import { FaWpforms, FaPlusSquare } from "react-icons/fa";
+import { RiWebhookLine } from "react-icons/ri";
+import { AiFillSignature } from "react-icons/ai";
+import { BiGitRepoForked } from "react-icons/bi";
 
 const data = [
   {
     category: "Fluxo",
     nodes: [
       {
-        icon: <ConditionalIcon />,
+        icon: <BiGitRepoForked size={24} />,
         title: "Condicional",
         description:
           "Avalia condições e direciona o fluxo com base em critérios configuráveis.",
       },
       {
-        icon: <ChangeStatusIcon />,
+        icon: <GoTag size={24} />,
         title: "Mudança de Status",
         description:
           "Atualiza o status atual de uma atividade para indicar em qual etapa do fluxo ela está.",
       },
       {
-        icon: <SwapWorkflowIcon />,
+        icon: <GoWorkflow size={24} />,
         title: "Mudança de Fluxo",
         description:
           "Permite a alternância entre diferentes fluxos de trabalho, reutilizando fluxos existentes.",
@@ -37,13 +34,13 @@ const data = [
     category: "Comunicação",
     nodes: [
       {
-        icon: <SendEmailIcon />,
+        icon: <BiMailSend size={24} />,
         title: "Envio de Email",
         description:
           "Gerencia o envio de emails automáticos para requisição de informações e comunicações gerais.",
       },
       {
-        icon: <InteractionIcon />,
+        icon: <FaWpforms size={24} />,
         title: "Interação",
         description:
           "Solicita informações específicas de um destinatário, como entregas parciais ou envio final de documentos.",
@@ -54,13 +51,13 @@ const data = [
     category: "Integração",
     nodes: [
       {
-        icon: <WebRequestIcon />,
+        icon: <RiWebhookLine size={24} />,
         title: "Requisição Web",
         description:
           "Realiza solicitações HTTP para integração com sistemas externos, como jira, discord...",
       },
       {
-        icon: <ClicksignIcon />,
+        icon: <AiFillSignature size={24} />,
         title: "Assinatura Clicksign",
         description:
           "Integra com a plataforma Clicksign para gerenciamento e coleta de assinaturas digitais.",
@@ -71,13 +68,13 @@ const data = [
     category: "Automação",
     nodes: [
       {
-        icon: <NewTicketIcon />,
+        icon: <FaPlusSquare size={24} />,
         title: "Criar Novo Ticket",
         description:
           "Cria automaticamente um novo ticket baseado em um formulário pré-definido.",
       },
       {
-        icon: <ScriptIcon />,
+        icon: <BiLogoJavascript size={24} />,
         title: "Script",
         description:
           "Executa scripts personalizados para automação de tarefas específicas.",
