@@ -69,7 +69,7 @@ const Conditional: React.FC<ConditionalProps> = (props) => {
         <CustomHandle
           type="source"
           position={Position.Bottom}
-          handleId="true-source"
+          handleId="default-source"
           style={{ background: "green", left: "30%" }}
           title={t(`workflow.nodes.conditional.true_path`)}
         />
