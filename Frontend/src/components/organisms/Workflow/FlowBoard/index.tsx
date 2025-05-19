@@ -26,7 +26,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Center, Spinner, useToast } from "@chakra-ui/react";
 import { IStep, IWorkflowDraft } from "@interfaces/WorkflowDraft";
 import { AxiosError } from "axios";
-import Minimap from "@components/atoms/Workflow/Minimap";
 import { workflowSchema } from "@pages/Portal/WorkflowDraft/nodesSchema";
 import { useTranslation } from "react-i18next";
 
@@ -266,15 +265,16 @@ const FlowBoard: React.FC<FlowBoardProps> = memo(({ isView }) => {
         onDragOver={onDragOver}
         isValidConnection={isValidConnection}
       >
+
         <FlowHeader
           status={workflow?.status}
           {...{ isView, isPending, onSave }}
         />
         <Background color="#aaa" gap={16} size={1} />
-        <Minimap />
         {!isView && (
           <>
-            <FlowPanel /> <Controls />
+            <Controls />
+            <FlowPanel />
           </>
         )}
       </ReactFlow>

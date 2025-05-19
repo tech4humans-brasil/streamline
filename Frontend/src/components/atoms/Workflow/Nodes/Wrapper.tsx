@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Flex,
-  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useCallback, useMemo } from "react";
@@ -19,6 +18,10 @@ interface WrapperNodeProps extends NodeProps {
   children: React.ReactNode;
   deletable?: boolean;
   numberOfSources?: number;
+  bgColor?: string;
+  borderColor?: string;
+  iconBgColor?: string;
+  iconColor?: string;
 }
 
 const WrapperNode: React.FC<WrapperNodeProps> = ({
@@ -27,12 +30,12 @@ const WrapperNode: React.FC<WrapperNodeProps> = ({
   selected,
   deletable,
   numberOfSources = 1,
+  bgColor,
+  borderColor,
 }) => {
   const { deleteElements, getNode } = useReactFlow();
   const { onOpen } = useDrawer();
   const node = getNode(id);
-
-  const theme = useColorMode();
 
   const isValid = useMemo(() => {
     return validateNode(node?.type as NodeTypes, node?.data);
@@ -47,39 +50,41 @@ const WrapperNode: React.FC<WrapperNodeProps> = ({
   }, [deleteElements, node]);
 
   const menuBg = useColorModeValue("white", "gray.700");
-
-  const borderColor = useMemo(() => {
-    if (selected) return "black.500";
-    if (theme.colorMode === "light") return "gray.300";
-    return "gray.600";
-  }, [selected, theme.colorMode]);
+  const selectedBgColor = useColorModeValue("bg.page", "bg.cardDark");
 
   return (
     <Flex
-      bg={useColorModeValue("white", "gray.700")}
-      width="100px"
-      height="50px"
-      alignItems="center"
-      direction={"column"}
-      justifyContent="center"
-      border="1px solid"
+      direction="column"
+      p={4}
+      bg={selected ? selectedBgColor : bgColor}
+      borderWidth={"2px"}
       borderColor={borderColor}
-      borderRadius="3px"
-      transition="border-color 0.3s ease-in-out"
-      title={node?.data?.name}
+      borderRadius="md"
+      boxShadow={selected ? "lg" : "md"}
+      width="12rem"
+      transition="all 0.2s"
     >
-      {!isValid && (
-        <Box position="absolute" top={-1} right={1} textAlign="center">
-          <Badge colorScheme="red">
-            <BiInfoCircle />
-          </Badge>
-        </Box>
+      <Handle
+        id="default-target"
+        type="target"
+        position={Position.Left}
+        style={{ background: "#555", left: "-10px" }}
+      />
+      {numberOfSources > 0 && (
+        <CustomHandle
+          handleId="default-source"
+          type="source"
+          position={Position.Right}
+          style={{ background: "#555", right: "-10px" }}
+          title="Conexão Padrão"
+        />
       )}
-
+      {children}
       {selected && (
         <Flex
           position="absolute"
           top="-35px"
+          right="0"
           cursor="pointer"
           bg={menuBg}
           borderRadius="5px"
@@ -110,22 +115,13 @@ const WrapperNode: React.FC<WrapperNodeProps> = ({
           </Button>
         </Flex>
       )}
-      <Handle
-        id="default-target"
-        type="target"
-        position={Position.Left}
-        style={{ background: "#555", left: "-10px" }}
-      />
-      {numberOfSources > 0 && (
-        <CustomHandle
-          handleId="default-source"
-          type="source"
-          position={Position.Right}
-          style={{ background: "#555", right: "-10px" }}
-          title="Conexão Padrão"
-        />
+      {!isValid && (
+        <Box position="absolute" top={-1} right={1} textAlign="center">
+          <Badge colorScheme="red">
+            <BiInfoCircle />
+          </Badge>
+        </Box>
       )}
-      {children}
     </Flex>
   );
 };

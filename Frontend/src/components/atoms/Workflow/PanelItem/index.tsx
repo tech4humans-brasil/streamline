@@ -11,7 +11,8 @@ interface PanelItemProps {
 
 const PanelItem: React.FC<PanelItemProps> = ({ children, nodeType, isCategory }) => {
   const { t } = useTranslation();
-  const borderColor = useColorModeValue("gray.200", "gray.600");
+  const borderColor = useColorModeValue("gray.200", "gray.700");
+  const hoverBorderColor = useColorModeValue("blue.500", "blue.200");
 
   const onDragStart = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -40,30 +41,34 @@ const PanelItem: React.FC<PanelItemProps> = ({ children, nodeType, isCategory })
   }
 
   return (
-    <Flex
-      alignItems="center"
-      justifyContent="start"
-      flexDirection="row"
-      gap={2}
-      p={2}
+    <Box
+      p={4}
+      bg={"bg.card"}
+      borderWidth="1px"
+      borderColor={borderColor}
       borderRadius="md"
-      _hover={{ bg: useColorModeValue("gray.50", "gray.600") }}
-      border="1px solid transparent"
-      _active={{ borderColor }}
-      role="button"
-      aria-label={nodeType ? t(`workflow.nodes.${nodeType}.title`) : undefined}
-      transition="transform 0.2s"
       cursor="grab"
+      transition="all 0.2s"
+      _hover={{
+        borderColor: hoverBorderColor,
+      }}
       draggable={!isCategory}
       onDragStart={onDragStart}
+      role="button"
+      aria-label={nodeType ? t(`workflow.nodes.${nodeType}.title`) : undefined}
     >
-      <Box>{children}</Box>
-      {nodeType && (
+      <Flex justify="space-between" align="center" mb={2}>
         <Text fontSize="sm" fontWeight="medium">
-          {t(`workflow.nodes.${nodeType}.title`)}
+          {nodeType && t(`workflow.nodes.${nodeType}.title`)}
+        </Text>
+        <Box>{children}</Box>
+      </Flex>
+      {nodeType && (
+        <Text fontSize="xs" color="gray.500">
+          {t(`workflow.nodes.${nodeType}.description`)}
         </Text>
       )}
-    </Flex>
+    </Box>
   );
 };
 
