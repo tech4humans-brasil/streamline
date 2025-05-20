@@ -4,9 +4,7 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  Heading,
   IconButton,
-  Tag,
 } from "@chakra-ui/react";
 import Table from "@components/organisms/Table";
 import { IActivityState } from "@interfaces/Activitiy";
