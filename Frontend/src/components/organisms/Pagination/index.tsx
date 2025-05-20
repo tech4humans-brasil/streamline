@@ -90,7 +90,7 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, isLoading }) => {
           onClick={() => handlePageClick({ selected: pagination.page })}
           mr={2}
           size="sm"
-          isDisabled={pagination.page === pagination.totalPages}
+          isDisabled={pagination.page === pagination.totalPages || pagination.totalPages === 0}
           isLoading={isLoading}
         >
           <BiChevronRight size={20} />
