@@ -2,18 +2,16 @@ import { getMyActivities } from "@apis/dashboard";
 import {
   Box,
   Button,
-  ButtonGroup,
   Flex,
   IconButton,
   Heading,
   Text,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import Table from "@components/organisms/Table";
 import { IActivityState } from "@interfaces/Activitiy";
 import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaPen, FaSync } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
