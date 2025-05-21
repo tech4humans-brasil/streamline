@@ -30,6 +30,10 @@ const columns = [
     label: "common.fields.type",
   },
   {
+    key: "forms",
+    label: "common.fields.form",
+  },
+  {
     key: "due_date",
     label: "common.fields.due_date",
   },
@@ -74,12 +78,9 @@ const PendingInteractions: React.FC = () => {
     //[Todo] - Verificar se o campo form.period.close é o correto
     return data.map((activity) => ({
       ...activity,
+      forms: activity.form.name,
       user: activity?.users[0]?.name || "-",
-      due_date: activity.due_date ? (
-        <DueDateIndicator dueDate={activity.due_date} />
-      ) : (
-        "-"
-      ),
+      due_date: <DueDateIndicator dueDate={activity.due_date} />,
       actions: (
         <Flex>
           <Button mr={2} onClick={() => handleView(activity)} size="sm">

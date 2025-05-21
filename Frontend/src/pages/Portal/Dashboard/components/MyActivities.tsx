@@ -5,18 +5,24 @@ import {
   ButtonGroup,
   Flex,
   IconButton,
+  Heading,
+  Text,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import Table from "@components/organisms/Table";
 import { IActivityState } from "@interfaces/Activitiy";
 import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaPen, FaSync } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Filter from "@components/organisms/Filter";
 import Pagination from "@components/organisms/Pagination";
 import StatusTag from "@components/atoms/StatusTag";
+import InputText from "@components/atoms/Inputs/Text";
+import Select from "@components/atoms/Inputs/Select";
+
 
 const columns = [
   {
@@ -25,7 +31,7 @@ const columns = [
   },
   {
     key: "name",
-    label: "common.fields.name",
+    label: "common.fields.form",
   },
   {
     key: "description",
@@ -54,7 +60,7 @@ type IItem = Awaited<ReturnType<typeof getMyActivities>>["activities"][0];
 const MyActivities: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["my-activities", searchParams.toString()],
@@ -74,19 +80,6 @@ const MyActivities: React.FC = () => {
     },
     [navigate]
   );
-
-  const handleStatusChange = useCallback((status: string) => {
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      if (status === "all") {
-        newParams.delete("finished");
-      } else {
-        newParams.set("finished", status);
-      }
-      newParams.set("page", "1"); // Reset to first page when changing status
-      return newParams;
-    });
-  }, [setSearchParams]);
 
   const rows = useMemo(() => {
     if (!data?.activities) return [];
@@ -118,45 +111,53 @@ const MyActivities: React.FC = () => {
     }));
   }, [data, handleView, handleEdit]);
 
-  const currentStatus = searchParams.get("finished");
-
   return (
     <Box mb={4} bg="bg.card" borderRadius="md" id="my-activities">
+
+      <Flex justifyContent="space-between" alignItems="start" p="4" direction="column">
+        <Heading size="md">
+          {t("dashboard.title.myActivities")}
+        </Heading>
+        <Text fontSize="sm" color="gray.500">
+          {t("dashboard.description.myActivities")}
+        </Text>
+      </Flex>
+
       <Filter.Container>
-        <ButtonGroup size="md" isAttached variant="solid">
-          <Button
-            onClick={() => handleStatusChange("all")}
-            colorScheme={currentStatus === null ? "blue" : undefined}
-          >
-            {t("dashboard.status.all")}
-          </Button>
-          <Button
-            onClick={() => handleStatusChange("false")}
-            colorScheme={currentStatus === "false" ? "blue" : undefined}
-          >
-            {t("dashboard.status.inProgress")}
-          </Button>
-          <Button
-            onClick={() => handleStatusChange("true")}
-            colorScheme={currentStatus === "true" ? "blue" : undefined}
-          >
-            {t("dashboard.status.finished")}
-          </Button>
-        </ButtonGroup>
-        <IconButton
-          ml="auto"
-          aria-label={t("common.refresh")}
-          icon={<FaSync />}
-          onClick={() => refetch()}
-          isLoading={isLoading}
+        <Select
+          input={{
+            id: "finished",
+            label: t("common.fields.status"),
+            options: [
+              { label: t("dashboard.status.inProgress"), value: "false" },
+              { label: t("dashboard.status.finished"), value: "true" },
+            ],
+          }}
         />
+        <Flex alignItems="end" gap={2} w="100%">
+          <InputText
+            input={{
+              id: "search",
+              type: "text",
+              placeholder: t("common.fields.search"),
+              label: t("common.fields.description"),
+            }}
+          />
+          <IconButton
+            ml="auto"
+            aria-label={t("common.refresh")}
+            icon={<FaSync />}
+            onClick={() => refetch()}
+            isLoading={isLoading}
+          />
+        </Flex>
+
       </Filter.Container>
 
       <Flex
         justifyContent="center"
         alignItems="center"
         mt="4"
-        width="100%"
         p="4"
         borderRadius="md"
         direction="column"

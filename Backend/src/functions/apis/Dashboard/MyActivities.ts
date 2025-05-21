@@ -14,6 +14,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
   finished: { type: WhereEnum.CUSTOM, alias: "finished_at" },
   user: { type: WhereEnum.EQUAL, alias: "users._id" },
   form: { type: WhereEnum.ARRAY, alias: "form" },
+  search: { type: WhereEnum.ILIKE, alias: "description" },
 },
   {
     finished: (value: string) => {
@@ -95,6 +96,7 @@ export default new Http(handler)
           .transform((v) => Number(v)),
         finished: schema.string().oneOf(["all", "true", "false"]).default("all"),
         form: schema.array(schema.string()).default([]),
+        search: schema.string().optional(),
       })
       .optional(),
   }))

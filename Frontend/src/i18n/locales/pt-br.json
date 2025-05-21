@@ -220,7 +220,8 @@
       "evaluationPending": "Tickets que estão pendentes de avaliação",
       "interactionPending": "Interações que estão pendentes de resposta",
       "activitiesAccept": "Tickets que estão pendentes de aceite",
-      "activityProcess": "Tickets que estão em andamento"
+      "activityProcess": "Tickets que estão em andamento",
+      "myActivities": "Aqui estão os tickets criados por você ou de forma automática"
     }
   },
   "title": {

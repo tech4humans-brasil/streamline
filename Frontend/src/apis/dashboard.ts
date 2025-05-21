@@ -103,7 +103,7 @@ export const getMyActivitiesPendingAcceptance = async ({
 };
 
 type ReqMyActivitiesPendingInteractions = Response<
-  (Pick<IActivity, "_id" | "name" | "description" | "protocol" | "users" | "due_date"> & {
+  (Pick<IActivity, "_id" | "name" | "description" | "protocol" | "users" | "due_date" | "status"> & {
     form: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
     status: "idle" | "pending" | "approved" | "rejected";
   })[]
