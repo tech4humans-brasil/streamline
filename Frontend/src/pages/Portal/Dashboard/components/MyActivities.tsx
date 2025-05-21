@@ -3,13 +3,9 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
   IconButton,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
+  Heading,
+  Text,
 } from "@chakra-ui/react";
 import Table from "@components/organisms/Table";
 import { IActivityState } from "@interfaces/Activitiy";
@@ -18,7 +14,13 @@ import { convertDateTime } from "@utils/date";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaPen, FaSync } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Filter from "@components/organisms/Filter";
+import Pagination from "@components/organisms/Pagination";
+import StatusTag from "@components/atoms/StatusTag";
+import InputText from "@components/atoms/Inputs/Text";
+import Select from "@components/atoms/Inputs/Select";
+
 
 const columns = [
   {
@@ -27,34 +29,15 @@ const columns = [
   },
   {
     key: "name",
-    label: "common.fields.name",
+    label: "common.fields.form",
   },
   {
     key: "description",
     label: "common.fields.description",
   },
   {
-    key: "createdAt",
-    label: "common.fields.createdAt",
-  },
-  {
-    key: "actions",
-    label: "common.fields.actions",
-  },
-];
-
-const columnsFinished = [
-  {
-    key: "protocol",
-    label: "common.fields.protocol",
-  },
-  {
-    key: "name",
-    label: "common.fields.name",
-  },
-  {
-    key: "description",
-    label: "common.fields.description",
+    key: "status",
+    label: "common.fields.status",
   },
   {
     key: "createdAt",
@@ -75,9 +58,10 @@ type IItem = Awaited<ReturnType<typeof getMyActivities>>["activities"][0];
 const MyActivities: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["my-activities"],
+    queryKey: ["my-activities", searchParams.toString()],
     queryFn: getMyActivities,
   });
 
@@ -96,17 +80,26 @@ const MyActivities: React.FC = () => {
   );
 
   const rows = useMemo(() => {
-    if (!data || data.activities.length === 0) return null;
+    if (!data?.activities) return [];
 
     return data.activities.map((activity) => ({
       ...activity,
+      description: (
+        <div title={activity.description}>
+          {activity.description.length > 15
+            ? `${activity.description.slice(0, 15)}...`
+            : activity.description}
+        </div>
+      ),
       createdAt: convertDateTime(activity.createdAt),
+      finished_at: activity.finished_at ? convertDateTime(activity.finished_at) : "-",
+      status: <StatusTag status={activity.status} />,
       actions: (
         <Flex>
           <Button mr={2} onClick={() => handleView(activity)} size="sm">
             <FaEye />
           </Button>
-          {activity.state === IActivityState.created && (
+          {activity.state === IActivityState.created && !activity.finished_at && (
             <Button size="sm" onClick={() => handleEdit(activity)}>
               <FaPen />
             </Button>
@@ -116,54 +109,61 @@ const MyActivities: React.FC = () => {
     }));
   }, [data, handleView, handleEdit]);
 
-  const rowsFinished = useMemo(() => {
-    if (!data || data.finishedActivities.length === 0) return null;
-
-    return data.finishedActivities.map((activity) => ({
-      ...activity,
-      createdAt: convertDateTime(activity.createdAt),
-      finished_at: convertDateTime(activity.finished_at),
-      actions: (
-        <Flex>
-          <Button mr={2} onClick={() => handleView(activity)} size="sm">
-            <FaEye />
-          </Button>
-        </Flex>
-      ),
-    }));
-  }, [data, handleView, handleEdit]);
-
   return (
-    <Box p={4} mb={4} bg="bg.card" borderRadius="md" id="my-activities">
-      <Flex align="center" mb="5">
-        <Heading size="md">{t("dashboard.title.myActivities")}</Heading>
-        <IconButton
-          ml="auto"
-          aria-label={t("common.refresh")}
-          icon={<FaSync />}
-          onClick={() => refetch()}
-          isLoading={isLoading}
-        />
+    <Box mb={4} bg="bg.card" borderRadius="md" id="my-activities">
+
+      <Flex justifyContent="space-between" alignItems="start" p="4" direction="column">
+        <Heading size="md">
+          {t("dashboard.title.myActivities")}
+        </Heading>
+        <Text fontSize="sm" color="gray.500">
+          {t("dashboard.description.myActivities")}
+        </Text>
       </Flex>
 
-      <Tabs>
-        <TabList>
-          <Tab>{t("state.inProgress")}</Tab>
-          <Tab>{t("state.finished")}</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Table columns={columns} data={rows ?? []} isLoading={isLoading} />
-          </TabPanel>
-          <TabPanel>
-            <Table
-              columns={columnsFinished}
-              data={rowsFinished ?? []}
-              isLoading={isLoading}
-            />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+      <Filter.Container>
+        <Select
+          input={{
+            id: "finished",
+            label: t("common.fields.status"),
+            options: [
+              { label: t("dashboard.status.inProgress"), value: "false" },
+              { label: t("dashboard.status.finished"), value: "true" },
+            ],
+          }}
+        />
+        <Flex alignItems="end" gap={2} w="100%">
+          <InputText
+            input={{
+              id: "search",
+              type: "text",
+              placeholder: t("common.fields.search"),
+              label: t("common.fields.description"),
+            }}
+          />
+          <IconButton
+            ml="auto"
+            aria-label={t("common.refresh")}
+            icon={<FaSync />}
+            onClick={() => refetch()}
+            isLoading={isLoading}
+          />
+        </Flex>
+
+      </Filter.Container>
+
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        mt="4"
+        p="4"
+        borderRadius="md"
+        direction="column"
+        bg={"bg.card"}
+      >
+        <Table columns={columns} data={rows} isLoading={isLoading} />
+        <Pagination pagination={data?.pagination} isLoading={isLoading} />
+      </Flex>
     </Box>
   );
 };

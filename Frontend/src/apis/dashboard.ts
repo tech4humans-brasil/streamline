@@ -14,6 +14,7 @@ type Activity = Pick<
   | "state"
   | "form_draft"
   | "finished_at"
+  | "status"
 > & {
   users: {
     _id: string;
@@ -28,18 +29,15 @@ type Activity = Pick<
 
 type ReqMyActivities = Response<{
   activities: Activity[];
-  finishedActivities: Activity[];
-  pagination: IPagination;
-}>;
+} & IPagination>;
+
 
 export const getMyActivities = async ({
-  queryKey: [, finished = "finished", page = "1", limit = "10"],
+  queryKey: [, params],
 }: {
   queryKey: string[];
 }) => {
-  const res = await api.get<ReqMyActivities>("/dashboard/my-activities", {
-    params: { page, limit, finished: finished === "finished" },
-  });
+  const res = await api.get<ReqMyActivities>(`/dashboard/my-activities?${params}`);
 
   return res.data.data;
 };
@@ -105,7 +103,7 @@ export const getMyActivitiesPendingAcceptance = async ({
 };
 
 type ReqMyActivitiesPendingInteractions = Response<
-  (Pick<IActivity, "_id" | "name" | "description" | "protocol" | "users" | "due_date"> & {
+  (Pick<IActivity, "_id" | "name" | "description" | "protocol" | "users" | "due_date" | "status"> & {
     form: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
     status: "idle" | "pending" | "approved" | "rejected";
   })[]

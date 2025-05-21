@@ -3,11 +3,12 @@ import { Text } from "@chakra-ui/react";
 import { convertDateTime } from "@utils/date";
 
 interface DueDateIndicatorProps {
-  dueDate: string | Date; // A data de vencimento pode ser string ou Date
+  dueDate?: string | Date | null; // A data de vencimento pode ser string ou Date
 }
 
 const DueDateIndicator: React.FC<DueDateIndicatorProps> = ({ dueDate }) => {
   const differenceInTime = useMemo(() => {
+    if (!dueDate) return 0;
     const due = new Date(dueDate);
     const now = new Date();
 
@@ -26,6 +27,8 @@ const DueDateIndicator: React.FC<DueDateIndicatorProps> = ({ dueDate }) => {
     }
     return color;
   }, [differenceInTime]);
+
+  if (!dueDate) return "-";
 
   return (
     <Text fontSize="sm" color={color}>

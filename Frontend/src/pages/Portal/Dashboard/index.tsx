@@ -36,9 +36,8 @@ const Dashboard: React.FC = () => {
       <Can permission="activity.create">
         <OpenForms />
       </Can>
-      <MyActivities />
-
       <PendingInteractions />
+      <MyActivities />
     </Flex>
   );
 };

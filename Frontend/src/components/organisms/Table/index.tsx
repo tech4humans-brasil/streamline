@@ -32,8 +32,8 @@ const Table: React.FC<TableProps> = ({
   const { t } = useTranslation();
 
   return isMobile ? (
-    <div>
-      <Text fontSize="lg" fontWeight="bold">
+    <Box w="100%">
+      <Text fontSize="lg" fontWeight="bold" w="100%">
         {tableTitle}
       </Text>
       <Flex direction="column" gap={4}>
@@ -49,7 +49,7 @@ const Table: React.FC<TableProps> = ({
           <CardBody columns={columns} data={item} key={item._id} />
         ))}
       </Flex>
-    </div>
+    </Box>
   ) : (
     <ChakraTable>
       <TableCaption>{tableTitle}</TableCaption>
@@ -69,8 +69,8 @@ const CardBody = ({
   data: TableData;
 }) => {
   return (
-    <Box p={4} borderWidth="1px" borderRadius="md" display="relative">
-      <VStack spacing={4} align="start">
+    <Box p={4} borderWidth="1px" borderRadius="md" display="relative" w="100%">
+      <VStack spacing={4} align="start" w="100%">
         {columns.map((column) => (
           <CardItem key={column.key} column={column} data={data} />
         ))}
