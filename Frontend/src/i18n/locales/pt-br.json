@@ -607,5 +607,50 @@
     },
     "cancel": "Cancelar",
     "submit": "Salvar"
+  },
+  "activityDetails": {
+    "timeline": "Linha do Tempo",
+    "formFields": "Campos do Formulário",
+    "back": "Voltar",
+    "ticket": "Ticket #",
+    "description": "Descrição",
+    "noDescription": "Nenhuma descrição fornecida.",
+    "creationDate": "Data de Criação",
+    "completionDate": "Data de Finalização",
+    "dueDate": "Prazo",
+    "requester": "Solicitante",
+    "information": "Informações",
+    "ticketId": "ID do Ticket",
+    "ticketProtocol": "Protocolo do Ticket",
+    "status": "Status",
+    "createdAt": "Criado em",
+    "lastUpdate": "Última atualização",
+    "comments": {
+      "title": "Comentários e Interações",
+      "subtitle": "Histórico de comunicação sobre esta atividade"
+    },
+    "relatedTickets": {
+      "title": "Tickets Relacionados",
+      "noRelated": "Nenhum ticket relacionado",
+      "parentTicket": "Atividade pai"
+    },
+    "extraFields": {
+      "unfilledFields": "Campos não preenchidos",
+      "noExtraFields": "Nenhum campo extra"
+    },
+    "timelineStatus": {
+      "waitingResponse": "Aguardando Resposta",
+      "notSent": "Não Enviada",
+      "error": "Erro",
+      "inProgress": "Em Progresso",
+      "inQueue": "Em Fila",
+      "sentResponse": "Resposta Enviada",
+      "unfilledResponses": "Respostas não enviadas",
+      "waitingResponses": "Aguardando Respostas",
+      "accessTicket": "Acessar Ticket",
+      "respond": "Responder",
+      "dueDate": "Prazo: ",
+      "signatory": "Signatário"
+    }
   }
 }

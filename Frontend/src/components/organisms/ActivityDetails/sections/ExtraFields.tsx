@@ -4,12 +4,14 @@ import { Flex } from "@chakra-ui/react";
 import RenderFieldValue from "@components/atoms/RenderFieldValue";
 import { IField } from "@interfaces/FormDraft";
 import Accordion from "@components/atoms/Accordion";
+import { useTranslation } from "react-i18next";
 
 interface ExtraFieldsProps {
   fields: IField[];
 }
 
 const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
+  const { t } = useTranslation();
   const fieldsFilled = useMemo(
     () => fields.filter((field) => field?.value),
     [fields]
@@ -30,7 +32,7 @@ const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
         <Accordion.Container allowToggle allowMultiple defaultIndex={[]}>
           <Accordion.Item>
             <Accordion.Button fontSize="sm">
-              Campos não preenchidos
+              {t('activityDetails.extraFields.unfilledFields')}
             </Accordion.Button>
             <Accordion.Panel>
               {fields
@@ -45,7 +47,7 @@ const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
 
       {fields.length === 0 && (
         <Flex justifyContent="center" alignItems="center" h="100%">
-          Nenhum campo extra
+          {t('activityDetails.extraFields.noExtraFields')}
         </Flex>
       )}
     </Flex>

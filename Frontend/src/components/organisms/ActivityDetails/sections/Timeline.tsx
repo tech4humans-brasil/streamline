@@ -33,13 +33,14 @@ import AddInteractionUser from "./AddInteractionUser";
 import { AiFillSignature } from "react-icons/ai";
 import { ClicksignRequirements } from "@utils/clicksign";
 import { convertDateTime } from "@utils/date";
+import { useTranslation } from "react-i18next";
 
 const statusMap = {
-  idle: "Aguardando Resposta",
-  finished: "Não Enviada",
-  error: "Erro",
-  in_progress: "Em Progresso",
-  in_queue: "Em Fila",
+  idle: "activityDetails.timelineStatus.waitingResponse",
+  finished: "activityDetails.timelineStatus.notSent",
+  error: "activityDetails.timelineStatus.error",
+  in_progress: "activityDetails.timelineStatus.inProgress",
+  in_queue: "activityDetails.timelineStatus.inQueue",
 };
 
 interface MilestoneItemProps { }
@@ -122,6 +123,7 @@ const TimelineStepItem = ({
 }) => {
   const { activity } = useActivity();
   const interactions = activity?.interactions;
+  const { t } = useTranslation();
 
   const Icon = useMemo(() => {
     switch (step?.type) {
@@ -227,11 +229,11 @@ const TimelineStepItem = ({
                     variant={"outline"}
                     leftIcon={<BsArrowsFullscreen />}
                   >
-                    Resposta Enviada
+                    {t('activityDetails.timelineStatus.sentResponse')}
                   </Button>
                 ) : (
                   <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-                    {statusMap[answer.status]}
+                    {t(statusMap[answer.status])}
                   </Tag>
                 )}
                 <Divider my={2} />
@@ -247,8 +249,8 @@ const TimelineStepItem = ({
                 <Accordion.Item>
                   <Accordion.Button fontSize="sm">
                     {interaction.finished
-                      ? "Respostas não enviadas"
-                      : "Aguardando Respostas"}
+                      ? t('activityDetails.timelineStatus.unfilledResponses')
+                      : t('activityDetails.timelineStatus.waitingResponses')}
                   </Accordion.Button>
                   <Accordion.Panel>
                     {closed.map((answer) => (
@@ -263,7 +265,7 @@ const TimelineStepItem = ({
                             variant={"outline"}
                             leftIcon={<BsArrowsFullscreen />}
                           >
-                            Resposta Enviada
+                            {t('activityDetails.timelineStatus.sentResponse')}
                           </Button>
                         ) : (
                           <PendencieTag
@@ -284,7 +286,7 @@ const TimelineStepItem = ({
 
             {interaction.dueDate && (
               <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-                {`Prazo: ${convertDateTime(interaction.dueDate)}`}
+                {`${t('activityDetails.timelineStatus.dueDate')}${convertDateTime(interaction.dueDate)}`}
               </Tag>
             )}
           </Box>
@@ -292,7 +294,7 @@ const TimelineStepItem = ({
         {step.type === NodeTypes.NewTicket && !!data.data?.new_ticket && (
           <Link to={`/portal/activity/${data.data.new_ticket}`}>
             <Button size="sm" mt="2" colorScheme="blue" rightIcon={<FaEye />}>
-              Acessar Ticket
+              {t('activityDetails.timelineStatus.accessTicket')}
             </Button>
           </Link>
         )}
@@ -310,7 +312,7 @@ const TimelineStepItem = ({
                       <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
                         {ClicksignRequirements.find(
                           (req) => req.value === signer.role
-                        )?.label || "Signatário"}
+                        )?.label || t('activityDetails.timelineStatus.signatory')}
                       </Tag>
                       <Divider my={2} />
                     </Box>
@@ -338,6 +340,7 @@ const PendencieTag = memo(
   }) => {
     const [auth] = useAuth();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleResponse = useCallback(() => {
       navigate(`/response/${slug}`, {
@@ -364,7 +367,7 @@ const PendencieTag = memo(
             rightIcon={<BsSend />}
             onClick={handleResponse}
           >
-            Responder
+            {t('activityDetails.timelineStatus.respond')}
           </Button>
         </>
       );
@@ -372,7 +375,7 @@ const PendencieTag = memo(
 
     return (
       <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-        {statusMap[answer.status]}
+        {t(statusMap[answer.status])}
       </Tag>
     );
   }

@@ -67,12 +67,7 @@ const Activity: React.FC = () => {
   }, [refetch]);
 
   return (
-    <Center width="100%" p={4} flexDirection={"column"}>
-      <Box w="100%" mb={4}>
-        <Button variant="ghost" onClick={() => navigate(-1)} w="fit-content">
-          <FaArrowLeft />
-        </Button>
-      </Box>
+    <Center p={0} flexDirection={"column"}>
       <ActivityProvider refetch={refetch}>
         <ActivityDetails {...{ activity, isLoading }} />
       </ActivityProvider>

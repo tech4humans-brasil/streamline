@@ -451,5 +451,50 @@
     "success": "Schedule saved successfully",
     "error": "Error loading schedule",
     "edit": "Edit Schedule"
+  },
+  "activityDetails": {
+    "timeline": "Timeline",
+    "formFields": "Form Fields",
+    "back": "Back",
+    "ticket": "Ticket #",
+    "description": "Description",
+    "noDescription": "No description provided.",
+    "creationDate": "Creation Date",
+    "completionDate": "Completion Date",
+    "dueDate": "Due Date",
+    "requester": "Requester",
+    "information": "Information",
+    "ticketId": "Ticket ID",
+    "ticketProtocol": "Ticket Protocol",
+    "status": "Status",
+    "createdAt": "Created At",
+    "lastUpdate": "Last Update",
+    "comments": {
+      "title": "Comments and Interactions",
+      "subtitle": "Communication history for this activity"
+    },
+    "relatedTickets": {
+      "title": "Related Tickets",
+      "noRelated": "No related tickets",
+      "parentTicket": "Parent Ticket"
+    },
+    "extraFields": {
+      "unfilledFields": "Unfilled Fields",
+      "noExtraFields": "No extra fields"
+    },
+    "timelineStatus": {
+      "waitingResponse": "Waiting for Response",
+      "notSent": "Not Sent",
+      "error": "Error",
+      "inProgress": "In Progress",
+      "inQueue": "In Queue",
+      "sentResponse": "Response Sent",
+      "unfilledResponses": "Unfilled Responses",
+      "waitingResponses": "Waiting for Responses",
+      "accessTicket": "Access Ticket",
+      "respond": "Respond",
+      "dueDate": "Due Date: ",
+      "signatory": "Signatory"
+    }
   }
 }
