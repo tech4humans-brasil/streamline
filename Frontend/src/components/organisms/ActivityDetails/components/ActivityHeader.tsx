@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
+import {  Button, Flex, Icon, Text } from '@chakra-ui/react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
