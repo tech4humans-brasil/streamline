@@ -1,5 +1,5 @@
 import { deleteActivity, exportActivity, getActivity } from "@apis/activity";
-import { Box, Button, Center, IconButton, useToast } from "@chakra-ui/react";
+import { Box, Center, IconButton, useToast } from "@chakra-ui/react";
 import Can from "@components/atoms/Can";
 import ActivityDetails from "@components/organisms/ActivityDetails";
 import ActivityProvider from "@contexts/ActivityContext";
@@ -7,7 +7,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import React, { memo, useCallback } from "react";
 import {
-  FaArrowLeft,
   FaCheckCircle,
   FaDownload,
   FaExclamationCircle,
@@ -19,7 +18,6 @@ import { useNavigate, useParams } from "react-router-dom";
 const Activity: React.FC = () => {
   const params = useParams<{ id: string }>();
   const id = params.id ?? "";
-  const navigate = useNavigate();
   const toast = useToast();
 
   const {
@@ -67,12 +65,7 @@ const Activity: React.FC = () => {
   }, [refetch]);
 
   return (
-    <Center width="100%" p={4} flexDirection={"column"}>
-      <Box w="100%" mb={4}>
-        <Button variant="ghost" onClick={() => navigate(-1)} w="fit-content">
-          <FaArrowLeft />
-        </Button>
-      </Box>
+    <Center p={0} flexDirection={"column"}>
       <ActivityProvider refetch={refetch}>
         <ActivityDetails {...{ activity, isLoading }} />
       </ActivityProvider>

@@ -3,9 +3,10 @@ import IStatus from "@interfaces/Status";
 
 interface StatusTagProps {
   status: IStatus;
+  size?: "sm" | "md" | "lg";
 }
 
-const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
+const StatusTag: React.FC<StatusTagProps> = ({ status, size = "sm" }) => {
   const getColorScheme = (type: string) => {
     switch (type) {
       case "progress":
@@ -22,7 +23,7 @@ const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   return (
     <Tag
       colorScheme={getColorScheme(status.type)}
-      size="sm"
+      size={size}
     >
       {status.name}
     </Tag>

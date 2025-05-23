@@ -1,30 +1,35 @@
 import React, { memo, useEffect } from "react";
-import {
-  Card,
-  CardProps,
-  Divider,
-  Flex,
-  Spinner,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Card, Flex, Grid, Spinner, VStack } from "@chakra-ui/react";
 import IActivity from "@interfaces/Activitiy";
-import { convertDateTime } from "@utils/date";
-import ActivityHeader from "./sections/ActivityHeader";
-import UserDetails from "./sections/UserDetails";
-import ExtraFields from "./sections/ExtraFields";
-import Accordion from "@components/atoms/Accordion";
-import Timeline from "./sections/Timeline";
 import useActivity from "@hooks/useActivity";
+import { useQuery } from "@tanstack/react-query";
+import { getActivity } from "@apis/activity";
+import Accordion from "@components/atoms/Accordion";
+import ExtraFields from "./sections/ExtraFields";
+import Timeline from "./sections/Timeline";
+import { useTranslation } from "react-i18next";
 
-interface ActivityDetailsProps extends CardProps {
+// Import new components
+import ActivityHeader from "./components/ActivityHeader";
+import TicketHeaderCard from "./components/TicketHeaderCard";
+import CommentsSection from "./components/CommentsSection";
+import TicketInfoCard from "./components/TicketInfoCard";
+import RelatedTicketsCard from "./components/RelatedTicketsCard";
+
+interface ActivityDetailsProps {
   activity?: IActivity;
   isLoading?: boolean;
 }
 
 const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
-  ({ activity, isLoading, ...rest }) => {
+  ({ activity }) => {
     const { alterActivity, removeActivity } = useActivity();
+    const { t } = useTranslation();
+
+    const { data: activityData, isLoading: queryLoading } = useQuery({
+      queryKey: ["activity", activity?._id || ""],
+      queryFn: getActivity,
+    });
 
     useEffect(() => {
       alterActivity(activity ?? null);
@@ -34,7 +39,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
       };
     }, [activity, alterActivity, removeActivity]);
 
-    if (isLoading) {
+    if (queryLoading) {
       return (
         <Card
           p={[0, 6]}
@@ -54,76 +59,58 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
     if (!activity) return null;
 
     return (
-      <Card
-        p={[4, 6]}
-        borderRadius="2xl"
-        w={["100%", "60%"]}
-        boxShadow={"lg"}
-        bg="bg.card"
-        {...rest}
-      >
-        <ActivityHeader
-          id={activity._id}
-          name={activity.name}
-          protocol={activity.protocol}
-          status={activity.status.name}
-          state={activity.state}
-          parent={activity.parent}
-        />
-        <VStack mb={4} align="start">
-          <Text fontWeight={"bold"} fontSize="md">
-            Data de Criação
-          </Text>
-          <Text>{convertDateTime(activity.createdAt)}</Text>
-          <Divider />
+      <Box w="90%" mx="auto" py={6} maxW="7xl">
+        <ActivityHeader protocol={activity.protocol} />
 
-          {activity.finished_at && (
-            <>
-              <Text fontWeight={"bold"} fontSize="md">
-                Data de finalização
-              </Text>
-              <Text>{convertDateTime(activity.finished_at)}</Text>
-              <Divider />
-            </>
-          )}
+        <Grid templateColumns={{ sm: "1fr", md: "2fr 1fr" }} gap={6} display={{ base: "block", md: "grid" }}>
+          {/* Coluna principal */}
+          <VStack spacing={6} align="stretch">
+            <TicketHeaderCard activity={activity} />
 
-          {activity.due_date && (
-            <>
-              <Text fontWeight={"bold"} fontSize="md">
-                Prazo
-              </Text>
-              <Text>{convertDateTime(activity.due_date)}</Text>
-              <Divider />
-            </>
-          )}
+            {/* Linha do tempo */}
+            {activity.workflows.length > 0 && (
+              <Card>
+                <Box p={6}>
+                  <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
+                    <Accordion.Item>
+                      <Accordion.Button>{t('activityDetails.timeline')}</Accordion.Button>
+                      <Accordion.Panel>
+                        <Timeline />
+                      </Accordion.Panel>
+                    </Accordion.Item>
+                  </Accordion.Container>
+                </Box>
+              </Card>
+            )}
 
-          <Text fontWeight={"bold"} fontSize="md">
-            Solicitante
-          </Text>
-          <Flex flexWrap="wrap" gap={4}>
-            {activity.users.map((user) => (
-              <UserDetails key={user._id} user={user} />
-            ))}
-          </Flex>
-        </VStack>
-        <Accordion.Container defaultIndex={[0, 1]} allowToggle allowMultiple>
-          <Accordion.Item>
-            <Accordion.Button>Informações do formulário</Accordion.Button>
-            <Accordion.Panel>
-              <ExtraFields fields={activity.form_draft.fields} />
-            </Accordion.Panel>
-          </Accordion.Item>
+            <CommentsSection
+              comments={activityData?.comments || []}
+              activityId={activity._id}
+            />
+          </VStack>
 
-          {activity.workflows.length > 0 && (
-            <Flex direction="column" gap={4}>
-              <Text fontWeight={"bold"} fontSize="md">
-                Linha do Tempo
-              </Text>
-              <Timeline />
-            </Flex>
-          )}
-        </Accordion.Container>
-      </Card>
+          {/* Coluna lateral */}
+          <VStack spacing={6} align="stretch" mt={{ base: 6, md: 0 }}>
+            <TicketInfoCard activity={activity} />
+
+            {/* Informações do formulário */}
+            <Card >
+              <Box p={6}>
+                <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
+                  <Accordion.Item>
+                    <Accordion.Button>{t('activityDetails.formFields')}</Accordion.Button>
+                    <Accordion.Panel>
+                      <ExtraFields fields={activity.form_draft.fields} />
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                </Accordion.Container>
+              </Box>
+            </Card>
+
+            <RelatedTicketsCard parentId={activity.parent} />
+          </VStack>
+        </Grid>
+      </Box>
     );
   }
 );
