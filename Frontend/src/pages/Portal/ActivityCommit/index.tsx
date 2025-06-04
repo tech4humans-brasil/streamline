@@ -112,7 +112,7 @@ export default function ActivityCommit() {
     }
   }, [activity, reset]);
 
-  useEffect(() => {}, [errors]);
+  useEffect(() => { }, [errors]);
 
   return (
     <Flex
@@ -127,8 +127,6 @@ export default function ActivityCommit() {
       <ActivityProvider>
         <ActivityDetails
           activity={activity}
-          minWidth={"50%"}
-          overflowY={"auto"}
         />
       </ActivityProvider>
       <FormProvider {...methods}>
