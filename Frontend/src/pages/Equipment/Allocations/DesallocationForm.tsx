@@ -21,27 +21,29 @@ import { z } from "zod";
 import { useParams } from "react-router-dom";
 import TextArea from "@components/atoms/Inputs/TextArea";
 import Radio from "@components/atoms/Inputs/Radio";
+import { IEquipmentStatus } from "@interfaces/Equipment";
+import Select from "@components/atoms/Inputs/Select";
 
 const deallocationSchema = z.object({
   description: z.string().min(3),
+  status: z.nativeEnum(IEquipmentStatus).default(IEquipmentStatus.available),
   checklist: z.object({
     backup: z.object({
-      backupToDrive: z.string().min(1),
-      verifyFilesIncluded: z.string().min(1),
-      secureBackup: z.string().min(1),
+      verifyFilesIncluded: z.enum(["yes", "no"]),
+      secureBackup: z.enum(["yes", "no"]),
     }),
-    formattingCompleted: z.string().min(1),
+    formattingCompleted: z.enum(["yes", "no"]),
   }),
   physicalDamages: z.object({
     additionalInfo: z.object({
-      hasPhysicalDamage: z.string().min(1),
-      damageDetails: z.string().nullable().default(null),
+      hasPhysicalDamage: z.enum(["yes", "no"]),
+      damageDetails: z.string().optional(),
     }),
     componentDamage: z.object({
-      hasComponentDamage: z.string().min(1),
-      damageDetails: z.string().nullable().default(null),
+      hasComponentDamage: z.enum(["yes", "no"]),
+      damageDetails: z.string().optional(),
     }),
-    accessoriesReturned: z.string().min(1),
+    accessoriesReturned: z.enum(["yes", "no"]).optional(),
   }),
 });
 
@@ -90,6 +92,9 @@ const DeallocationForm: React.FC<DeallocationFormProps> = ({
 
   const methods = useForm<DeallocationFormSchema>({
     resolver: zodResolver(deallocationSchema),
+    defaultValues: {
+      status: IEquipmentStatus.available,
+    },
   });
 
   const {
@@ -112,12 +117,35 @@ const DeallocationForm: React.FC<DeallocationFormProps> = ({
         <ModalCloseButton />
         <ModalContent>
           <ModalHeader>{t("allocation.deallocate")}</ModalHeader>
-          <ModalBody>
+          <ModalBody display="flex" flexDirection="column" gap={4}>
             <TextArea
               input={{
                 id: "description",
                 label: t("common.fields.description"),
                 required: true,
+              }}
+            />
+            <Select
+              input={{
+                id: "status",
+                label: t("common.fields.status"),
+                placeholder: t("common.fields.status"),
+                options: [
+                  {
+                    label: t("common.fields.allocated"),
+                    value: "allocated",
+                    isDisabled: true,
+                  },
+                  {
+                    label: t("common.fields.available"),
+                    value: "available",
+                  },
+                  {
+                    label: t("common.fields.discarded"),
+                    value: "discarded",
+                  },
+                  { label: t("common.fields.office"), value: "office" },
+                ],
               }}
             />
             <Flex direction="column" gap={4} mt="4">

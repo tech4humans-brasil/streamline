@@ -153,7 +153,7 @@ const handler: HttpHandler = async (conn, req) => {
         {
           $or: [
             {
-              project: { $eq: null },
+              project: { $in: projects.map((project) => project._id) },
             },
             {
               project,

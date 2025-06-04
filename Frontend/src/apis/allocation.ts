@@ -51,7 +51,7 @@ export const updateAllocation = async ({
 }: {
   userId: string;
   id: string;
-  data: Omit<IReturn, "createdBy">;
+  data: Omit<IReturn, "createdBy" | "createdAt" | "updatedAt">;
 }) => {
   const res = await apiClient.put(`user/${userId}/allocation/${id}`, data);
   return res.data;
