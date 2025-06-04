@@ -1,8 +1,8 @@
 import { FileUploaded } from "./Answer";
 
 export enum IEquipmentStatus {
-  allocated = "allocated",
   available = "available",
+  allocated = "allocated",
   discarded = "discarded",
   office = "office",
 }
@@ -13,47 +13,44 @@ export enum IEquipmentSituation {
   broken = "broken",
   damaged = "damaged",
   lost = "lost",
+  discarded = "discarded",
 }
 
-interface UserEquipmentAllocation {
+export interface IUser {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+export interface IAllocation {
   allocation: string;
-  user: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-  endDate: Date | null;
-  startDate: Date;
-  return: IReturn | null;
+  user: IUser;
+  startDate: string;
+  endDate?: string;
+  return?: IReturn;
 }
 
 export interface IReturn {
   description: string;
   checklist: {
     backup: {
-      backupToDrive: string;
-      verifyFilesIncluded: string;
-      secureBackup: string;
+      verifyFilesIncluded: "yes" | "no";
+      secureBackup: "yes" | "no";
     };
-    formattingCompleted: string;
+    formattingCompleted: "yes" | "no";
   };
   physicalDamages: {
     additionalInfo: {
-      hasPhysicalDamage: string;
-      damageDetails: string | null;
+      hasPhysicalDamage: "yes" | "no";
+      damageDetails?: string;
     };
     componentDamage: {
-      hasComponentDamage: string;
-      damageDetails: string | null;
+      hasComponentDamage: "yes" | "no";
+      damageDetails?: string;
     };
-    accessoriesReturned: string;
+    accessoriesReturned?: "yes" | "no";
   };
-  createdBy: {
-    _id: string;
-    name: string;
-    email: string;
-    matriculation: string;
-  };
+  createdBy?: IUser;
 }
 
 export interface IEquipment {
@@ -67,6 +64,6 @@ export interface IEquipment {
   modelDescription?: string;
   serialNumber?: string;
   additionalNotes?: string;
-  allocations: UserEquipmentAllocation[];
+  allocations: IAllocation[];
   invoice?: FileUploaded | null;
 }

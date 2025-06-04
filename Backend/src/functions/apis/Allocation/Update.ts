@@ -43,7 +43,7 @@ const handler: HttpHandler = async (conn, req) => {
   });
 
   if (equipment) {
-    equipment.status = IEquipmentStatus.available;
+    equipment.status = body.status || IEquipmentStatus.available;
     const equipmentAllocation = equipment.allocations.find(
       (alloc) => alloc.allocation.toString() === allocationId
     );
@@ -57,11 +57,11 @@ const handler: HttpHandler = async (conn, req) => {
 
   await user.save();
 
-  const emailHtml = generateEmailHtml(body);
+  const emailHtml = generateEmailHtml(body, equipment);
 
   await sendEmail(
     ["equipamentos@tech4h.com.br"],
-    `Retorno de Equipamento - ${equipment.equipmentType} ${equipment.inventoryNumber}`,
+    `Retorno de Equipamento - ${equipment?.equipmentType} ${equipment?.inventoryNumber}`,
     emailHtml,
     ""
   );
@@ -84,7 +84,7 @@ export default new Http(handler)
     },
   });
 
-function generateEmailHtml(selectedReturn) {
+function generateEmailHtml(selectedReturn, equipment) {
   // Função para traduzir "yes"/"no" para "Sim"/"Não"
   const translateYesNo = (value) =>
     value === "yes" ? "Sim" : value === "no" ? "Não" : value;
@@ -128,8 +128,8 @@ function generateEmailHtml(selectedReturn) {
         <body>
           <div class="container">
             <h2>Detalhes do Retorno| Equipamento: ${
-              selectedReturn.equipmentType
-            } ${selectedReturn.inventoryNumber}</h2>
+              equipment?.equipmentType
+            } ${equipment?.inventoryNumber}</h2>
             
             <p><strong>Descrição:</strong> ${selectedReturn.description}</p>
             <p><strong>Backup no Drive:</strong> ${translateYesNo(

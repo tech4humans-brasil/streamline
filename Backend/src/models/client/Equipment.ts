@@ -46,6 +46,7 @@ interface UserEquipmentAllocation {
 
 export interface IReturn {
   description: string;
+  status: IEquipmentStatus;
   checklist: {
     backup: {
       backupToDrive: boolean;

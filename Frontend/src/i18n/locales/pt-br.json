@@ -118,7 +118,9 @@
       "returnNotes": "Notas de devolução",
       "additionalNotes": "Notas adicionais",
       "noEndDate": "Sem data de término",
-      "loanTerm": "Termo de empréstimo"
+      "loanTerm": "Termo de empréstimo",
+      "returned": "Devolvido",
+      "view": "Visualizar"
     },
     "actions": {
       "copy": {
@@ -568,6 +570,7 @@
   "allocation": {
     "edit": "Editar alocação",
     "returnDetails": "Detalhes da devolução",
+    "returnDetailsDescription": "Informações sobre o retorno do equipamento",
     "create": "Criar alocação",
     "updated": "Alocação atualizada com sucesso",
     "created": "Alocação criada com sucesso",
@@ -575,7 +578,15 @@
     "deallocate": "Desalocar",
     "deallocated": "Equipamento desalocado com sucesso",
     "confirmDeallocate": "Confirmar desalocação",
-    "confirmDeallocateMessage": "Tem certeza que deseja desalocar o equipamento? Esta ação não pode ser desfeita."
+    "confirmDeallocateMessage": "Tem certeza que deseja desalocar o equipamento? Esta ação não pode ser desfeita.",
+    "viewReturnDetails": "Ver detalhes do retorno",
+    "backupChecklist": "Checklist de Backup",
+    "physicalCondition": "Condição Física",
+    "physicalDamageDetected": "Danos físicos detectados",
+    "noPhysicalDamage": "Sem danos físicos",
+    "componentDamageDetected": "Danos em componentes",
+    "componentsIntact": "Componentes intactos",
+    "noAccessoriesReturned": "Nenhum acessório retornado"
   },
   "allocations": {
     "title": "Alocações",
