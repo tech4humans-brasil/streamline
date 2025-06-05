@@ -22,6 +22,7 @@ import {
   IEquipmentStatus,
 } from "@interfaces/Equipment";
 import { equipmentTypes, techBrands } from "../constants";
+import { useEffect } from "react";
 
 const Schema = z.object({
   _id: z.string().optional(),
@@ -81,6 +82,12 @@ export function EquipmentForm({
   } = methods;
 
   const isAllocated = watch("status") === IEquipmentStatus.allocated;
+
+  useEffect(() => {
+    if (equipment) {
+      methods.reset(equipment);
+    }
+  }, [equipment]);
 
   return (
     <FormProvider {...methods}>
@@ -209,9 +216,9 @@ export function EquipmentForm({
 
           <TextArea
             input={{
-              id: "modelDescription",
-              label: t("common.fields.description"),
-              placeholder: t("common.fields.description"),
+              id: "additionalNotes",
+              label: t("common.fields.additionalNotes"),
+              placeholder: t("common.fields.additionalNotes"),
             }}
           />
 
