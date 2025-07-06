@@ -1,6 +1,5 @@
 import { getConfigs } from "@apis/admin";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 export function useConfig(acronym?: string) {
   const data = useQuery({
