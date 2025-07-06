@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Divider, Flex, Text } from "@chakra-ui/react";
 import { FileUploaded } from "@interfaces/Answer";
 import { memo } from "react";
 import FileItem from "../FileItem";
@@ -12,6 +12,20 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   }
 
   const { label = "", value = "", type } = field;
+
+  if (type === FieldTypes.section) {
+    return (
+      <Flex direction={"column"} mt={3}>
+        <Text fontSize="md" fontWeight="bold">
+          {label}
+        </Text>
+        <Text fontSize="sm" color="gray.400">
+          {field.describe}
+        </Text>
+        <Divider my={2} />
+      </Flex>
+    );
+  }
 
   if (
     type === FieldTypes.textarea ||

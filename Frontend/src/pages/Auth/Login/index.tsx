@@ -45,13 +45,13 @@ const Login: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
-  const { data: configData, isLoading: configLoading, isError } = useConfig();
-
   const redirect = searchParams.get("redirect") ?? "/portal";
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
+  const { data: configData, isLoading: configLoading, isError } = useConfig(methods.watch("acronym"));
 
   const { handleSubmit } = methods;
   const toast = useToast();

@@ -92,7 +92,7 @@ export function replaceVariables(data, template: string): string {
 
 export const extractCustomFields = (form_draft: { fields: IField[] }) => {
   return form_draft.fields.reduce((acc, field) => {
-    if (field.system) {
+    if (field.system || field.type === "section") {
       return acc;
     }
 

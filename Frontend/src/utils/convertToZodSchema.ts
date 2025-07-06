@@ -16,7 +16,7 @@ export default function convertToZodSchema(fields: IField[]): z.ZodObject<any> {
     >;
   } = {};
 
-  fields.forEach((field) => {
+  fields.filter((field) => field.type !== "section").forEach((field) => {
     //@ts-ignore
     let fieldSchema: z.ZodType<any, any, any>;
 

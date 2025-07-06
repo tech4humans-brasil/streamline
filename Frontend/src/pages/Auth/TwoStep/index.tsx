@@ -37,8 +37,6 @@ const TwoStep: React.FC = () => {
   const redirect = searchParams.get("redirect") ?? "/portal";
   const resetToken = searchParams.get("token");
 
-  const { data } = useConfig();
-
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
   });
@@ -85,8 +83,10 @@ const TwoStep: React.FC = () => {
 
   const decodedToken = useMemo(() => {
     if (!resetToken) return null;
-    return jwtDecode<{ email: string }>(resetToken);
+    return jwtDecode<{ email: string, client: string }>(resetToken);
   }, [resetToken]);
+
+  const { data } = useConfig(decodedToken?.client);
 
   useEffect(() => {
     if (!resetToken) {

@@ -13,12 +13,12 @@ interface ExtraFieldsProps {
 const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
   const { t } = useTranslation();
   const fieldsFilled = useMemo(
-    () => fields.filter((field) => field?.value),
+    () => fields.filter((field) => field?.value || field.type === "section"),
     [fields]
   );
 
   const fieldsEmpty = useMemo(
-    () => fields.filter((field) => !field?.value),
+    () => fields.filter((field) => !field?.value && field.type !== "section"),
     [fields]
   );
 
@@ -35,8 +35,7 @@ const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
               {t('activityDetails.extraFields.unfilledFields')}
             </Accordion.Button>
             <Accordion.Panel>
-              {fields
-                .filter((field) => !field.value)
+              {fieldsEmpty
                 .map((field) => (
                   <RenderFieldValue key={field.id} field={field} />
                 ))}

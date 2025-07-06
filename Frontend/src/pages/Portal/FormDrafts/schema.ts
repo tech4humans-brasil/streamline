@@ -29,6 +29,7 @@ const formsZodSchema = z.object({
           "file",
           "placeholder",
           "time",
+          "section",
         ]),
         multi: z.boolean().optional().default(false),
         created: z.boolean().optional().default(false),

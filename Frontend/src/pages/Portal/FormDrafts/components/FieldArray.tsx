@@ -31,6 +31,7 @@ const fieldTypes = {
   file: "Arquivo",
   placeholder: "Requisição Web",
   time: "Hora",
+  section: "Seção",
 };
 
 const fieldOptions = Object.entries(fieldTypes).map(([value, label]) => ({
@@ -58,6 +59,7 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
     const haveOptions = ["select", "multiselect", "radio", "checkbox"].includes(
       fieldType
     );
+    const isSection = watch(`fields.${index}.type`) === FieldTypes.section;
 
     const handleDuplicate = useCallback(() => {
       const newField = { ...field };
@@ -146,7 +148,11 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
               label: "Campo obrigatório",
               required: false,
             }}
-            isDisabled={field.system || fieldType === FieldTypes.placeholder}
+            isDisabled={
+              field.system ||
+              fieldType === FieldTypes.placeholder ||
+              isSection
+            }
           />
 
           <Switch
@@ -155,7 +161,7 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
               label: "Visivel para o usuário",
               required: false,
             }}
-            isDisabled={field.system}
+            isDisabled={field.system || isSection}
           />
         </Flex>
 
@@ -180,14 +186,16 @@ const FieldArray: React.FC<FieldFormsProps> = memo(
             }}
           />
 
-          <Text
-            input={{
-              id: `fields.${index}.placeholder`,
-              label: "Digite o placeholder do campo",
-              placeholder: "Placeholder",
-              required: false,
-            }}
-          />
+          {
+            !isSection && (<Text
+              input={{
+                id: `fields.${index}.placeholder`,
+                label: "Digite o placeholder do campo",
+                placeholder: "Placeholder",
+                required: false,
+              }}
+            />)
+          }
         </Flex>
 
         <TextArea

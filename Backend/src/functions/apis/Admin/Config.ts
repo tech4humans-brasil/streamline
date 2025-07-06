@@ -4,21 +4,30 @@ import { connectAdmin } from "../../../services/mongo";
 import AdminRepository from "../../../repositories/Admin";
 import BlobUploader from "../../../services/upload";
 
+type Params = {
+  slug?: string | null;
+};
+
 export const handler: HttpHandler = async (_, req) => {
   const adminConn = await connectAdmin();
   const clientModel = new AdminRepository(adminConn);
 
   const host = req.headers.origin;
+  const { slug } = req.query as Params;
+
+  const where = !!slug ? {
+    acronym: slug,
+  } : {
+    principal: true,
+    domains: {
+      $elemMatch: {
+        $eq: host,
+      },
+    },
+  };
 
   const client = await clientModel.findOne({
-    where: {
-      domains: {
-        $elemMatch: {
-          $eq: host,
-        },
-      },
-      principal: true,
-    },
+    where,
     select: {
       name: 1,
       acronym: 1,
@@ -73,4 +82,9 @@ export default new Http(handler).setPublic().configure({
     methods: ["GET"],
     route: "config",
   },
-});
+})
+  .setSchemaValidator((schema) => ({
+    query: schema.object().shape({
+      slug: schema.string().optional().nullable().default(null),
+    }),
+  }));
