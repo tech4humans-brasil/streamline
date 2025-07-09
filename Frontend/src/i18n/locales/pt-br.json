@@ -649,6 +649,10 @@
       "unfilledFields": "Campos não preenchidos",
       "noExtraFields": "Nenhum campo extra"
     },
+    "response": {
+      "title": "Resposta",
+      "submit": "Enviar"
+    },
     "timelineStatus": {
       "waitingResponse": "Aguardando Resposta",
       "notSent": "Não Enviada",

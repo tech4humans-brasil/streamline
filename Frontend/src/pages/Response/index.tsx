@@ -182,7 +182,7 @@ const Response: React.FC<ResponseProps> = memo(() => {
                         size={["sm", "md"]}
                         w="40%"
                       >
-                        Enviar
+                        {t("response.submit")}
                       </Button>
                     </Flex>
                   </VStack>
