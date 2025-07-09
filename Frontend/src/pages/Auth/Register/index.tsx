@@ -26,7 +26,6 @@ import SwitchTheme from "@components/molecules/SwitchTheme";
 import { useTranslation } from "react-i18next";
 import LocaleSwap from "@components/atoms/LocaleSwap";
 import { useConfig } from "@hooks/useConfig";
-import Select from "@components/atoms/Inputs/Select";
 
 const schema = z.object({
   acronym: z

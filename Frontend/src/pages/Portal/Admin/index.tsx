@@ -51,6 +51,10 @@ const adminSchema = z.object({
     clicksign: z.object({
       apiKey: z.string().nullable(),
     }),
+    externalUsers: z.object({
+      allow: z.boolean().default(true),
+      redirect: z.string().nullable(),
+    }),
   }),
 });
 
@@ -198,6 +202,20 @@ const Admin: React.FC = () => {
               input={{
                 id: "config.clicksign.apiKey",
                 label: t("admin.fields.clicksignApiKey"),
+              }}
+            />
+
+            <Switch
+              input={{
+                id: "config.externalUsers.allow",
+                label: t("admin.fields.externalUsersAllow"),
+              }}
+            />
+
+            <Text
+              input={{
+                id: "config.externalUsers.redirect",
+                label: t("admin.fields.externalUsersRedirect"),
               }}
             />
 

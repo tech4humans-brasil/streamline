@@ -13,11 +13,12 @@ import {
   Alert,
   AlertIcon,
   Hide,
+  Spinner,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import InputText from "@components/atoms/Inputs/Text";
 import { forgotPassword } from "@apis/auth";
 import { useTranslation } from "react-i18next";
@@ -88,6 +89,28 @@ const ForgotPassword: React.FC = () => {
   const onSubmit = handleSubmit(async (data) => {
     await mutateAsync({ ...data, acronym: slug });
   });
+
+  if (configLoading) {
+    return (
+      <Box
+        p={4}
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-around"
+        height="100vh"
+        bg={"bg.page"}
+      >
+        <Spinner />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Navigate to="/404" replace />
+    );
+  }
 
   return (
     <Box
