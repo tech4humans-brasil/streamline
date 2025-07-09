@@ -16,7 +16,15 @@ export const updateAdmin = async (data: IAdmin) => {
   return response.data?.data;
 };
 
-export const getConfigs = async () => {
-  const response = await api.get<ConfigResponse>("/config");
+export const getConfigs = async ({
+  queryKey: [, acronym],
+}: {
+  queryKey: ["config", string];
+}) => {
+  const response = await api.get<ConfigResponse>("/config", {
+    params: {
+      slug: acronym,
+    },
+  });
   return response.data?.data;
 };

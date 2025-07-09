@@ -14,6 +14,7 @@ import InstituteRepository from "../../../repositories/Institute";
 interface Body {
   credential: string;
   client_id: string;
+  acronym: string;
 }
 
 interface GoogleUserToken {
@@ -36,7 +37,7 @@ export const handler: HttpHandler = async (_, req, context) => {
 
   const payload: GoogleUserToken = ticket.getPayload();
 
-  const acronym = payload.hd.split(".")[0];
+  const { acronym } = req.body as Body;
 
   const clientAdmin = await new AdminClient(adminConn).model().findOne({
     acronym,
@@ -55,9 +56,12 @@ export const handler: HttpHandler = async (_, req, context) => {
   let user = await userRepository.findOne({
     where: {
       email,
-      active: true,
     },
   });
+
+  if (!user.active) {
+    return res.notFound("User not found");
+  }
 
   if (!user) {
     const institute = await new InstituteRepository(conn).findOne({
@@ -107,6 +111,7 @@ export default new Http(handler)
     body: schema.object().shape({
       credential: schema.string().required(),
       client_id: schema.string().required(),
+      acronym: schema.string().required(),
     }),
   }))
   .configure({

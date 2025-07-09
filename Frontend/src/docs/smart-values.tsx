@@ -77,7 +77,6 @@ const HelpSmartValues = () => {
             status: "success",
             duration: 3000,
             isClosable: true,
-            position: "top-right",
           });
         })
         .catch(() => {
@@ -86,7 +85,6 @@ const HelpSmartValues = () => {
             status: "error",
             duration: 3000,
             isClosable: true,
-            position: "top-right",
           });
         });
     },

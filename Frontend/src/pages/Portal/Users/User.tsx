@@ -106,7 +106,6 @@ export default function User() {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       navigate(-1);
     },
@@ -116,7 +115,6 @@ export default function User() {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });
@@ -130,7 +128,6 @@ export default function User() {
           status: "success",
           duration: 3000,
           isClosable: true,
-          position: "top-right",
         });
       },
       onError: () => {
@@ -139,7 +136,6 @@ export default function User() {
           status: "error",
           duration: 3000,
           isClosable: true,
-          position: "top-right",
         });
       },
     });

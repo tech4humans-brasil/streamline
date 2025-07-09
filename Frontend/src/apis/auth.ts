@@ -12,9 +12,20 @@ export const login = async (data: {
   return response.data;
 };
 
+export const register = async (data: {
+  name: string;
+  email: string;
+  password: string;
+  acronym: string;
+}): Promise<LoginResponse> => {
+  const response = await api.post<LoginResponse>("/auth/register", data);
+  return response.data;
+};
+
 export const samlGoogle = async (data: {
   credential: string;
   client_id: string;
+  acronym: string | null;
 }): Promise<LoginResponse> => {
   const response = await api.post<LoginResponse>("/auth/google", data);
   return response.data;

@@ -16,5 +16,9 @@ export interface IAdmin {
     clicksign: {
       apiKey: string | null;
     };
+    externalUsers: {
+      allow: boolean;
+      redirect: string | null;
+    };
   };
 }

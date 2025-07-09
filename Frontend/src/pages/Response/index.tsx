@@ -4,7 +4,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   Button,
-  Stack,
   Text,
   Center,
   Box,
@@ -12,6 +11,9 @@ import {
   useToast,
   Divider,
   Flex,
+  Card,
+  Grid,
+  VStack,
 } from "@chakra-ui/react";
 import { getFormBySlug } from "@apis/form";
 import Inputs from "@components/atoms/Inputs";
@@ -20,6 +22,7 @@ import convertToZodSchema from "@utils/convertToZodSchema";
 import { responseForm } from "@apis/response";
 import DraftHandle from "./DraftHandle";
 import { FaArrowLeft } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 interface ResponseProps {
   isPreview?: boolean;
@@ -30,6 +33,7 @@ const Response: React.FC<ResponseProps> = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const toast = useToast();
+  const { t } = useTranslation();
 
   const activity_id = location.state?.activity_id as string | undefined;
 
@@ -64,7 +68,6 @@ const Response: React.FC<ResponseProps> = memo(() => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       navigate(`/portal/activity/${data._id}`);
     },
@@ -74,7 +77,6 @@ const Response: React.FC<ResponseProps> = memo(() => {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });
@@ -94,84 +96,104 @@ const Response: React.FC<ResponseProps> = memo(() => {
 
   if (isLoading) {
     return (
-      <Center h="100vh">
-        <Spinner size="xl" />
-      </Center>
+      <Card
+        p={[0, 6]}
+        borderRadius="2xl"
+        minWidth={"60%"}
+        boxShadow={"lg"}
+        h="100%"
+        bg="bg.card"
+      >
+        <Flex justify="center" align="center" h="100%">
+          <Spinner />
+        </Flex>
+      </Card>
     );
   }
 
   if (isError) {
     return (
-      <Center h="100vh" flexDirection="column">
-        <Text>Formulário não encontrado ou não está mais disponível</Text>
-        <Text>
+      <Box w="90%" mx="auto" py={6} maxW="7xl">
+        <Center flexDirection="column" minH="50vh">
+          <Text fontSize="lg" mb={4}>Formulário não encontrado ou não está mais disponível</Text>
           <Button colorScheme="blue" onClick={() => navigate("/portal")}>
             Voltar
           </Button>
-        </Text>
-      </Center>
+        </Center>
+      </Box>
     );
   }
 
   if (form?.type !== "created" && !activity_id) {
     return (
-      <Center h="100vh">
-        <Box>
-          <Text>Formulário sem atividade</Text>
-          <Text>
-            <Button colorScheme="blue" onClick={() => navigate("/portal")}>
-              Voltar
-            </Button>
-          </Text>
-        </Box>
-      </Center>
+      <Box w="90%" mx="auto" py={6} maxW="7xl">
+        <Center flexDirection="column" minH="50vh">
+          <Text fontSize="lg" mb={4}>Formulário sem atividade</Text>
+          <Button colorScheme="blue" onClick={() => navigate("/portal")}>
+            Voltar
+          </Button>
+        </Center>
+      </Box>
     );
   }
 
   return (
-    <Box p={4} minH="100vh" bg={"bg.page"}>
-      <Center>
-        <Box bg={"bg.card"} w="xl" borderRadius="md" boxShadow="md" p={4}>
-          <Flex align="center" justify="space-between">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              w="fit-content"
-            >
-              <FaArrowLeft />
-            </Button>
-            <Text fontSize="2xl" fontWeight="bold" w="100%" textAlign="center">
-              {form?.name}
-            </Text>
-          </Flex>
-          <Box mb={4} mt={2}>
-            <Text>{form?.description}</Text>
-            <Divider my={4} />
-          </Box>
-          <FormProvider {...methods}>
-            <DraftHandle
-              form_id={form?._id}
-              activity_id={activity_id}
-              isSubmitting={isSubmitting}
-            />
-            <form onSubmit={onSubmit}>
-              <Flex direction="column" align="center" justify="center" gap="3">
-                <Inputs fields={form?.published?.fields ?? []} />
+    <Box w="90%" mx="auto" py={6} maxW="4xl">
+      <Flex alignItems="center" mb={6} position="sticky">
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<FaArrowLeft />}
+          mr={4}
+          onClick={() => navigate(-1)}
+        >
+          Voltar
+        </Button>
+      </Flex>
 
-                <Stack direction="row" justifyContent="flex-end" mt={4}>
-                  <Button
-                    type="submit"
-                    colorScheme="blue"
-                    isLoading={isSubmitting}
-                  >
-                    Enviar
-                  </Button>
-                </Stack>
-              </Flex>
-            </form>
-          </FormProvider>
-        </Box>
-      </Center>
+      <Grid templateColumns="1fr" gap={6}>
+        <VStack spacing={6} align="stretch">
+          {/* Card principal do formulário */}
+          <Card>
+            <Box p={6}>
+              <Text fontSize={["lg", "2xl"]} fontWeight="bold">
+                {form?.name}
+              </Text>
+              <Text fontSize={["sm", "md"]} mb={4} color="gray.400" mt={2}>
+                {form?.description}
+              </Text>
+              <Divider my={4} />
+
+              <FormProvider {...methods}>
+                <DraftHandle
+                  form_id={form?._id}
+                  activity_id={activity_id}
+                  isSubmitting={isSubmitting}
+                />
+                <form onSubmit={onSubmit}>
+                  <VStack spacing={4} align="stretch">
+                    <Inputs fields={form?.published?.fields ?? []} />
+
+                    <Flex justify="center" mt={6}>
+                      <Button
+                        type="submit"
+                        colorScheme="blue"
+                        isLoading={isSubmitting}
+                        size={["sm", "md"]}
+                        w="40%"
+                      >
+                        {t("response.submit")}
+                      </Button>
+                    </Flex>
+                  </VStack>
+                </form>
+              </FormProvider>
+            </Box>
+          </Card>
+        </VStack>
+
+
+      </Grid>
     </Box>
   );
 });

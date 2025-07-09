@@ -247,7 +247,7 @@
   },
   "role": {
     "admin": "Administrador(a)",
-    "teacher": "Professor(a)",
+    "external": "Externo(a)",
     "student": "Usuário(a)"
   },
   "state": {
@@ -648,6 +648,10 @@
     "extraFields": {
       "unfilledFields": "Campos não preenchidos",
       "noExtraFields": "Nenhum campo extra"
+    },
+    "response": {
+      "title": "Resposta",
+      "submit": "Enviar"
     },
     "timelineStatus": {
       "waitingResponse": "Aguardando Resposta",

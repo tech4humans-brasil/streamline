@@ -1,8 +1,8 @@
 import { IUserRoles } from "../models/client/User";
-import { Role } from "./";
+import { Role } from ".";
 
-export const TeacherRole: Role = {
-  name: IUserRoles.teacher,
+export const ExternalRole: Role = {
+  name: IUserRoles.external,
   permissions: [
     {
       name: "dashboard",
@@ -15,7 +15,6 @@ export const TeacherRole: Role = {
         "create",
         "update",
         "read",
-        "accept",
       ],
     },
     {

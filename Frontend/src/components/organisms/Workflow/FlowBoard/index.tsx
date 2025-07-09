@@ -111,7 +111,6 @@ const FlowBoard: React.FC<FlowBoardProps> = memo(({ isView }) => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       navigate(`/portal/project/${params.project}/workflow-draft/${data.parent}/${data._id}/view`);
     },
@@ -122,7 +121,6 @@ const FlowBoard: React.FC<FlowBoardProps> = memo(({ isView }) => {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });
@@ -146,7 +144,7 @@ const FlowBoard: React.FC<FlowBoardProps> = memo(({ isView }) => {
           status: "error",
           duration: 3000,
           isClosable: true,
-          position: "top-right",
+
         });
         console.error(formState);
         return;

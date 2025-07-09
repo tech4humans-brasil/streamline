@@ -37,8 +37,6 @@ const TwoStep: React.FC = () => {
   const redirect = searchParams.get("redirect") ?? "/portal";
   const resetToken = searchParams.get("token");
 
-  const { data } = useConfig();
-
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
   });
@@ -59,10 +57,8 @@ const TwoStep: React.FC = () => {
         isClosable: true,
         icon: <FaCheckCircle />,
       });
-      const user = setAuth(data.token);
-      navigate(
-        `${!user?.tutorials.includes("first-page") ? "/welcome" : redirect}`
-      );
+      setAuth(data.token);
+      navigate(redirect);
     },
     onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
       toast({
@@ -85,8 +81,10 @@ const TwoStep: React.FC = () => {
 
   const decodedToken = useMemo(() => {
     if (!resetToken) return null;
-    return jwtDecode<{ email: string }>(resetToken);
+    return jwtDecode<{ email: string, client: string }>(resetToken);
   }, [resetToken]);
+
+  const { data } = useConfig(decodedToken?.client);
 
   useEffect(() => {
     if (!resetToken) {

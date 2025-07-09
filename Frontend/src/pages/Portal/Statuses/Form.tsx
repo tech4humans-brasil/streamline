@@ -62,7 +62,6 @@ const StatusForm: React.FC<StatusFormProps> = ({
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       queryClient.invalidateQueries({ queryKey: ["statuses"] });
       queryClient.invalidateQueries({ queryKey: ["forms"] });
@@ -74,7 +73,6 @@ const StatusForm: React.FC<StatusFormProps> = ({
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

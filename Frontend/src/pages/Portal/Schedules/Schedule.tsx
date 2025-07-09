@@ -141,7 +141,6 @@ export default function Schedule() {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       navigate(-1);
     },
@@ -151,7 +150,6 @@ export default function Schedule() {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

@@ -1,5 +1,5 @@
 import { AdminRole } from "./admin";
-import { TeacherRole } from "./teacher";
+import { ExternalRole } from "./external";
 import { StudentRole } from "./student";
 import { EquipmentRole } from "./equipment";
 
@@ -13,4 +13,4 @@ export type Role = {
   permissions: Array<IPermission<string>>;
 };
 
-export const roles = [AdminRole, TeacherRole, StudentRole, EquipmentRole];
+export const roles = [AdminRole, ExternalRole, StudentRole, EquipmentRole];

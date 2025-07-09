@@ -26,6 +26,7 @@ import Icon from "@components/atoms/Icon";
 import Tutorial, { JoyrideSteps } from "@components/molecules/Tutorial";
 import { useTranslation } from "react-i18next";
 import { useConfig } from "@hooks/useConfig";
+import useAuth from "@hooks/useAuth";
 
 const steps: JoyrideSteps = [
   {
@@ -81,7 +82,8 @@ const CustomCard = React.forwardRef<HTMLSpanElement, TagProps>(
 
 function Sidebar() {
   const location = useLocation();
-  const { data } = useConfig();
+  const [authData] = useAuth();
+  const { data } = useConfig(authData?.slug);
 
   return (
     <div>

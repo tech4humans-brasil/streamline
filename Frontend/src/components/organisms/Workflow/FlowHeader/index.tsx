@@ -46,7 +46,6 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       queryClient.invalidateQueries({ queryKey: ["workflow", id] });
       queryClient.invalidateQueries({ queryKey: ["forms"] });
@@ -58,7 +57,6 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });
@@ -72,7 +70,7 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
           status: "success",
           duration: 3000,
           isClosable: true,
-          position: "top-right",
+
         });
         navigate(-1);
       },
@@ -83,7 +81,7 @@ const FlowPanel: React.FC<FlowPanelProps> = ({
           status: "error",
           duration: 3000,
           isClosable: true,
-          position: "top-right",
+
         });
       },
     });

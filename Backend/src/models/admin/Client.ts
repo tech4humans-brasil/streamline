@@ -20,6 +20,10 @@ export interface IAdminClient extends mongoose.Document {
     clicksign: {
       apiKey: string | null;
     };
+    externalUsers: {
+      allow: boolean;
+      redirect: string | null;
+    }
   };
 }
 
@@ -42,6 +46,10 @@ export const schema = new Schema<IAdminClient>(
       },
       clicksign: {
         apiKey: { type: String, required: false, default: null },
+      },
+      externalUsers: {
+        allow: { type: Boolean, required: false, default: false },
+        redirect: { type: String, required: false, default: null },
       },
     },
   },

@@ -48,7 +48,6 @@ const AllocationForm: React.FC<AllocationFormProps> = ({ isOpen, onClose }) => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       queryClient.invalidateQueries({ queryKey: ["allocations", userId] });
       onClose();
@@ -59,7 +58,6 @@ const AllocationForm: React.FC<AllocationFormProps> = ({ isOpen, onClose }) => {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

@@ -3,10 +3,12 @@ import { useConfig } from "@hooks/useConfig";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import useAuth from "@hooks/useAuth";
 
 const OpenForms: React.FC = () => {
   const { t } = useTranslation();
-  const { data } = useConfig();
+  const [authData] = useAuth();
+  const { data } = useConfig(authData?.slug);
 
   return (
     <Flex

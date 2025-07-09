@@ -604,6 +604,7 @@ const ConditionalFields = memo(({ form_id, name }: ConditionalProps) => {
     queryFn: getFormWithFields,
     retryOnMount: false,
     select(data) {
+      data.published.fields = data.published.fields.filter((field) => field.type !== "section");
       return data?.published;
     },
   });
