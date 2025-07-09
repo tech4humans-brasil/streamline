@@ -190,7 +190,7 @@ const TimelineStepItem = ({
     return { open, closed };
   }, [interaction]);
 
-  if (!step || !step?.data.visible) return null;
+  if (!step) return null;
 
   return (
     <MilestoneItem key={step._id} isStep status={data.status}>

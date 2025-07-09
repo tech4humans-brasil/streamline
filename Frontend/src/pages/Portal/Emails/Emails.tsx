@@ -76,7 +76,6 @@ const EmailTemplate: React.FC = () => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       queryClient.invalidateQueries({ queryKey: ["emails"] });
       queryClient.invalidateQueries({ queryKey: ["forms"] });
@@ -88,7 +87,6 @@ const EmailTemplate: React.FC = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

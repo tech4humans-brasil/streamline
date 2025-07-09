@@ -93,7 +93,6 @@ const VariableForm: React.FC<VariableFormProps> = () => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       queryClient.setQueryData(["variables", project ?? ""], data);
       methods.reset(data);
@@ -104,7 +103,6 @@ const VariableForm: React.FC<VariableFormProps> = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

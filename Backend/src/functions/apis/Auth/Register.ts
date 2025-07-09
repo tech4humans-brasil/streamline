@@ -1,20 +1,24 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import * as bcrypt from "bcrypt";
-import jwt from "../../../services/jwt";
 import { connect, connectAdmin } from "../../../services/mongo";
 import AdminClient from "../../../models/admin/Client";
 import UserRepository from "../../../repositories/User";
+import { IUserRoles, IUserProviders } from "../../../models/client/User";
+import InstituteRepository from "../../../repositories/Institute";
 import { sendEmail } from "../../../services/email";
 import emailTemplate from "../../../utils/emailTemplate";
+import jwt from "../../../services/jwt";
 
 interface Body {
+  name: string;
   email: string;
   password: string;
   acronym: string;
 }
+
 export const handler: HttpHandler = async (_, req, context) => {
-  const { email, password, acronym } = req.body as Body;
+  const { name, email, password, acronym } = req.body as Body;
 
   const adminConn = await connectAdmin();
 
@@ -23,32 +27,54 @@ export const handler: HttpHandler = async (_, req, context) => {
   });
 
   if (!client) {
-    return res.notFound("User or password not found");
+    return res.notFound("Client not found");
+  }
+
+  if (!client.config?.externalUsers?.allow) {
+    return res.badRequest("External users are not allowed");
   }
 
   const conn = connect(client.acronym);
   const userRepository = new UserRepository(conn);
 
-  const user = await userRepository.findOne({
+  const existingUser = await userRepository.findOne({
     where: {
-      active: true,
       email,
     },
   });
 
-  if (!user) {
-    return res.notFound("User or password not found");
+  if (existingUser) {
+    return res.badRequest("User already exists with this email");
   }
 
-  if (!(await bcrypt.compare(password, user.password))) {
-    return res.unauthorized("User or password not found");
+  const instituteRepository = new InstituteRepository(conn);
+  const institute = await instituteRepository.findOne({
+    where: {
+      acronym,
+    },
+  });
+
+  if (!institute) {
+    return res.badRequest("Institute not found");
   }
 
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await userRepository.create({
+    name,
+    email,
+    password: hashedPassword,
+    roles: [IUserRoles.external],
+    providers: [IUserProviders.self],
+    isExternal: true,
+    active: true,
+  });
+
+  user.institutes.push(institute);
   const verificationCode = Math.floor(
     100000 + Math.random() * 900000
   ).toString();
   user.twoStepVerification.code = verificationCode;
-
   await user.save();
 
   const contentCss = `
@@ -103,28 +129,32 @@ export const handler: HttpHandler = async (_, req, context) => {
   `;
 
   const content = `
-    <div class="container">
-      <p class="title">Olá, ${user.name}!</p>
-      <p class="message">
+    <p>Olá, ${user.name}!</p>
+    <p>Seu cadastro foi realizado com sucesso em nosso sistema!</p>
+    <p class="message">
         Aqui está o seu código de verificação. Use-o para continuar o processo:
       </p>
-
-      <div class="code-box">${verificationCode}</div>
-
-      <p class="footer">
-        Se você não solicitou este código, por favor, ignore este e-mail.
-      </p>
-    </div>
+    <div class="code-box">${verificationCode}</div>
+    <p>Aqui estão algumas informações importantes:</p>
+    <ul>
+        <li>O domínio de sua conta é: ${client.acronym}</li>
+        <li>Você pode fazer login em: <a href="${client.domains?.[0] ?? process.env.FRONTEND_URL}">Acessar o sistema</a></li>
+        <li>Seu email de acesso: ${user.email}</li>
+    </ul>
   `;
-
 
   const { html, css } = await emailTemplate({
     content,
-    contentCss: contentCss,
+    contentCss,
     slug: client.acronym,
   });
 
-  await sendEmail(user.email, "Your verification code", html, css);
+  await sendEmail(
+    user.email,
+    `${client.name} | Bem-vindo ao Streamline`,
+    html,
+    css
+  );
 
   const token = await jwt.signResetPassword({
     id: user._id,
@@ -132,7 +162,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     email: user.email,
   });
 
-  return res.success({
+  return res.created({
     token,
     message: "Verification code sent to your email",
   });
@@ -142,15 +172,16 @@ export default new Http(handler)
   .setPublic()
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
-      password: schema.string().required(),
-      email: schema.string().required(),
-      acronym: schema.string().required(),
+      name: schema.string().required().min(3, "Name must have at least 3 characters").max(255),
+      email: schema.string().required().email("Invalid email format"),
+      password: schema.string().required().min(6, "Password must have at least 6 characters").max(255),
+      acronym: schema.string().required().min(2, "Acronym must have at least 2 characters"),
     }),
   }))
   .configure({
-    name: "AuthLogin",
+    name: "AuthRegister",
     options: {
       methods: ["POST"],
-      route: "auth/login",
+      route: "auth/register",
     },
-  });
+  }); 

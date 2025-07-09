@@ -12,15 +12,19 @@ import {
   Flex,
   Alert,
   AlertIcon,
+  Hide,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import InputText from "@components/atoms/Inputs/Text";
 import { forgotPassword } from "@apis/auth";
 import { useTranslation } from "react-i18next";
 import LocaleSwap from "@components/atoms/LocaleSwap";
+import { useConfig } from "@hooks/useConfig";
+import Icon from "@components/atoms/Icon";
+import SwitchTheme from "@components/molecules/SwitchTheme";
 
 const schema = z.object({
   acronym: z
@@ -35,15 +39,20 @@ type FormData = z.infer<typeof schema>;
 
 const ForgotPassword: React.FC = () => {
   const { t } = useTranslation();
+  const { slug } = useLocation().state as { slug: string };
+
+  const { data: configData, isLoading: configLoading, isError } = useConfig(slug);
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      acronym: slug,
+    },
   });
 
   const { handleSubmit } = methods;
 
   const toast = useToast({
-    position: "top-right",
     isClosable: true,
   });
 
@@ -77,7 +86,7 @@ const ForgotPassword: React.FC = () => {
   }, [navigate]);
 
   const onSubmit = handleSubmit(async (data) => {
-    await mutateAsync(data);
+    await mutateAsync({ ...data, acronym: slug });
   });
 
   return (
@@ -91,10 +100,44 @@ const ForgotPassword: React.FC = () => {
       gap="10"
       bg={"bg.page"}
     >
-      <LocaleSwap />
+      <Hide below="md">
+        <Flex direction="column" gap="4" alignItems="center">
+          <Flex alignItems="center" justifyContent="center">
+            {configData?.logo ? (
+              <img
+                src={configData.logo.url}
+                alt={configData.acronym}
+                width="250px"
+                height="150px"
+              />
+            ) : (
+              <Icon w="150px" />
+            )}
+          </Flex>
+
+          <Text
+            fontSize="2xl"
+            fontWeight="bold"
+            textAlign="center"
+            color="text.primary"
+          >
+            {t("welcome.title")}
+          </Text>
+          <Text
+            fontSize="sm"
+            textAlign="center"
+            color="text.secondary"
+            maxW="400px"
+          >
+            {t("welcome.description")}
+          </Text>
+          <SwitchTheme />
+          <LocaleSwap />
+        </Flex>
+      </Hide>
       <FormProvider {...methods}>
         <Card
-          p={[4, 8]}
+          p={[4, 10]}
           w={{ base: "100%", md: "450px" }}
           boxShadow="lg"
           bg={"bg.card"}
@@ -109,16 +152,6 @@ const ForgotPassword: React.FC = () => {
               )}
 
               <Flex direction="column" gap="4">
-                <InputText
-                  input={{
-                    id: "acronym",
-                    label: t("common.fields.acronym"),
-                    placeholder: t("input.enter.male", {
-                      field: t("common.fields.slug"),
-                    }),
-                  }}
-                />
-
                 <InputText
                   input={{
                     id: "email",

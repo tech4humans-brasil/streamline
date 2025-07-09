@@ -3,8 +3,6 @@ import {
   Box,
   Button,
   Card,
-  Center,
-  Divider,
   Flex,
   Heading,
   IconButton,
@@ -15,6 +13,8 @@ import {
   Stack,
   Tag,
   Text,
+  Grid,
+  VStack,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
@@ -71,26 +71,47 @@ const NewTicket: React.FC = () => {
     });
   }, []);
 
-  return (
-    <Box p={4} bg="bg.card" borderRadius="md" id="forms" w="95%" m={8}>
-      <Flex
-        justifyContent="space-between"
-        alignItems="center"
-        gap={2}
-        wrap={"wrap"}
+  if (isLoading) {
+    return (
+      <Card
+        p={[0, 6]}
+        borderRadius="2xl"
+        minWidth={"60%"}
+        boxShadow={"lg"}
+        h="100%"
+        bg="bg.card"
       >
-        <Flex alignItems="center" gap={2}>
-          <Button variant="ghost" onClick={() => navigate(-1)} w="fit-content">
-            <FaArrowLeft />
+        <Flex justify="center" align="center" h="100%">
+          <Spinner />
+        </Flex>
+      </Card>
+    );
+  }
+
+  return (
+    <Box w="90%" mx="auto" py={6} maxW="7xl">
+      <Flex alignItems="center" mb={6} wrap={"wrap"} gap={2} justifyContent={"space-between"}>
+        <Flex alignItems={"center"} gap={2}>
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<FaArrowLeft />}
+            mr={4}
+            onClick={() => navigate(-1)}
+          >
+            Voltar
           </Button>
-          <Heading size="md">
+          <Text fontSize={["lg", "2xl"]} fontWeight="bold">
             {t("dashboard.title.openForms")}
             {` / ${institute?.name}`}
-          </Heading>
+          </Text>
         </Flex>
 
-        {/* Barra de pesquisa */}
-        <Flex>
+        <Flex
+          justifyContent="flex-end"
+          alignItems="flex-end"
+          gap={2}
+        >
           <InputGroup>
             <Input
               placeholder={t("common.fields.search")}
@@ -111,19 +132,21 @@ const NewTicket: React.FC = () => {
           />
         </Flex>
       </Flex>
-      <Divider my={2} />
 
-      {isLoading && (
-        <Center w="100%" h="50%">
-          <Spinner />
-        </Center>
-      )}
+      <Grid templateColumns="1fr" gap={6}>
+        <VStack spacing={6} align="stretch">
+          <Card>
+            <Box p={6}>
 
-      <Stack spacing={4}>
-        {filteredForms?.map((form) => (
-          <FormItem key={form._id} form={form} />
-        ))}
-      </Stack>
+              <VStack spacing={4}>
+                {filteredForms?.map((form) => (
+                  <FormItem key={form._id} form={form} />
+                ))}
+              </VStack>
+            </Box>
+          </Card>
+        </VStack>
+      </Grid>
     </Box>
   );
 };
@@ -173,6 +196,7 @@ const FormItem: React.FC<ActivityItemProps> = ({ form }) => {
       onClick={handleView}
       cursor="pointer"
       _hover={{ bg: "bg.page" }}
+      w="100%"
     >
       <Stack
         spacing={2}

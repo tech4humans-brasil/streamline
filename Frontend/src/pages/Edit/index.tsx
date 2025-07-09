@@ -84,7 +84,6 @@ const EditResponse: React.FC<ResponseProps> = memo(() => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       navigate(-1);
     },
@@ -94,7 +93,6 @@ const EditResponse: React.FC<ResponseProps> = memo(() => {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

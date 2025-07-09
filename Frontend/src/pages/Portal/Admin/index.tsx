@@ -74,7 +74,6 @@ const Admin: React.FC = () => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       queryClient.invalidateQueries({ queryKey: ["admin"] });
     },
@@ -84,7 +83,6 @@ const Admin: React.FC = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

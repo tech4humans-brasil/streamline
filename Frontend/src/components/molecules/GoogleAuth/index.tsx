@@ -1,7 +1,6 @@
 import { samlGoogle } from "@apis/auth";
 import { Box, Center, Spinner, useToast } from "@chakra-ui/react";
 import useAuth from "@hooks/useAuth";
-import { IUserRoles } from "@interfaces/User";
 import {
   CredentialResponse,
   GoogleLogin,
@@ -13,7 +12,7 @@ import { useCallback } from "react";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const GoogleAuth = ({ clientId = null }: { clientId: string | null }) => {
+const GoogleAuth = ({ clientId = null, slug = null }: { clientId: string | null, slug: string | null }) => {
   const toast = useToast();
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
@@ -31,15 +30,8 @@ const GoogleAuth = ({ clientId = null }: { clientId: string | null }) => {
         isClosable: true,
         icon: <FaCheckCircle />,
       });
-      const user = setAuth(data.token);
-      navigate(
-        `${
-          user?.roles.includes(IUserRoles.admin) &&
-          !user.tutorials.includes("first-page")
-            ? "/welcome"
-            : redirect
-        }`
-      );
+      setAuth(data.token);
+      navigate(redirect);
     },
     onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
       toast({
@@ -62,9 +54,10 @@ const GoogleAuth = ({ clientId = null }: { clientId: string | null }) => {
       mutateAsync({
         credential: credentialResponse.credential,
         client_id: clientId,
+        acronym: slug,
       });
     },
-    [mutateAsync]
+    [mutateAsync, slug]
   );
 
   if (!clientId) {

@@ -37,7 +37,6 @@ const AlterPassword: React.FC = () => {
   const { handleSubmit } = methods;
 
   const toast = useToast({
-    position: "top-right",
     isClosable: true,
   });
 

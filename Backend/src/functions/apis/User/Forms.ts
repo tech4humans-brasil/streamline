@@ -21,6 +21,7 @@ const handler: HttpHandler = async (conn) => {
   const roles = [
     { label: "Admin", value: "admin" },
     { label: "Usuário", value: "student" },
+    { label: "Externo", value: "external" },
     { label: "Gestor Ativos", value: "equipment" },
   ];
 

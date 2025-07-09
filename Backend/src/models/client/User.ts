@@ -4,7 +4,7 @@ import { IInstitute } from "./Institute";
 export enum IUserRoles {
   admin = "admin",
   student = "student",
-  teacher = "teacher",
+  external = "external",
   equipment = "equipment",
 }
 

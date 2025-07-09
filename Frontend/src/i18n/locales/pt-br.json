@@ -247,7 +247,7 @@
   },
   "role": {
     "admin": "Administrador(a)",
-    "teacher": "Professor(a)",
+    "external": "Externo(a)",
     "student": "Usuário(a)"
   },
   "state": {

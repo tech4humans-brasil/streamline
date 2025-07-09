@@ -74,7 +74,6 @@ const DeallocationForm: React.FC<DeallocationFormProps> = ({
         status: "success",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
       queryClient.invalidateQueries({ queryKey: ["allocations", userId] });
       onClose();
@@ -85,7 +84,6 @@ const DeallocationForm: React.FC<DeallocationFormProps> = ({
         status: "error",
         duration: 3000,
         isClosable: true,
-        position: "top-right",
       });
     },
   });

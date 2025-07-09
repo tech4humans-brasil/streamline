@@ -71,6 +71,10 @@ export const handler: HttpHandler = async (_, req) => {
       google: {
         clientId: client.config.google.clientId,
       },
+      externalUsers: {
+        allow: client.config.externalUsers?.allow || false,
+        redirect: client.config.externalUsers?.redirect || null,
+      },
     },
     slugs: slugs.map((slug) => slug.acronym),
   });

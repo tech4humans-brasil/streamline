@@ -3,16 +3,16 @@ import {
   Avatar,
   Box,
   Button,
-  Center,
-  Divider,
   Flex,
-  Heading,
   IconButton,
   Input,
   InputGroup,
   InputRightAddon,
   Spinner,
-  Stack,
+  Card,
+  Grid,
+  VStack,
+  Text,
 } from "@chakra-ui/react";
 import React, { useCallback, useMemo, useTransition } from "react";
 import { FaArrowLeft, FaSearch, FaSync } from "react-icons/fa";
@@ -59,22 +59,45 @@ const InstitutesPage: React.FC = () => {
     [navigate]
   );
 
-  return (
-    <Box p={4} bg="bg.card" borderRadius="md" id="institutes" w="95%" m={8}>
-      <Flex
-        justifyContent="space-between"
-        alignItems="center"
-        gap={2}
-        wrap={"wrap"}
+  if (isLoading) {
+    return (
+      <Card
+        p={[0, 6]}
+        borderRadius="2xl"
+        minWidth={"60%"}
+        boxShadow={"lg"}
+        h="100%"
+        bg="bg.card"
       >
-        <Flex alignItems="center" gap={2}>
-          <Button variant="ghost" onClick={() => navigate(-1)} w="fit-content">
-            <FaArrowLeft />
-          </Button>
-          <Heading size="md">{t("dashboard.title.openForms")}</Heading>
+        <Flex justify="center" align="center" h="100%">
+          <Spinner />
         </Flex>
+      </Card>
+    );
+  }
 
-        <Flex>
+  return (
+    <Box w="90%" mx="auto" py={6} maxW="7xl">
+      <Flex alignItems="center" mb={6} justifyContent={"space-between"}>
+        <Flex alignItems={"center"} gap={2}>
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<FaArrowLeft />}
+            mr={4}
+            onClick={() => navigate(-1)}
+          >
+            Voltar
+          </Button>
+          <Text fontSize={["lg", "2xl"]} fontWeight="bold">
+            {t("dashboard.title.openForms")}
+          </Text>
+        </Flex>
+        <Flex
+          justifyContent="flex-end"
+          alignItems="center"
+          gap={2}
+        >
           <InputGroup>
             <Input
               placeholder={t("common.fields.search")}
@@ -95,28 +118,33 @@ const InstitutesPage: React.FC = () => {
           />
         </Flex>
       </Flex>
-      <Divider my={2} />
 
-      {isLoading && (
-        <Center w="100%" h="50%">
-          <Spinner />
-        </Center>
-      )}
-
-      <Stack spacing={4}>
-        {institutes?.map((institute) => (
-          <Button
-            key={institute?._id}
-            onClick={() => handleInstituteClick(institute?._id)}
-            leftIcon={<Avatar size="md" name={institute?.name ?? ""} />}
-            justifyContent="flex-start"
-            h="auto"
-            p={2}
-          >
-            {institute?.name ?? "Sem Responsável"}
-          </Button>
-        ))}
-      </Stack>
+      <Grid templateColumns="1fr" gap={6}>
+        <VStack spacing={6} align="stretch">
+          <Card>
+            <Box p={6}>
+              <VStack spacing={4}>
+                {institutes?.map((institute) => (
+                  <Button
+                    key={institute?._id}
+                    onClick={() => handleInstituteClick(institute?._id)}
+                    leftIcon={<Avatar size="md" name={institute?.name ?? ""} />}
+                    justifyContent="flex-start"
+                    h="auto"
+                    p={4}
+                    w="100%"
+                    variant="outline"
+                  >
+                    <Text fontSize="md" fontWeight="medium">
+                      {institute?.name ?? "Sem Responsável"}
+                    </Text>
+                  </Button>
+                ))}
+              </VStack>
+            </Box>
+          </Card>
+        </VStack>
+      </Grid>
     </Box>
   );
 };

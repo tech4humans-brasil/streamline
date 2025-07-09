@@ -57,10 +57,8 @@ const TwoStep: React.FC = () => {
         isClosable: true,
         icon: <FaCheckCircle />,
       });
-      const user = setAuth(data.token);
-      navigate(
-        `${!user?.tutorials.includes("first-page") ? "/welcome" : redirect}`
-      );
+      setAuth(data.token);
+      navigate(redirect);
     },
     onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
       toast({
