@@ -649,10 +649,6 @@
       "unfilledFields": "Campos não preenchidos",
       "noExtraFields": "Nenhum campo extra"
     },
-    "response": {
-      "title": "Resposta",
-      "submit": "Enviar"
-    },
     "timelineStatus": {
       "waitingResponse": "Aguardando Resposta",
       "notSent": "Não Enviada",
@@ -667,5 +663,9 @@
       "dueDate": "Prazo: ",
       "signatory": "Signatário"
     }
+  },
+  "response": {
+    "title": "Resposta",
+    "submit": "Enviar"
   }
 }
