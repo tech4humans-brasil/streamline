@@ -28,7 +28,6 @@ import IFormDraft, { IField } from "@interfaces/FormDraft";
 import ExtraFields from "./ExtraFields";
 import { BsArrowsFullscreen, BsSend, BsChevronDown, BsExclamationTriangle } from "react-icons/bs";
 import { RiWebhookLine } from "react-icons/ri";
-import Accordion from "@components/atoms/Accordion";
 import useAuth from "@hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import AddInteractionUser from "./AddInteractionUser";
