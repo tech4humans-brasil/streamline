@@ -58,7 +58,7 @@ const handler: HttpHandler = async (conn, req) => {
         if (step.data) {
           // @ts-ignore0
           step.data = {
-            name: step.data.name ?? "Start",
+            name: step.data.name,
             visible: step.data.visible,
           };
         }

@@ -621,6 +621,9 @@
   },
   "activityDetails": {
     "timeline": "Linha do Tempo",
+    "timelineDescription": "Progresso do ticket através do fluxo de automação",
+    "showMore": "Mostrar mais",
+    "showLess": "Mostrar menos",
     "formFields": "Campos do Formulário",
     "back": "Voltar",
     "ticket": "Ticket #",
@@ -661,7 +664,9 @@
       "accessTicket": "Acessar Ticket",
       "respond": "Responder",
       "dueDate": "Prazo: ",
-      "signatory": "Signatário"
+      "signatory": "Signatário",
+      "pendingPeople": "Pessoas pendentes",
+      "pendingResponse": "Pendente de resposta"
     }
   },
   "response": {

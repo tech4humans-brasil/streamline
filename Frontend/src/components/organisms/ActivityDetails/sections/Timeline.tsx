@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Divider,
   Flex,
   Modal,
   ModalCloseButton,
@@ -10,8 +9,11 @@ import {
   Tag,
   Text,
   useDisclosure,
+  VStack,
+  Circle,
+  Tooltip,
+  Divider,
 } from "@chakra-ui/react";
-import { MilestoneEnd, MilestoneItem } from "@components/molecules/TimeLine";
 import IActivity, {
   IActivityStep,
   IActivityInteractions,
@@ -24,7 +26,7 @@ import { BiGitRepoForked, BiLogoJavascript, BiMailSend } from "react-icons/bi";
 import useActivity from "@hooks/useActivity";
 import IFormDraft, { IField } from "@interfaces/FormDraft";
 import ExtraFields from "./ExtraFields";
-import { BsArrowsFullscreen, BsSend } from "react-icons/bs";
+import { BsArrowsFullscreen, BsSend, BsChevronDown, BsExclamationTriangle } from "react-icons/bs";
 import { RiWebhookLine } from "react-icons/ri";
 import Accordion from "@components/atoms/Accordion";
 import useAuth from "@hooks/useAuth";
@@ -48,7 +50,9 @@ interface MilestoneItemProps { }
 const Timeline: React.FC<MilestoneItemProps> = () => {
   const { activity } = useActivity();
   const [modalData, setModalData] = useState<IField[] | null>(null);
+  const [showAllItems, setShowAllItems] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { t } = useTranslation();
 
   const workflows = activity?.workflows;
 
@@ -60,21 +64,96 @@ const Timeline: React.FC<MilestoneItemProps> = () => {
     [onOpen]
   );
 
+  // Calcular total de steps em todos os workflows
+  const totalSteps = useMemo(() => {
+    return workflows?.reduce((total, workflow) => {
+      return total + (workflow.steps?.length || 0);
+    }, 0) || 0;
+  }, [workflows]);
+
+  // Determinar quantos itens mostrar
+  const itemsToShow = showAllItems ? totalSteps : Math.min(3, totalSteps);
+  const hiddenItems = totalSteps - itemsToShow;
+
+  // Obter todos os steps de todos os workflows
+  const allSteps = useMemo(() => {
+    if (!workflows) return [];
+    const steps: Array<{ step: IActivityStep; workflow: IActivity["workflows"][0] }> = [];
+    workflows.forEach(workflow => {
+      workflow.steps?.forEach(step => {
+        steps.push({ step, workflow });
+      });
+    });
+    return steps;
+  }, [workflows]);
+
+  const stepsToShow = useCallback(() => {
+    if (showAllItems) {
+      return allSteps;
+    }
+    return allSteps.slice(-3);
+  }, [allSteps, showAllItems]);
+
   return (
     <Box>
-      {workflows?.map((workflow) => (
-        <TimelineWorkflowItem
-          key={workflow._id}
-          {...{ workflow, handleOpenModal }}
+
+      {/* Container da Timeline */}
+      <Box position="relative" pl={8}>
+        {/* Linha vertical da timeline */}
+        <Box
+          position="absolute"
+          left={4}
+          top={0}
+          bottom={0}
+          width="2px"
+          bg="gray.200"
+          zIndex={0}
         />
-      ))}
-      <MilestoneEnd />
+
+        {totalSteps > 3 && (
+          <Box pb={5}>
+            <Flex
+              align="center"
+              gap={2}
+              cursor="pointer"
+              _hover={{ opacity: 0.8 }}
+              onClick={() => setShowAllItems(!showAllItems)}
+            >
+              {showAllItems ? (
+                <>
+                  <BsChevronDown size={16} style={{ transform: 'rotate(180deg)' }} />
+                  <Text fontSize="sm" fontWeight="medium">
+                    {t('activityDetails.showLess')}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <BsChevronDown size={16} />
+                  <Text fontSize="sm" fontWeight="medium">
+                    {t('activityDetails.showMore')} ({hiddenItems} itens)
+                  </Text>
+                </>
+              )}
+            </Flex>
+          </Box>
+        )}
+
+        <VStack spacing={6} align="stretch">
+          {stepsToShow().map(({ step, workflow }) => (
+            <TimelineStepItem
+              key={step._id}
+              data={step}
+              step={workflow.workflow_draft.steps.find((s) => s._id === step.step)}
+              handleOpenModal={handleOpenModal}
+            />
+          ))}
+        </VStack>
+      </Box>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent p="5">
           <ModalCloseButton />
-
           <ExtraFields fields={modalData || []} />
         </ModalContent>
       </Modal>
@@ -84,33 +163,7 @@ const Timeline: React.FC<MilestoneItemProps> = () => {
 
 export default Timeline;
 
-const TimelineWorkflowItem = ({
-  workflow,
-  handleOpenModal,
-}: {
-  workflow: IActivity["workflows"][0];
-  handleOpenModal: (data: IField[]) => void;
-}) => {
-  const getStep = useCallback(
-    (stepId: string) => {
-      return workflow.workflow_draft.steps.find((step) => step._id === stepId);
-    },
-    [workflow.workflow_draft.steps]
-  );
 
-  return (
-    <div>
-      {workflow?.steps?.map((step) => (
-        <TimelineStepItem
-          key={step._id}
-          data={step}
-          step={getStep(step.step)}
-          handleOpenModal={handleOpenModal}
-        />
-      ))}
-    </div>
-  );
-};
 
 const TimelineStepItem = ({
   data,
@@ -152,13 +205,39 @@ const TimelineStepItem = ({
     }
   }, [step?.type]);
 
+  const getIconColor = useCallback((stepType: string | undefined) => {
+    switch (stepType) {
+      case NodeTypes.Interaction:
+        return "yellow.500";
+      case NodeTypes.SendEmail:
+        return "blue.500";
+      case NodeTypes.ChangeStatus:
+        return "orange.500";
+      case NodeTypes.SwapWorkflow:
+        return "cyan.500";
+      case NodeTypes.Conditional:
+        return "purple.500";
+      case NodeTypes.WebRequest:
+        return "green.500";
+      case NodeTypes.Circle:
+        return "gray.400";
+      case NodeTypes.NewTicket:
+        return "red.500";
+      case NodeTypes.Clicksign:
+        return "pink.500";
+      case NodeTypes.Script:
+        return "purple.500";
+      default:
+        return "gray.500";
+    }
+  }, []);
+
   const interaction = useMemo(() => {
     if (step?.type === NodeTypes.Interaction) {
       return interactions?.find(
         (interaction) => interaction.activity_step_id === data._id
       );
     }
-
     return null;
   }, [data._id, step?.type, interactions]);
 
@@ -166,7 +245,6 @@ const TimelineStepItem = ({
     if (step?.type !== NodeTypes.Clicksign) {
       return null;
     }
-
     return activity?.documents.find((doc) => doc.activity_step_id === data._id)
       ?.documents;
   }, [activity?.documents, data._id, step?.type]);
@@ -177,154 +255,239 @@ const TimelineStepItem = ({
       if (!fields?.length) {
         return;
       }
-
       handleOpenModal(fields);
     },
     [handleOpenModal]
   );
 
-  const { open, closed } = useMemo(() => {
-    const open = interaction?.answers.filter((answer) => answer.data);
-    const closed = interaction?.answers.filter((answer) => !answer.data);
 
-    return { open, closed };
-  }, [interaction]);
 
   if (!step) return null;
 
   return (
-    <MilestoneItem key={step._id} isStep status={data.status}>
-      <Flex
-        gap={2}
-        px={4}
-        py={3}
-        borderRadius="lg"
-        alignItems="start"
-        direction="column"
-        borderWidth={1}
-        bg={"bg.card"}
-        borderColor={"bg.border"}
+    <Box position="relative">
+      <Box
+        position="absolute"
+        left="-8"
+        top={2}
+        zIndex={1}
       >
-        <Flex direction="row" alignItems="center" gap={2}>
-          <Icon size={20} />
-          <Text fontSize="md" fontWeight={"bold"}>
-            {step.data?.name}
+        <Circle
+          size={8}
+          bg={getIconColor(step.type)}
+          color="white"
+          boxShadow="sm"
+        >
+          <Icon size={16} />
+        </Circle>
+      </Box>
+
+      {/* Conteúdo do item */}
+      <Box ml={4}>
+        {/* Cabeçalho do item */}
+        <VStack align="stretch" spacing={3} mt={2}>
+          <Box>
+            <Text fontSize="md" fontWeight="bold" mb={1}>
+              {step.data?.name}
+            </Text>
+            <Text fontSize="sm">
+              {getStepDescription(step, interaction || null)}
+            </Text>
+          </Box>
+
+          {/* Conteúdo específico baseado no tipo */}
+          {data.data?.error && (
+            <Text fontSize="sm" color="red.500">
+              {data.data?.error}
+            </Text>
+          )}
+
+          {interaction && (
+            <InteractionContent
+              interaction={interaction}
+              handleOpenModalItem={handleOpenModalItem}
+              activity={activity}
+            />
+          )}
+
+          {step.type === NodeTypes.NewTicket && !!data.data?.new_ticket && (
+            <Link to={`/portal/activity/${data.data.new_ticket}`}>
+              <Button size="sm" colorScheme="blue" rightIcon={<FaEye />}>
+                {t('activityDetails.timelineStatus.accessTicket')}
+              </Button>
+            </Link>
+          )}
+
+          {documents && (
+            <DocumentsContent documents={documents} t={t} />
+          )}
+
+        </VStack>
+        <Text fontSize="xs" mt={1} color="gray.500">
+          {convertDateTime(activity?.createdAt)}
+        </Text>
+      </Box>
+    </Box>
+  );
+};
+
+const getStepDescription = (
+  step: IStep,
+  interaction: IActivityInteractions | null
+): string => {
+  switch (step.type) {
+    case NodeTypes.Interaction:
+      return interaction?.form?.name || "Interação solicitada";
+    case NodeTypes.SendEmail:
+      return "Email enviado";
+    case NodeTypes.ChangeStatus:
+      return "Status alterado";
+    case NodeTypes.NewTicket:
+      return "Novo ticket criado";
+    case NodeTypes.Clicksign:
+      return "Documento para assinatura";
+    default:
+      return step.data?.name || "Ação executada";
+  }
+};
+
+const InteractionContent = ({
+  interaction,
+  handleOpenModalItem,
+  activity,
+}: {
+  interaction: IActivityInteractions;
+  handleOpenModalItem: (data: IFormDraft | null) => void;
+  activity: IActivity | null;
+}) => {
+  const { t } = useTranslation();
+  const [auth] = useAuth();
+
+  const { open, closed } = useMemo(() => {
+    const open = interaction.answers.filter((answer) => answer.data);
+    const closed = interaction.answers.filter((answer) => !answer.data);
+    return { open, closed };
+  }, [interaction]);
+
+  // Respostas pendentes do usuário logado
+  const myPendingAnswers = useMemo(() => {
+    return closed.filter((answer) => answer.user._id === auth?.id);
+  }, [closed, auth?.id]);
+
+  // Respostas pendentes de outros usuários
+  const otherPendingAnswers = useMemo(() => {
+    return closed.filter((answer) => answer.user._id !== auth?.id);
+  }, [closed, auth?.id]);
+
+  // Tooltip com nomes dos usuários pendentes
+  const pendingPeopleTooltip = useMemo(() => {
+    if (otherPendingAnswers.length === 0) return '';
+    const peopleList = otherPendingAnswers.map(answer => answer.user.name).join(', ');
+    return `${t('activityDetails.timelineStatus.waitingResponses')}: ${peopleList}`;
+  }, [otherPendingAnswers, t]);
+
+  return (
+    <VStack align="stretch" spacing={3} maxW={"300px"}>
+      {open?.map((answer, index) => (
+        <Box key={answer._id}>
+          <Text fontWeight="bold">{answer.user.name}</Text>
+          <Text fontSize={"sm"}>{answer.user.email}</Text>
+          {answer?.data ? (
+            <Button
+              size="sm"
+              mt="1"
+              onClick={() => handleOpenModalItem(answer.data)}
+              variant={"outline"}
+              leftIcon={<BsArrowsFullscreen />}
+            >
+              {t('activityDetails.timelineStatus.sentResponse')}
+            </Button>
+          ) : (
+            <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
+              {t(statusMap[answer.status])}
+            </Tag>
+          )}
+
+          {index !== open.length - 1 && (
+            <Divider my={2} />
+          )}
+        </Box>
+      ))}
+
+      {myPendingAnswers.map((answer) => (
+        <Box key={answer._id} p={0} borderRadius="md">
+          <Flex align="center" gap={2}>
+            <Text fontWeight="bold" fontSize="md">
+              {answer.user.name}
+            </Text>
+            <BsExclamationTriangle color="#F6AD55" size={18} />
+          </Flex>
+          <Text fontSize="xs" mb={2}>
+            {answer.user.email}
           </Text>
-        </Flex>
-        <Divider my={2} />
+          <PendencieTag
+            answer={answer}
+            activity_id={activity?._id}
+            slug={interaction.form.slug}
+          />
+        </Box>
+      ))}
 
-        {data.data?.error && <Text fontSize="sm">{data.data?.error}</Text>}
+      {otherPendingAnswers.length > 0 && (
+        <Tooltip label={pendingPeopleTooltip} placement="top">
+          <Box>
+            <Tag size="sm" variant="subtle" colorScheme="orange">
+              {t('activityDetails.timelineStatus.waitingResponses')} ({otherPendingAnswers.length})
+            </Tag>
+          </Box>
+        </Tooltip>
+      )}
 
-        {interaction && (
-          <Box w="100%">
-            {open?.map((answer) => (
-              <Box key={answer._id} p={2}>
-                <Text fontWeight="bold">{answer.user.name}</Text>
-                <Text fontSize={"sm"}>{answer.user.email}</Text>
-                {answer?.data ? (
-                  <Button
-                    size="sm"
-                    mt="1"
-                    onClick={() => handleOpenModalItem(answer.data)}
-                    variant={"outline"}
-                    leftIcon={<BsArrowsFullscreen />}
-                  >
-                    {t('activityDetails.timelineStatus.sentResponse')}
-                  </Button>
-                ) : (
-                  <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-                    {t(statusMap[answer.status])}
-                  </Tag>
-                )}
-                <Divider my={2} />
+      <AddInteractionUser interaction={interaction} />
+
+      {interaction.dueDate && !interaction.finished && (
+        <Tag size="sm" variant="subtle" colorScheme="gray" w={"fit-content"}>
+          {`${t('activityDetails.timelineStatus.dueDate')}${convertDateTime(interaction.dueDate)}`}
+        </Tag>
+      )}
+    </VStack>
+  );
+};
+
+const DocumentsContent = ({
+  documents,
+  t,
+}: {
+  documents: any[];
+  t: any;
+}) => {
+  return (
+    <VStack align="stretch" spacing={3}>
+      {documents?.map((document) => (
+        <Box key={document.id}>
+          <Text fontWeight="bold" fontSize="sm" mb={2}>
+            {document.name}
+          </Text>
+          <VStack align="stretch" spacing={2}>
+            {document.users.map((signer: any) => (
+              <Box key={signer.id} p={0} borderRadius="md">
+                <Text fontWeight="bold" fontSize="sm">
+                  {signer.name}
+                </Text>
+                <Text fontSize="xs" color="gray.600" mb={2}>
+                  {signer.email}
+                </Text>
+                <Tag size="sm" variant="subtle" colorScheme="gray">
+                  {ClicksignRequirements.find(
+                    (req) => req.value === signer.role
+                  )?.label || t('activityDetails.timelineStatus.signatory')}
+                </Tag>
               </Box>
             ))}
-
-            {!!closed?.length && (
-              <Accordion.Container
-                defaultIndex={interaction.finished ? [] : [0]}
-                allowToggle
-                allowMultiple
-              >
-                <Accordion.Item>
-                  <Accordion.Button fontSize="sm">
-                    {interaction.finished
-                      ? t('activityDetails.timelineStatus.unfilledResponses')
-                      : t('activityDetails.timelineStatus.waitingResponses')}
-                  </Accordion.Button>
-                  <Accordion.Panel>
-                    {closed.map((answer) => (
-                      <Box key={answer._id}>
-                        <Text fontWeight="bold">{answer.user.name}</Text>
-                        <Text fontSize={"sm"}>{answer.user.email}</Text>
-                        {answer?.data ? (
-                          <Button
-                            size="sm"
-                            mt="1"
-                            onClick={() => handleOpenModalItem(answer.data)}
-                            variant={"outline"}
-                            leftIcon={<BsArrowsFullscreen />}
-                          >
-                            {t('activityDetails.timelineStatus.sentResponse')}
-                          </Button>
-                        ) : (
-                          <PendencieTag
-                            answer={answer}
-                            activity_id={activity?._id}
-                            slug={interaction.form.slug}
-                          />
-                        )}
-                        <Divider my={2} />
-                      </Box>
-                    ))}
-                  </Accordion.Panel>
-                </Accordion.Item>
-              </Accordion.Container>
-            )}
-
-            <AddInteractionUser interaction={interaction} />
-
-            {interaction.dueDate && (
-              <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-                {`${t('activityDetails.timelineStatus.dueDate')}${convertDateTime(interaction.dueDate)}`}
-              </Tag>
-            )}
-          </Box>
-        )}
-        {step.type === NodeTypes.NewTicket && !!data.data?.new_ticket && (
-          <Link to={`/portal/activity/${data.data.new_ticket}`}>
-            <Button size="sm" mt="2" colorScheme="blue" rightIcon={<FaEye />}>
-              {t('activityDetails.timelineStatus.accessTicket')}
-            </Button>
-          </Link>
-        )}
-
-        {documents && (
-          <Box w="100%">
-            {documents?.map((document) => (
-              <>
-                <Text fontWeight="bold">{document.name}</Text>
-                <Flex gap={2} alignItems="center">
-                  {document.users.map((signer) => (
-                    <Box key={signer.id} p={2}>
-                      <Text fontWeight="bold">{signer.name}</Text>
-                      <Text fontSize={"sm"}>{signer.email}</Text>
-                      <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-                        {ClicksignRequirements.find(
-                          (req) => req.value === signer.role
-                        )?.label || t('activityDetails.timelineStatus.signatory')}
-                      </Tag>
-                      <Divider my={2} />
-                    </Box>
-                  ))}
-                </Flex>
-                <Divider my={2} />
-              </>
-            ))}
-          </Box>
-        )}
-      </Flex>
-    </MilestoneItem>
+          </VStack>
+        </Box>
+      ))}
+    </VStack>
   );
 };
 
@@ -348,35 +511,35 @@ const PendencieTag = memo(
           activity_id,
         },
       });
-    }, [activity_id, slug]);
+    }, [activity_id, slug, navigate]);
 
     if (auth?.id === answer.user._id && answer.status === "idle") {
       return (
-        <>
+        <VStack align="stretch" spacing={2}>
           {answer.observation && (
-            <>
-              <Divider my={2} />
-              <Text fontSize={"sm"}>{answer.observation}</Text>
-            </>
+            <Text fontSize="sm" color="gray.600">
+              {answer.observation}
+            </Text>
           )}
           <Button
             size="sm"
-            mt="2"
-            colorScheme="blue"
-            variant={"outline"}
+            colorScheme="red"
+            variant="outline"
             rightIcon={<BsSend />}
             onClick={handleResponse}
           >
             {t('activityDetails.timelineStatus.respond')}
           </Button>
-        </>
+        </VStack>
       );
     }
 
     return (
-      <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
-        {t(statusMap[answer.status])}
-      </Tag>
+      <Tooltip label={t('activityDetails.timelineStatus.pendingResponse')}>
+        <Tag size="sm" variant="subtle" colorScheme="gray">
+          {t(statusMap[answer.status])}
+        </Tag>
+      </Tooltip>
     );
   }
 );

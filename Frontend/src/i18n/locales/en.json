@@ -454,6 +454,9 @@
   },
   "activityDetails": {
     "timeline": "Timeline",
+    "timelineDescription": "Ticket progress through the automation flow",
+    "showMore": "Show more",
+    "showLess": "Show less",
     "formFields": "Form Fields",
     "back": "Back",
     "ticket": "Ticket #",
@@ -494,7 +497,9 @@
       "accessTicket": "Access Ticket",
       "respond": "Respond",
       "dueDate": "Due Date: ",
-      "signatory": "Signatory"
+      "signatory": "Signatory",
+      "pendingPeople": "Pending people",
+      "pendingResponse": "Pending response"
     }
   }
 }
