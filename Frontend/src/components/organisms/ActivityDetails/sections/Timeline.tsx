@@ -2,13 +2,8 @@ import {
   Box,
   Button,
   Flex,
-  Modal,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
   Tag,
   Text,
-  useDisclosure,
   VStack,
   Circle,
   Tooltip,
@@ -24,9 +19,8 @@ import { GoMilestone, GoTag, GoWorkflow } from "react-icons/go";
 import { FaEye, FaPlusSquare, FaWpforms } from "react-icons/fa";
 import { BiGitRepoForked, BiLogoJavascript, BiMailSend } from "react-icons/bi";
 import useActivity from "@hooks/useActivity";
-import IFormDraft, { IField } from "@interfaces/FormDraft";
 import ExtraFields from "./ExtraFields";
-import { BsArrowsFullscreen, BsSend, BsChevronDown, BsExclamationTriangle } from "react-icons/bs";
+import { BsSend, BsChevronDown, BsExclamationTriangle } from "react-icons/bs";
 import { RiWebhookLine } from "react-icons/ri";
 import useAuth from "@hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
@@ -48,20 +42,12 @@ interface MilestoneItemProps { }
 
 const Timeline: React.FC<MilestoneItemProps> = () => {
   const { activity } = useActivity();
-  const [modalData, setModalData] = useState<IField[] | null>(null);
   const [showAllItems, setShowAllItems] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation();
 
   const workflows = activity?.workflows;
 
-  const handleOpenModal = useCallback(
-    (data: IField[]) => {
-      setModalData(data);
-      onOpen();
-    },
-    [onOpen]
-  );
+
 
   // Calcular total de steps em todos os workflows
   const totalSteps = useMemo(() => {
@@ -95,17 +81,15 @@ const Timeline: React.FC<MilestoneItemProps> = () => {
 
   return (
     <Box>
-
-      {/* Container da Timeline */}
-      <Box position="relative" pl={8}>
-        {/* Linha vertical da timeline */}
+      <Box position="relative" pl={8} >
         <Box
           position="absolute"
           left={4}
           top={0}
           bottom={0}
           width="2px"
-          bg="gray.200"
+          bg="gray"
+          opacity={0.4}
           zIndex={0}
         />
 
@@ -143,19 +127,10 @@ const Timeline: React.FC<MilestoneItemProps> = () => {
               key={step._id}
               data={step}
               step={workflow.workflow_draft.steps.find((s) => s._id === step.step)}
-              handleOpenModal={handleOpenModal}
             />
           ))}
         </VStack>
       </Box>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent p="5">
-          <ModalCloseButton />
-          <ExtraFields fields={modalData || []} />
-        </ModalContent>
-      </Modal>
     </Box>
   );
 };
@@ -167,11 +142,9 @@ export default Timeline;
 const TimelineStepItem = ({
   data,
   step,
-  handleOpenModal,
 }: {
   step: IStep | undefined;
   data: IActivityStep;
-  handleOpenModal: (data: IField[]) => void;
 }) => {
   const { activity } = useActivity();
   const interactions = activity?.interactions;
@@ -207,27 +180,27 @@ const TimelineStepItem = ({
   const getIconColor = useCallback((stepType: string | undefined) => {
     switch (stepType) {
       case NodeTypes.Interaction:
-        return "yellow.500";
+        return "yellow";
       case NodeTypes.SendEmail:
-        return "blue.500";
+        return "blue";
       case NodeTypes.ChangeStatus:
-        return "orange.500";
+        return "orange";
       case NodeTypes.SwapWorkflow:
-        return "cyan.500";
+        return "cyan";
       case NodeTypes.Conditional:
-        return "purple.500";
+        return "purple";
       case NodeTypes.WebRequest:
-        return "green.500";
+        return "green";
       case NodeTypes.Circle:
-        return "gray.400";
+        return "gray";
       case NodeTypes.NewTicket:
-        return "red.500";
+        return "red";
       case NodeTypes.Clicksign:
-        return "pink.500";
+        return "pink";
       case NodeTypes.Script:
-        return "purple.500";
+        return "purple";
       default:
-        return "gray.500";
+        return "gray";
     }
   }, []);
 
@@ -248,17 +221,6 @@ const TimelineStepItem = ({
       ?.documents;
   }, [activity?.documents, data._id, step?.type]);
 
-  const handleOpenModalItem = useCallback(
-    (data: IFormDraft | null) => {
-      const fields = data?.fields;
-      if (!fields?.length) {
-        return;
-      }
-      handleOpenModal(fields);
-    },
-    [handleOpenModal]
-  );
-
 
 
   if (!step) return null;
@@ -267,23 +229,23 @@ const TimelineStepItem = ({
     <Box position="relative">
       <Box
         position="absolute"
-        left="-8"
+        left="-9"
         top={2}
         zIndex={1}
       >
         <Circle
-          size={8}
-          bg={getIconColor(step.type)}
-          color="white"
+          p={2}
           boxShadow="sm"
+          borderWidth={1}
+          bg="bg.card"
+          borderColor={"gray.500"}
+          color={`${getIconColor(step.type)}.500`}
         >
-          <Icon size={16} />
+          <Icon size={22} />
         </Circle>
       </Box>
 
-      {/* Conteúdo do item */}
       <Box ml={4}>
-        {/* Cabeçalho do item */}
         <VStack align="stretch" spacing={3} mt={2}>
           <Box>
             <Text fontSize="md" fontWeight="bold" mb={1}>
@@ -294,7 +256,6 @@ const TimelineStepItem = ({
             </Text>
           </Box>
 
-          {/* Conteúdo específico baseado no tipo */}
           {data.data?.error && (
             <Text fontSize="sm" color="red.500">
               {data.data?.error}
@@ -304,7 +265,6 @@ const TimelineStepItem = ({
           {interaction && (
             <InteractionContent
               interaction={interaction}
-              handleOpenModalItem={handleOpenModalItem}
               activity={activity}
             />
           )}
@@ -323,7 +283,7 @@ const TimelineStepItem = ({
 
         </VStack>
         <Text fontSize="xs" mt={1} color="gray.500">
-          {convertDateTime(activity?.createdAt)}
+          {convertDateTime(activity?.updatedAt)}
         </Text>
       </Box>
     </Box>
@@ -352,11 +312,9 @@ const getStepDescription = (
 
 const InteractionContent = ({
   interaction,
-  handleOpenModalItem,
   activity,
 }: {
   interaction: IActivityInteractions;
-  handleOpenModalItem: (data: IFormDraft | null) => void;
   activity: IActivity | null;
 }) => {
   const { t } = useTranslation();
@@ -388,19 +346,19 @@ const InteractionContent = ({
   return (
     <VStack align="stretch" spacing={3} maxW={"300px"}>
       {open?.map((answer, index) => (
-        <Box key={answer._id}>
+        <Box key={answer._id} borderColor="bg.page" borderRadius="md" p={2} borderWidth={2}>
           <Text fontWeight="bold">{answer.user.name}</Text>
           <Text fontSize={"sm"}>{answer.user.email}</Text>
           {answer?.data ? (
-            <Button
-              size="sm"
-              mt="1"
-              onClick={() => handleOpenModalItem(answer.data)}
-              variant={"outline"}
-              leftIcon={<BsArrowsFullscreen />}
-            >
-              {t('activityDetails.timelineStatus.sentResponse')}
-            </Button>
+            <Box p={2}>
+              <Text fontSize="xs" color="gray.500" as="span">
+                {t('activityDetails.timelineStatus.sentResponse')}
+              </Text>
+              <ExtraFields fields={answer.data.fields} />
+              <Text fontSize="xs" color="gray.500" as="span">
+                {convertDateTime(answer.data?.createdAt)}
+              </Text>
+            </Box>
           ) : (
             <Tag size="sm" variant="subtle" colorScheme="gray" mt="2">
               {t(statusMap[answer.status])}

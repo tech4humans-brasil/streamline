@@ -34,7 +34,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   ) {
     return (
       <Flex direction={"column"}>
-        <Text fontSize="sm" mr={2}>
+        <Text fontSize="sm" mr={2} fontWeight={"bold"}>
           {label}:
         </Text>
         {/* @ts-ignore */}
@@ -46,7 +46,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (type === FieldTypes.file) {
     return (
       <Flex direction={"column"}>
-        <Text fontSize="sm" mr={2}>
+        <Text fontSize="sm" mr={2} fontWeight={"bold"}>
           {label}:
         </Text>
         <FileItem file={value as FileUploaded} />
@@ -80,7 +80,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (type === FieldTypes.checkbox && Array.isArray(value)) {
     return (
       <Flex direction={"column"}>
-        <Text fontSize="sm" mr={2}>
+        <Text fontSize="sm" mr={2} fontWeight={"bold"}>
           {label}:
         </Text>
         {value
@@ -97,7 +97,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (type === FieldTypes.radio) {
     return (
       <Flex direction={"column"}>
-        <Text fontSize="sm" mr={2}>
+        <Text fontSize="sm" mr={2} fontWeight={"bold"}>
           {label}:
         </Text>
         {/* @ts-ignore */}
@@ -109,7 +109,7 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (type === FieldTypes.select) {
     return (
       <Flex direction={"column"}>
-        <Text fontSize="sm" mr={2}>
+        <Text fontSize="sm" mr={2} fontWeight={"bold"}>
           {label}:
         </Text>
         {/* @ts-ignore */}
@@ -139,10 +139,10 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
   if (type === FieldTypes.date) {
     return (
       <Flex direction={"column"}>
-        <Text fontSize="sm" mr={2}>
+        <Text fontSize="sm" mr={2} fontWeight={"bold"}>
           {label}:
         </Text>
-        <Text fontSize="sm" fontWeight={"bold"}>
+        <Text fontSize="sm">
           {/* @ts-ignore */}
           {convertDateTime(value,
             {
@@ -159,10 +159,10 @@ const RenderFieldValue = memo(({ field }: { field: IField }) => {
 
   return (
     <Flex direction={"column"}>
-      <Text fontSize="sm" mr={2}>
+      <Text fontSize="sm" mr={2} fontWeight={"bold"}>
         {label}:
       </Text>
-      <Text fontSize="sm" fontWeight={"bold"}>
+      <Text fontSize="sm">
         {/* @ts-ignore */}
         {value}
       </Text>
