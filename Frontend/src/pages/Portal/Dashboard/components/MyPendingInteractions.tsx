@@ -78,7 +78,7 @@ const PendingInteractions: React.FC = () => {
     //[Todo] - Verificar se o campo form.period.close é o correto
     return data.map((activity) => ({
       ...activity,
-      forms: activity.form.name,
+      forms: activity.form?.name || "-",
       user: activity?.users[0]?.name || "-",
       due_date: <DueDateIndicator dueDate={activity.due_date} />,
       actions: (
