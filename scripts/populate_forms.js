@@ -200,58 +200,23 @@ async function main() {
   const { forms } = await getForms();
   console.log(`Found ${forms.length} forms total`);
 
-  const createdForms = forms.filter(form => form.type === "created");
-  const interactionForms = forms.filter(form => form.type === "interaction" && !form.name.includes("[Time]"));
+  const createdForms = forms;
 
   console.log(`Found ${createdForms.length} created forms`);
-  console.log(`Found ${interactionForms.length} interaction forms`);
   for (const form of createdForms) {
     console.log(`Processing form ${form.name}`);
     const formData = await getForm(form._id);
 
-    const formDraft = await getFormDraft(formData.published);
-
-    // console.log(formDraft);
-
-    const count = formDraft.fields.length;
-
-    if (count > 1) {
+    if (!formData.active) {
+      console.log(`Form ${form.name} is not active, skipping`);
       continue;
     }
 
-    console.log(`> Form ${form.name} has ${count} fields`);
+    formData.description = `Relembre as responsabilidades verificando a planilha: https://docs.google.com/spreadsheets/d/1hct0krTzTSp1zPs0f1Vc3rq_L7wdW3ui/edit
+    `
+    await updateForm(form._id, formData);
 
-    if (!formData.active || !formData.published) {
-      console.log(`> Form ${form.name} is not active, skipping`);
-      continue;
-    }
-
-    const interactionFormId = interactionForms.find(interactionForm => interactionForm.name.includes(form.name.split(" - ")[1]))?._id;
-
-    console.log(`> Interaction form id: ${interactionFormId}`);
-
-    const interactionForm = await getForm(interactionFormId);
-
-    if (!interactionForm.active || !interactionForm.published) {
-      console.log(`> Interaction form ${interactionForm.name} is not active, skipping`);
-      continue;
-    }
-
-    const interactionFormDraft = await getFormDraft(interactionForm.published);
-
-    formDraft.fields.push(...interactionFormDraft.fields.map(field => ({
-      ...field,
-      required: false,
-      type: "placeholder",
-    })));
-
-    const newFormDraft = await createFormDraft(form._id, "created", formDraft.fields);
-
-    console.log(`> New form draft id: ${newFormDraft._id}`);
-
-    await publishFormDraft(newFormDraft._id);
-
-    console.log(`> Form ${form.name} published`);
+    console.log(`Form ${form.name} updated`);
 
   }
 

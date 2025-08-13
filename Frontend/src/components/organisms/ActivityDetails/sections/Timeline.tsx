@@ -282,9 +282,6 @@ const TimelineStepItem = ({
           )}
 
         </VStack>
-        <Text fontSize="xs" mt={1} color="gray.500">
-          {convertDateTime(activity?.updatedAt)}
-        </Text>
       </Box>
     </Box>
   );
