@@ -8,7 +8,7 @@ import ActivityRepository from "../../repositories/Activity";
 import ConditionalEvaluator from "../../utils/conditionalEvaluator";
 import sendNextQueue from "../../utils/sendNextQueue";
 
-interface TMessage extends GenericMessage {}
+interface TMessage extends GenericMessage { }
 
 const handler: QueueWrapperHandler<TMessage> = async (
   conn,
@@ -62,11 +62,15 @@ const handler: QueueWrapperHandler<TMessage> = async (
       answers.push({ data: activity.form_draft });
     } else {
       const interaction = activity.interactions.find(
-        (iteration) => iteration.form.toString() === data.form_id
+        (iteration) => iteration.form._id.toString() === data.form_id
       );
 
       if (interaction) {
-        answers.push(...interaction.answers);
+        answers.push(
+          ...interaction.answers.map((answer) => ({
+            data: answer.data,
+          }))
+        );
       }
     }
 
