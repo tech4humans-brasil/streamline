@@ -150,6 +150,9 @@ export default function AddInteractionUser({
                       direction="column"
                       gap={4}
                       position="relative"
+                      maxH="300px"
+                      overflowY="auto"
+                      
                     >
                       <Button
                         colorScheme="red"
