@@ -55,7 +55,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
   )[0];
 
   if (!form) {
-    return res.notFound("Form not found");
+    throw new Error("Form not found");
   }
 
   const [workflow, formDraft] = await Promise.all([
@@ -64,11 +64,11 @@ export const handler: HttpHandler = async (conn, req, context) => {
   ]);
 
   if (!workflow) {
-    return res.notFound("Workflow not found");
+    throw new Error("Workflow not found");
   }
 
   if (!formDraft) {
-    return res.notFound("Form draft not found");
+    throw new Error("Form draft not found");
   }
 
   const responseUseCases = new ResponseUseCases(
@@ -112,8 +112,6 @@ export const handler: HttpHandler = async (conn, req, context) => {
     automatic: !!req.params.automatic,
   });
 
-  console.log("Activity", activity);
-
   if (form.sla) {
     const slaCalculator = new Holiday();
 
@@ -144,7 +142,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
   const firstStep = workflowDraft.steps.find((step) => step.id === "start");
 
   if (!firstStep) {
-    return res.error(400, {}, "Invalid workflow");
+    throw new Error("Invalid workflow");
   }
 
   activity.workflows.push({

@@ -51,7 +51,7 @@ export default class FormRepository extends BaseRepository<IForm> {
               },
             ],
           },
-          {
+          ...(!!options.institutes ? [{
             $or: [
               {
                 institute: {
@@ -67,9 +67,11 @@ export default class FormRepository extends BaseRepository<IForm> {
                 institute: {
                   $size: 0,
                 },
+                  },
+                ],
               },
-            ],
-          },
+            ]
+          : []),
         ]
       },
       select: options.select,
