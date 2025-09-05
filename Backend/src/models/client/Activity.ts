@@ -76,6 +76,7 @@ export type IActivityInteractions = {
     status: IActivityStepStatus;
     observation?: string | null;
     user: Omit<IUser, "password">;
+    responseAt: Date | null;
     data: IFormDraft | null;
   }>;
   finished: boolean;
@@ -156,6 +157,7 @@ const interactionSchema = new Schema<IActivityInteractions>({
         enum: Object.values(IActivityStepStatus),
       },
       observation: { type: String, required: false },
+      responseAt: { type: Date, required: false, default: null },
       user: { type: userSchema, required: true },
       data: { type: Object, default: null },
     },

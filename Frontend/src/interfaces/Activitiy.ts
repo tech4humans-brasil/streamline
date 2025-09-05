@@ -40,6 +40,7 @@ export type IActivityInteractions = {
     user: Omit<IUser, "password">;
     observation?: string;
     data: IFormDraft | null;
+    responseAt: Date | null;
   }>;
   finished: boolean;
 };

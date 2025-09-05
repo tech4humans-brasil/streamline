@@ -353,7 +353,7 @@ const InteractionContent = ({
               </Text>
               <ExtraFields fields={answer.data.fields} />
               <Text fontSize="xs" color="gray.500" as="span">
-                {convertDateTime(answer.data?.createdAt)}
+                {answer.responseAt && convertDateTime(answer.responseAt)}
               </Text>
             </Box>
           ) : (

@@ -97,6 +97,7 @@ const handler: HttpHandler = async (conn, req, context) => {
 
   interaction.answers[myAnswer].data = formDraft.toObject();
   interaction.answers[myAnswer].status = IActivityStepStatus.finished;
+  interaction.answers[myAnswer].responseAt = new Date();
 
   InteractionHelper.processInteractionAnswers(
     interaction,
