@@ -51,6 +51,7 @@ export default new Http(handler)
           "application/csv",
           "application/json",
           "application/xml",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ])
         .required(),
       size: schema.string().required().min(3).max(255),
