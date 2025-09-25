@@ -57,6 +57,7 @@ const handler: HttpHandler = async (conn, req) => {
       institutes: {
         $in: form.visibilities,
       },
+      active: true,
     },
     select: {
       email: 1,
@@ -73,7 +74,7 @@ const handler: HttpHandler = async (conn, req) => {
   });
 
   await sendEmail(
-    [...new Set([...users.map((user) => user.email), ...interactionUsers])],
+    [...new Set([...users.map((user) => user.email), ...interactionUsers, ...comment.users.map((user) => user.email)])],
     `[${comment.protocol}] | ${req.user.name} adicionou um comentário em seu ticket`,
     html,
     css

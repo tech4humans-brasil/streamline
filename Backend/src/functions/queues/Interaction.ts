@@ -92,10 +92,12 @@ const handler: QueueWrapperHandler<TMessage> = async (
         $or: [
           {
             _id: { $in: destination },
+            active: true,
           },
           {
             "institutes._id": {
               $in: destination,
+              active: true,
             },
           },
         ],
@@ -131,11 +133,14 @@ const handler: QueueWrapperHandler<TMessage> = async (
           $or: [
             {
               _id: { $in: permissionAddParticipants },
+              active:true,
             },
             {
               "institutes._id": {
                 $in: permissionAddParticipants,
+                active: true,
               },
+              active: true,
             },
           ],
         },
@@ -143,6 +148,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
           _id: 1,
           name: 1,
           email: 1,
+          active: 1,
         },
       });
 
