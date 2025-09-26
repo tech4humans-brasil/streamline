@@ -115,7 +115,7 @@ const Users: React.FC = () => {
       active: user.active
         ? t("common.fields.active")
         : t("common.fields.inactive"),
-      institutes: user.institutes?.at(0)?.name,
+      institutes: user.institutes?.[0]?.name,
       actions: <Action {...user} />,
     }));
   }, [users]);
