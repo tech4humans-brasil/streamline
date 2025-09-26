@@ -12,6 +12,7 @@ import {
 import IActivity, {
   IActivityStep,
   IActivityInteractions,
+  IActivityStepStatus,
 } from "@interfaces/Activitiy";
 import { IStep, NodeTypes } from "@interfaces/WorkflowDraft";
 import React, { memo, useCallback, useMemo, useState } from "react";
@@ -281,6 +282,13 @@ const TimelineStepItem = ({
             <DocumentsContent documents={documents} t={t} />
           )}
 
+          {
+            data.status === IActivityStepStatus.error && (
+              <Text fontSize="sm" color="red.500">
+                {t('activityDetails.timelineStatus.errorMessage')}
+              </Text>
+            )
+          }
         </VStack>
       </Box>
     </Box>

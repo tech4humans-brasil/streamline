@@ -31,6 +31,15 @@ const handler: HttpHandler = async (conn, req) => {
   const where = filterQueryBuilder.build(filters);
 
   const users = await userRepository.find({
+    select: {
+      name: 1,
+      email: 1,
+      roles: 1,
+      active: 1,
+      isExternal: 1,
+      matriculation: 1,
+      institutes: 1,
+    },
     skip: (page - 1) * limit,
     where,
     limit,

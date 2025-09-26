@@ -24,11 +24,11 @@ class InteractionHelper {
 
     if (shouldProceed && !interaction.canAddParticipants) {
       interaction.finished = true;
-      interaction.answers.forEach((answer) => {
-        if (answer.status === IActivityStepStatus.idle) {
-          answer.status = IActivityStepStatus.finished;
+      for(let i = 0; i < interaction.answers.length; i++) {
+        if (interaction.answers[i].status === IActivityStepStatus.idle) {
+          interaction.answers[i].status = IActivityStepStatus.finished;
         }
-      });
+      }
 
       sendToQueue({
         context,

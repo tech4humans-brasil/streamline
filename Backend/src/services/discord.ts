@@ -23,6 +23,7 @@ interface DiscordMessage {
 
 const sendDiscordMessage = async (message: DiscordMessage) => {
   if (!webhookUrl) {
+    console.log("Discord webhook URL not found");
     return;
   }
 

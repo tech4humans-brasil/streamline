@@ -666,7 +666,8 @@
       "dueDate": "Prazo: ",
       "signatory": "Signatário",
       "pendingPeople": "Pessoas pendentes",
-      "pendingResponse": "Pendente de resposta"
+      "pendingResponse": "Pendente de resposta",
+      "errorMessage": "Erro ao executar a ação, entre em contato com o suporte"
     }
   },
   "response": {

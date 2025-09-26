@@ -499,7 +499,8 @@
       "dueDate": "Due Date: ",
       "signatory": "Signatory",
       "pendingPeople": "Pending people",
-      "pendingResponse": "Pending response"
+      "pendingResponse": "Pending response",
+      "errorMessage": "Error executing action, contact support"
     }
   }
 }

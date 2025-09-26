@@ -29,7 +29,7 @@ const columns = [
     label: "common.fields.email",
   },
   {
-    key: "institute",
+    key: "institutes",
     label: "common.fields.institute",
   },
   {
@@ -115,7 +115,7 @@ const Users: React.FC = () => {
       active: user.active
         ? t("common.fields.active")
         : t("common.fields.inactive"),
-      institute: user.institute?.acronym,
+      institutes: user.institutes?.at(0)?.name,
       actions: <Action {...user} />,
     }));
   }, [users]);

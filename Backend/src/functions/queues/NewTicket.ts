@@ -18,7 +18,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
   messageQueue,
   context
 ) => {
-  try {
     const { activity_id, activity_step_id, activity_workflow_id } =
       messageQueue;
 
@@ -121,11 +120,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
       context,
     });
 
-    await activity.save();
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
+  await activity.save();
 };
 
 export default new QueueWrapper<TMessage>(handler).configure({

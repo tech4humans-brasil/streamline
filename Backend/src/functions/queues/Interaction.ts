@@ -19,85 +19,121 @@ const handler: QueueWrapperHandler<TMessage> = async (
   messageQueue,
   context
 ) => {
-  try {
-    const { activity_id, activity_step_id, activity_workflow_id, client } =
-      messageQueue;
+  const { activity_id, activity_step_id, activity_workflow_id, client } =
+    messageQueue;
 
-    const activityRepository = new ActivityRepository(conn);
-    const formRepository = new FormRepository(conn);
-    const userRepository = new UserRepository(conn);
+  const activityRepository = new ActivityRepository(conn);
+  const formRepository = new FormRepository(conn);
+  const userRepository = new UserRepository(conn);
 
-    const activity = await activityRepository.findById({ id: activity_id });
+  const activity = await activityRepository.findById({ id: activity_id });
 
-    if (!activity) {
-      throw new Error("Activity not found");
+  if (!activity) {
+    throw new Error("Activity not found");
+  }
+
+  const activityWorkflow = activity.workflows.find(
+    (workflow) => workflow._id.toString() === activity_workflow_id
+  );
+
+  if (!activityWorkflow) {
+    throw new Error("Workflow not found");
+  }
+
+  const {
+    workflow_draft: { steps },
+  } = activityWorkflow;
+
+  const activityStep = activityWorkflow.steps.find(
+    (step) => step._id.toString() === activity_step_id
+  );
+
+  if (!activityStep) {
+    throw new Error("Step not found");
+  }
+
+  const step = steps.find(
+    (step) => step._id.toString() === activityStep.step.toString()
+  );
+
+  if (!step) {
+    throw new Error("Step not found");
+  }
+
+  const { data } = step as { data: IInteraction };
+
+  if (!data) {
+    throw new Error("Data not found");
+  }
+
+  const {
+    form_id,
+    to,
+    waitForOne = null,
+    canAddParticipants = false,
+    permissionAddParticipants = [],
+    sla_value = null,
+    sla_unit = null,
+  } = data;
+
+  let destination: string[] = to.flatMap((t) => {
+    if (t.includes("users")) {
+      return activity.users.map((u) => u._id.toString());
     }
 
-    const activityWorkflow = activity.workflows.find(
-      (workflow) => workflow._id.toString() === activity_workflow_id
-    );
+    return t;
+  });
 
-    if (!activityWorkflow) {
-      throw new Error("Workflow not found");
-    }
+  const users = await userRepository.find({
+    where: {
+      active: true,
+      $or: [
+        {
+          _id: { $in: destination },
+        },
+        {
+          "institutes._id": {
+            $in: destination,
+          },
+        },
+      ],
+    },
+    select: {
+      _id: 1,
+      name: 1,
+      email: 1,
+      matriculation: 1,
+      institute: 1,
+    },
+  });
 
-    const {
-      workflow_draft: { steps },
-    } = activityWorkflow;
+  if (!users.length && !canAddParticipants) {
+    throw new Error("Users not found");
+  }
 
-    const activityStep = activityWorkflow.steps.find(
-      (step) => step._id.toString() === activity_step_id
-    );
+  const form = await formRepository.findById({ id: form_id });
 
-    if (!activityStep) {
-      throw new Error("Step not found");
-    }
+  let interactionDueDate: Date | null = null;
 
-    const step = steps.find(
-      (step) => step._id.toString() === activityStep.step.toString()
-    );
+  if (sla_value) {
+    const slaCalculator = new Holiday();
 
-    if (!step) {
-      throw new Error("Step not found");
-    }
+    interactionDueDate = await slaCalculator.calculateDueDate(new Date(), sla_value, sla_unit);
+  }
 
-    const { data } = step as { data: IInteraction };
+  const waitFor = InteractionHelper.calculateWaitFor(users.length, data);
 
-    if (!data) {
-      throw new Error("Data not found");
-    }
-
-    const {
-      form_id,
-      to,
-      waitForOne = null,
-      waitType = null,
-      waitValue = null,
-      canAddParticipants = false,
-      permissionAddParticipants = [],
-      sla_value = null,
-      sla_unit = null,
-    } = data;
-
-    let destination: string[] = to.flatMap((t) => {
-      if (t.includes("users")) {
-        return activity.users.map((u) => u._id.toString());
-      }
-
-      return t;
-    });
-
-    const users = await userRepository.find({
+  const permissionAddParticipantsResult = await (async () => {
+    const usersP = await userRepository.find({
       where: {
+        active: true,
         $or: [
           {
-            _id: { $in: destination },
-            active: true,
+            _id: { $in: permissionAddParticipants },
           },
           {
             "institutes._id": {
-              $in: destination,
-              active: true,
+              $in: permissionAddParticipants,
             },
           },
         ],
@@ -106,103 +142,61 @@ const handler: QueueWrapperHandler<TMessage> = async (
         _id: 1,
         name: 1,
         email: 1,
-        matriculation: 1,
-        institute: 1,
+        active: 1,
       },
     });
 
-    if (!users.length && !canAddParticipants) {
-      throw new Error("Users not found");
-    }
+    return usersP;
+  })();
 
-    const form = await formRepository.findById({ id: form_id });
+  if (users.length === 0 && permissionAddParticipantsResult.length === 0) {
+    throw new Error("Users to and permissionAddParticipants not found");
+  }
 
-    let interactionDueDate: Date | null = null;
+  activity.interactions.push({
+    activity_workflow_id,
+    activity_step_id,
+    form: form.toObject(),
+    canAddParticipants,
+    permissionAddParticipants: permissionAddParticipantsResult.map((u) => u._id.toString()),
+    waitFor,
+    dueDate: interactionDueDate,
+    answers: users.map((u) => ({
+      status: "idle",
+      user: u,
+      data: null,
+    })),
+    finished: false,
+  });
 
-    if (sla_value) {
-      const slaCalculator = new Holiday();
+  await activity.save();
 
-      interactionDueDate = await slaCalculator.calculateDueDate(new Date(), sla_value, sla_unit);
-    }
-
-    const waitFor = InteractionHelper.calculateWaitFor(users.length, data);
-
-    const permissionAddParticipantsResult = await (async () => {
-      const usersP = await await userRepository.find({
-        where: {
-          $or: [
-            {
-              _id: { $in: permissionAddParticipants },
-              active:true,
-            },
-            {
-              "institutes._id": {
-                $in: permissionAddParticipants,
-                active: true,
-              },
-              active: true,
-            },
-          ],
-        },
-        select: {
-          _id: 1,
-          name: 1,
-          email: 1,
-          active: 1,
-        },
-      });
-
-      return usersP;
-    })();
-
-    if (users.length === 0 && permissionAddParticipantsResult.length === 0) {
-      throw new Error("Users to and permissionAddParticipants not found");
-    }
-
-    activity.interactions.push({
-      activity_workflow_id,
-      activity_step_id,
-      form: form.toObject(),
-      canAddParticipants,
-      permissionAddParticipants: permissionAddParticipantsResult.map((u) => u._id.toString()),
-      waitFor,
-      dueDate: interactionDueDate,
-      answers: users.map((u) => ({
-        status: "idle",
-        user: u,
-        data: null,
-      })),
-      finished: false,
-    });
-
-    await activity.save();
-
-    if (users.length > 0) {
-      const content = `
+  if (users.length > 0) {
+    const content = `
         <p>Olá, ${users.map((u) => u.name).join(", ")}!</p>
         <p>O formulário "${form.name}" foi enviado para você.</p>
         <p>Acesse o painel para responder.</p> 
         ${interactionDueDate ? `<p>O prazo para responder é até ${interactionDueDate.toLocaleString("pt-BR")}.</p>` : ""}
         ${waitForOne
-          ? "<p>Este formulário é necessário resposta de pelo menos um usuário.</p>"
-          : "Este formulário é necessário resposta de todos os usuários."
-        }
+        ? "<p>Este formulário é necessário resposta de pelo menos um usuário.</p>"
+        : "Este formulário é necessário resposta de todos os usuários."
+      }
         <a href="${process.env.FRONTEND_URL}/portal">Acessar o painel</a>
       `;
 
-      const { html, css } = await emailTemplate({ slug: client, content });
+    const { html, css } = await emailTemplate({ slug: client, content });
 
-      await sendEmail(
-        users.map((u) => u.email),
-        `[${activity.protocol}] - Você possui uma nova pendência!`,
-        html,
-        css
-      );
-    }
+    await sendEmail(
+      users.map((u) => u.email),
+      `[${activity.protocol}] - Você possui uma nova pendência!`,
+      html,
+      css
+    );
+  }
 
-    if (permissionAddParticipantsResult.length > 0 && canAddParticipants) {
+  if (permissionAddParticipantsResult.length > 0 && canAddParticipants) {
 
-      const content = `
+    const content = `
         <p>Olá, ${permissionAddParticipantsResult.map((u) => u.name).join(", ")}!</p>
         <p>O formulário "${form.name}" está pendente para que você selecione os participantes.</p>
         <div class="button-container">
@@ -210,23 +204,20 @@ const handler: QueueWrapperHandler<TMessage> = async (
         </div>
       `;
 
-      const { html, css } = await emailTemplate({ slug: client, content });
+    const { html, css } = await emailTemplate({ slug: client, content });
 
-      await sendEmail(
-        permissionAddParticipantsResult.map((u) => u.email),
-        `[${activity.protocol}] - Você precisa selecionar os participantes!`,
-        html,
-        css
-      );
-    }
-
-    activityStep.status = IActivityStepStatus.idle;
-
-    await activity.save();
-  } catch (err) {
-    console.error(err);
-    throw err;
+    await sendEmail(
+      permissionAddParticipantsResult.map((u) => u.email),
+      `[${activity.protocol}] - Você precisa selecionar os participantes!`,
+      html,
+      css
+    );
   }
+
+  activityStep.status = IActivityStepStatus.idle;
+
+  await activity.save();
+
 };
 
 export default new QueueWrapper<TMessage>(handler).configure({

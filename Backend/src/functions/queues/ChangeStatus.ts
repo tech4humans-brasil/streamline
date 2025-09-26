@@ -9,104 +9,100 @@ import { sendEmail } from "../../services/email";
 import emailTemplate from "../../utils/emailTemplate";
 import sendNextQueue from "../../utils/sendNextQueue";
 
-interface TMessage extends GenericMessage {}
+interface TMessage extends GenericMessage { }
 
 const handler: QueueWrapperHandler<TMessage> = async (
   conn,
   messageQueue,
   context
 ) => {
-  try {
-    const { activity_id, activity_step_id, activity_workflow_id, client } =
-      messageQueue;
 
-    const activityRepository = new ActivityRepository(conn);
-    const statusRepository = new StatusRepository(conn);
+  const { activity_id, activity_step_id, activity_workflow_id, client } =
+    messageQueue;
 
-    const activity = await activityRepository.findById({ id: activity_id });
+  const activityRepository = new ActivityRepository(conn);
+  const statusRepository = new StatusRepository(conn);
 
-    if (!activity) {
-      throw new Error("Activity not found");
-    }
+  const activity = await activityRepository.findById({ id: activity_id });
 
-    const activityWorkflow = activity.workflows.find(
-      (workflow) => workflow._id.toString() === activity_workflow_id
-    );
+  if (!activity) {
+    throw new Error("Activity not found");
+  }
 
-    if (!activityWorkflow) {
-      throw new Error("Workflow not found");
-    }
+  const activityWorkflow = activity.workflows.find(
+    (workflow) => workflow._id.toString() === activity_workflow_id
+  );
 
-    const {
-      workflow_draft: { steps },
-    } = activityWorkflow;
+  if (!activityWorkflow) {
+    throw new Error("Workflow not found");
+  }
 
-    const activityStep = activityWorkflow.steps.find(
-      (step) => step._id.toString() === activity_step_id
-    );
+  const {
+    workflow_draft: { steps },
+  } = activityWorkflow;
 
-    if (!activityStep) {
-      throw new Error("Step not found");
-    }
+  const activityStep = activityWorkflow.steps.find(
+    (step) => step._id.toString() === activity_step_id
+  );
 
-    const step = steps.find(
-      (step) => step._id.toString() === activityStep.step.toString()
-    );
+  if (!activityStep) {
+    throw new Error("Step not found");
+  }
 
-    if (!step) {
-      throw new Error("Step not found");
-    }
+  const step = steps.find(
+    (step) => step._id.toString() === activityStep.step.toString()
+  );
 
-    const { data } = step as { data: IChangeStatus };
+  if (!step) {
+    throw new Error("Step not found");
+  }
 
-    if (!data) {
-      throw new Error("Data not found");
-    }
+  const { data } = step as { data: IChangeStatus };
 
-    const { status_id } = data;
+  if (!data) {
+    throw new Error("Data not found");
+  }
 
-    const status = await statusRepository.findById({ id: status_id });
+  const { status_id } = data;
 
-    if (!status) {
-      throw new Error("Status not found");
-    }
+  const status = await statusRepository.findById({ id: status_id });
 
-    const lastStatus = activity.status;
-    activity.status = status;
+  if (!status) {
+    throw new Error("Status not found");
+  }
 
-    await sendNextQueue({
-      conn,
-      activity,
-      context,
-    });
+  const lastStatus = activity.status;
+  activity.status = status;
 
-    await activity.save();
+  await sendNextQueue({
+    conn,
+    activity,
+    context,
+  });
 
-    const content = `
+  await activity.save();
+
+  const content = `
     <p>Olá, ${activity.users.at(0).name}!</p>
     <p>A atividade "${activity.name}" mudou de status para "${status.name}".</p>
     <p>Anteriormente, o status era "${lastStatus.name}".</p>
     <p>Para mais informações, acesse o sistema.</p>
-    <a href="${process.env.FRONTEND_URL}/portal/activity/${
-      activity._id
+    <a href="${process.env.FRONTEND_URL}/portal/activity/${activity._id
     }">Acessar o painel</a>
 `;
 
-    const { html, css } = await emailTemplate({
-      content,
-      slug: client,
-    });
+  const { html, css } = await emailTemplate({
+    content,
+    slug: client,
+  });
 
-    await sendEmail(
-      activity.users.map((user) => user.email),
-      `[${activity.protocol}] - Sua atividade mudou de status!`,
-      html,
-      css
-    );
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
+  await sendEmail(
+    activity.users.map((user) => user.email),
+    `[${activity.protocol}] - Sua atividade mudou de status!`,
+    html,
+    css
+  );
+
 };
 
 export default new QueueWrapper<TMessage>(handler).configure({
