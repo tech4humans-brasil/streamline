@@ -7,8 +7,6 @@
 
 **Streamline** é uma plataforma completa de automação de processos e workflows, projetada para reduzir o TOIL (Trabalho Operacional Desnecessário) e melhorar a eficiência organizacional através de fluxos de trabalho automatizados e inteligentes.
 
-![Streamline Architecture](docs/images/architecture-overview.png)
-
 ## ✨ Principais Funcionalidades
 
 ### 🔄 **Automação de Workflows**
@@ -177,23 +175,6 @@ Adoramos contribuições! Veja nosso [Guia de Contribuição](CONTRIBUTING.md) p
 4. **Commit** suas mudanças: `git commit -m 'feat: adiciona nova funcionalidade'`
 5. **Push** para a branch: `git push origin feature/minha-feature`
 6. **Abra** um Pull Request
-
-## 📊 Roadmap
-
-### 🎯 Próximimas Funcionalidades
-- [ ] **Mobile App** - Aplicativo React Native
-- [ ] **Plugin System** - Sistema de plugins extensível
-- [ ] **AI Integration** - Assistente IA para criação de workflows
-- [ ] **Advanced Analytics** - Dashboards mais robustos
-- [ ] **Multi-tenancy** - Suporte para múltiplas organizações
-
-### 🔄 Melhorias Planejadas
-- [ ] **Performance** - Otimizações de renderização
-- [ ] **Accessibility** - Melhor suporte para acessibilidade
-- [ ] **Internationalization** - Suporte para mais idiomas
-- [ ] **Real-time Updates** - WebSockets para atualizações em tempo real
-
-## 🆘 Suporte
 
 ### 💬 Comunidade
 - **GitHub Discussions**: Para perguntas e discussões gerais
