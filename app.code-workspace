@@ -10,17 +10,8 @@
       "path": "IaC"
     },
     {
-      "path": "Assistant"
-    },
-    {
       "name": "Actions",
       "path": ".github/workflows"
-    },
-    {
-      "path": "scripts"
     }
-  ],
-  "settings": {
-    "atlascode.bitbucket.enabled": false
-  },
+  ]
 }
