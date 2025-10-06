@@ -12,18 +12,12 @@ export const handler: HttpHandler = async (_, req) => {
   const adminConn = await connectAdmin();
   const clientModel = new AdminRepository(adminConn);
 
-  const host = req.headers.origin;
   const { slug } = req.query as Params;
 
   const where = !!slug ? {
     acronym: slug,
   } : {
     principal: true,
-    domains: {
-      $elemMatch: {
-        $eq: host,
-      },
-    },
   };
 
   const client = await clientModel.findOne({
@@ -38,13 +32,6 @@ export const handler: HttpHandler = async (_, req) => {
   });
 
   const slugs = await clientModel.find({
-    where: {
-      domains: {
-        $elemMatch: {
-          $eq: host,
-        },
-      },
-    },
     select: {
       acronym: 1,
     },
