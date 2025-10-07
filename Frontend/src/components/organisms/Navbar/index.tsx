@@ -14,7 +14,6 @@ import { Link as ReactRouterLink, useLocation } from "react-router-dom";
 import {
   BsHouse,
   BsPerson,
-  BsPostcardFill,
   BsActivity,
   BsFolder,
 } from "react-icons/bs";

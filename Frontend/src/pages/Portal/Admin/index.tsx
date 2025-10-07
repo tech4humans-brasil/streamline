@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next";
 import Text from "@components/atoms/Inputs/Text";
 import { showAdmin, updateAdmin } from "@apis/admin";
 import File from "@components/atoms/Inputs/File";
-import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 import Switch from "@components/atoms/Inputs/Switch";
 
 const adminSchema = z.object({
