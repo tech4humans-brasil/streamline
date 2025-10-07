@@ -138,7 +138,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     <p>Aqui estão algumas informações importantes:</p>
     <ul>
         <li>O domínio de sua conta é: ${client.acronym}</li>
-        <li>Você pode fazer login em: <a href="${client.domains?.[0] ?? process.env.FRONTEND_URL}">Acessar o sistema</a></li>
+        <li>Você pode fazer login em: <a href="${process.env.FRONTEND_URL}">Acessar o sistema</a></li>
         <li>Seu email de acesso: ${user.email}</li>
     </ul>
   `;

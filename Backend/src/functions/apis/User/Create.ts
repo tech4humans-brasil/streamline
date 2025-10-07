@@ -59,16 +59,14 @@ const handler: HttpHandler = async (conn, req) => {
 
   const content = `
     <p>Olá, ${user.name}!</p>
-    <p>Seu cadastro foi realizado com sucesso em nosso site por ${
-      admin?.name
+    <p>Seu cadastro foi realizado com sucesso em nosso site por ${admin?.name
     }.</p>
     <p>Sua conta foi criada em ${new Date().toLocaleString()}.</p>
     <p>Aqui estão algumas informações importantes:</p>
     <ul>
         <li>O domínio de sua conta é: ${conn.name}</li>
-        <li>Defina sua senha aqui: <a href="${
-          admin?.domains.at(0) ?? process.env.FRONTEND_URL
-        }/auth/alter-password/${token}">Acessar o painel</a></li>
+        <li>Defina sua senha aqui: <a href="${process.env.FRONTEND_URL
+    }/auth/alter-password/${token}">Acessar o painel</a></li>
         <li>Verifique seu e-mail para mais instruções sobre como aproveitar ao máximo nossos serviços.</li>
     </ul>
 `;
