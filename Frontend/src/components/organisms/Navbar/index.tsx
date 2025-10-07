@@ -149,15 +149,6 @@ function Sidebar() {
           />
         </Can>
 
-        <Can permission="reporting.view">
-          <NavLink
-            id="reportings"
-            to="/portal/reportings"
-            label="title.reportings"
-            icon={BsPostcardFill}
-            active={location.pathname === "/portal/reportings"}
-          />
-        </Can>
 
         <Can permission="equipment.view">
           <NavLink
@@ -168,17 +159,6 @@ function Sidebar() {
             active={location.pathname === "/portal/equipment"}
           />
         </Can>
-
-        <Can permission="report.view">
-          <NavLink
-            id="reports"
-            to="/portal/reports"
-            label="title.reports"
-            icon={BsPostcardFill}
-            active={location.pathname === "/portal/reports"}
-          />
-        </Can>
-
       </List>
     </div>
   );

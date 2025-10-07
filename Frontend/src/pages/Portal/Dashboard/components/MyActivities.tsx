@@ -141,6 +141,17 @@ const MyActivities: React.FC = () => {
               label: t("common.fields.description"),
             }}
           />
+          <Select
+            input={{
+              id: "automatic",
+              label: t("common.fields.automatic"),
+              options: [
+                { label: t("common.fields.yes"), value: "true" },
+                { label: t("common.fields.no"), value: "false" },
+              ],
+            }}
+          />
+
           <IconButton
             ml="auto"
             aria-label={t("common.refresh")}
@@ -149,7 +160,6 @@ const MyActivities: React.FC = () => {
             isLoading={isLoading}
           />
         </Flex>
-
       </Filter.Container>
 
       <Flex

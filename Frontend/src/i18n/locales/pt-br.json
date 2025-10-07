@@ -57,6 +57,7 @@
       "discarded": "Descartado",
       "damaged": "Danificado",
       "office": "Escritório",
+      "automatic": "Automático",
       "timezone": "Fuso horário",
       "search": "Pesquisar",
       "acronym": "Sigla",
@@ -606,7 +607,6 @@
       "name": "Nome",
       "acronym": "Sigla",
       "principal": "Principal",
-      "domains": "Domínios",
       "clicksignApiKey": "Chave API Clicksign",
       "icon": "Ícone",
       "emailSender": "Remetente do Email",
@@ -614,7 +614,9 @@
       "googleClientId": "ID do Cliente Google",
       "googleClientSecret": "Segredo do Cliente Google",
       "googleRedirectUri": "URI de Redirecionamento Google",
-      "logo": "Logo"
+      "logo": "Logo",
+      "externalUsersAllow": "Permitir usuários externos",
+      "externalUsersRedirect": "Redirecionamento para usuários externos"
     },
     "cancel": "Cancelar",
     "submit": "Salvar"

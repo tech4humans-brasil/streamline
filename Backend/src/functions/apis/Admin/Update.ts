@@ -6,7 +6,7 @@ import { FileUploaded } from "../../../services/upload";
 import { IAdminClient } from "../../../models/admin/Client";
 
 export const handler: HttpHandler = async (_, req) => {
-  const { name, config, logo, icon, domains, principal } =
+  const { name, config, logo, icon, principal } =
     req.body as IAdminClient;
 
   const adminConn = await connectAdmin();
@@ -22,7 +22,6 @@ export const handler: HttpHandler = async (_, req) => {
 
   client.principal = principal;
   if (name) client.name = name;
-  if (domains) client.domains = domains;
   if (config) {
     client.config = config;
   }
@@ -45,7 +44,6 @@ export default new Http(handler)
     body: schema.object().shape({
       name: schema.string().optional(),
       acronym: schema.string().optional(),
-      domains: schema.array(schema.string()).required(),
       principal: schema.boolean().required(),
       config: schema
         .object()

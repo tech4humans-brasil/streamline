@@ -159,16 +159,6 @@ const Admin: React.FC = () => {
               }}
             />
 
-            <CreatableSelect
-              input={{
-                id: "domains",
-                label: t("admin.fields.domains"),
-                required: true,
-                options: [],
-              }}
-              isMulti
-            />
-
             <File
               input={{
                 id: "logo",

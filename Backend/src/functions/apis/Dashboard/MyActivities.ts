@@ -13,6 +13,7 @@ interface Query {
 const filterQueryBuilder = new FilterQueryBuilder({
   finished: { type: WhereEnum.CUSTOM, alias: "finished_at" },
   user: { type: WhereEnum.EQUAL, alias: "users._id" },
+  automatic: { type: WhereEnum.BOOLEAN, alias: "automatic" },
   form: { type: WhereEnum.ARRAY, alias: "form" },
   search: { type: WhereEnum.ILIKE, alias: "description" },
 },

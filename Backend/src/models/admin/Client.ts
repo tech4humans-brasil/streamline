@@ -7,7 +7,6 @@ export interface IAdminClient extends mongoose.Document {
   acronym: string;
   logo: FileUploaded | null;
   icon: FileUploaded | null;
-  domains: string[];
   principal: boolean;
   config: {
     emailSender: string | null;
@@ -34,7 +33,6 @@ export const schema = new Schema<IAdminClient>(
     acronym: { type: String, required: true },
     logo: { type: Object, required: false, default: null },
     icon: { type: Object, required: false, default: null },
-    domains: [{ type: String, required: false, default: null, index: 1 }],
     principal: { type: Boolean, required: false, default: true },
     config: {
       emailSender: { type: String, required: false, default: null },
