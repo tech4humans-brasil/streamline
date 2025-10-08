@@ -15,10 +15,9 @@ interface Body {
   name: string;
   acronym: string;
   email: string;
-  domain: string;
 }
 export const handler: HttpHandler = async (_, req, context) => {
-  const { name, acronym, email, domain } = req.body as Body;
+  const { name, acronym, email } = req.body as Body;
 
   const adminConn = await connectAdmin();
 
@@ -33,7 +32,6 @@ export const handler: HttpHandler = async (_, req, context) => {
   const instance = await new AdminClient(adminConn).model().create({
     acronym,
     name,
-    domain,
   });
 
   const conn = connect(instance.acronym);
@@ -115,7 +113,6 @@ export default new Http(handler)
         .matches(/^[a-z0-9_-]+$/)
         .required(),
       email: schema.string().email(),
-      domain: schema.string().url(),
     }),
   }))
   .configure({
