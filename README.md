@@ -176,15 +176,9 @@ Adoramos contribuições! Veja nosso [Guia de Contribuição](CONTRIBUTING.md) p
 5. **Push** para a branch: `git push origin feature/minha-feature`
 6. **Abra** um Pull Request
 
-### 💬 Comunidade
-- **GitHub Discussions**: Para perguntas e discussões gerais
-- **GitHub Issues**: Para bugs e requests de features
-- **Discord**: [Junte-se ao nosso servidor](https://discord.gg/streamline)
-
 ### 📧 Contato
-- **Email**: team@streamline.dev
-- **Website**: https://streamline.dev
-- **Blog**: https://blog.streamline.dev
+- **Nome**: Luis Ricardo
+- **Email**: luis.ricardo@tech4h.com.br
 
 ## 📄 Licença
 
@@ -195,7 +189,5 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 <div align="center">
 
 **⭐ Se este projeto foi útil para você, considere dar uma estrela!**
-
-Feito com ❤️ pela equipe [Tech4H](https://github.com/tech4h)
 
 </div>
