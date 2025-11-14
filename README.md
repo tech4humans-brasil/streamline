@@ -7,6 +7,8 @@
 
 **Streamline** é uma plataforma completa de automação de processos e workflows, projetada para reduzir o TOIL (Trabalho Operacional Desnecessário) e melhorar a eficiência organizacional através de fluxos de trabalho automatizados e inteligentes.
 
+### Para guias, tutoriais e outras informações, consulte a [Streamline Wiki](https://github.com/tech4humans-brasil/streamline/wiki)
+
 ## ✨ Principais Funcionalidades
 
 ### 🔄 **Automação de Workflows**
@@ -97,13 +99,27 @@ cp local.example.setting.json local.settings.json
 **Variáveis de Ambiente Necessárias:**
 ```json
 {
+  "IsEncrypted": false,
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "MONGO_URI": "sua-string-conexao-mongodb",
-    "JWT_SECRET": "seu-jwt-secret-super-seguro",
-    "FRONTEND_URL": "http://localhost:5173",
-    "SENDGRID_API_KEY": "sua-chave-sendgrid",
-    "NODE_ENV": "development"
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "AzureWebJobsStorage": "sua-connection-string-azure-storage-para-webjobs",
+    "AZURE_STORAGE_CONNECTION_STRING": "sua-connection-string-azure-storage-para-aplicacao",
+    "AZURE_SERVICE_BUS_CONNECTION_STRING": "sua-connection-string-azure-service-bus",
+    "JWT_SECRET": "seu-jwt-secret-de-autenticacao",
+    "JWT_RESET_PASSWORD_SECRET": "seu-jwt-secret-de-reset-de-senha",
+    "MONGO_ADMIN_DB": "nome-do-banco-de-dados-admin-ou-global",
+    "FRONTEND_URL": "url-do-seu-frontend",
+    "MONGO_URI": "uri-mongodb",
+    "MONGO_PARAMS": "parametros-mongodb",
+    "EMAIL_ACCOUNT": "seu-email-de-remetente padrão",
+    "SENDGRID_API_KEY": "sua-sendgrid-api-key",
+    "LOGGIN": "true-ou-false",
+    "DISCORD_WEBHOOK_URL": "seu-discord-webhook-url",
+    "NODE_ENV": "development-ou-production"
+  },
+  "Host": {
+    "CORS": "*"
   }
 }
 ```
@@ -138,25 +154,6 @@ npm run dev
 ### 4. Acesse a Aplicação
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:7071/api
-
-## 📚 Documentação
-
-### Guias de Uso
-- [🎯 **Criando seu Primeiro Workflow**](docs/guides/first-workflow.md)
-- [📋 **Configurando Formulários**](docs/guides/forms-setup.md)
-- [⚙️ **Integrações e APIs**](docs/guides/integrations.md)
-- [👥 **Gerenciamento de Usuários**](docs/guides/user-management.md)
-
-### Referência Técnica
-- [🔌 **API Reference**](docs/api/README.md)
-- [🏗️ **Arquitetura Detalhada**](docs/architecture/README.md)
-- [🧩 **Componentes de Workflow**](docs/components/README.md)
-- [🚀 **Deploy e Produção**](docs/deployment/README.md)
-
-### Desenvolvimento
-- [💻 **Guia de Desenvolvimento**](docs/development/README.md)
-- [🧪 **Testes**](docs/development/testing.md)
-- [🎨 **Padrões de Código**](docs/development/code-standards.md)
 
 ## 🤝 Contribuindo
 
