@@ -49,32 +49,38 @@ npm run test       # Executa testes
 {
   "IsEncrypted": false,
   "Values": {
+    // Configuração de Runtime do Worker Functions (Node.js)
     "FUNCTIONS_WORKER_RUNTIME": "node",
+
+    // Configurações Globais da Azure Functions
     "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
-    
-    // Database
-    "MONGO_URI": "mongodb://localhost:27017/streamline",
-    "MONGO_PARAMS": "authSource=admin",
-    
-    // Authentication
-    "JWT_SECRET": "seu-jwt-secret-super-seguro",
-    "JWT_RESET_PASSWORD_SECRET": "outro-secret-para-reset",
-    
-    // External Services
-    "SENDGRID_API_KEY": "sua-chave-sendgrid",
-    "EMAIL_ACCOUNT": "noreply@suaempresa.com",
-    "SENTRY_DSN": "sua-dsn-sentry-opcional",
-    
-    // Storage (Azure)
-    "AZURE_STORAGE_CONNECTION_STRING": "sua-connection-string",
-    "AZURE_SERVICE_BUS_CONNECTION_STRING": "sua-service-bus-string",
-    
-    // Configuration
-    "FRONTEND_URL": "http://localhost:5173",
-    "NODE_ENV": "development",
-    "LOGGING": "true"
+    "AzureWebJobsStorage": "sua-connection-string-azure-storage-para-webjobs",
+
+    // Configurações de Connection String para Serviços Azure (Azure Storage e Service Bus)
+    "AZURE_STORAGE_CONNECTION_STRING": "sua-connection-string-azure-storage-para-aplicacao",
+    "AZURE_SERVICE_BUS_CONNECTION_STRING": "sua-connection-string-azure-service-bus",
+
+    // Configurações de Json Web Token (JWT) para Autenticação
+    "JWT_SECRET": "seu-jwt-secret-de-autenticacao",
+    "JWT_RESET_PASSWORD_SECRET": "seu-jwt-secret-de-reset-de-senha",
+
+    // Configurações de Banco de Dados MongoDB
+    "MONGO_ADMIN_DB": "nome-do-banco-de-dados-admin-ou-global",
+    "MONGO_URI": "uri-mongodb",
+    "MONGO_PARAMS": "parametros-mongodb",
+
+    // Configurações de Email (Remetente e SendGrid)
+    "EMAIL_ACCOUNT": "seu-email-de-remetente padrão",
+    "SENDGRID_API_KEY": "sua-sendgrid-api-key",
+
+    // Variáveis Diversas (Frontend URL, Logs e Ambiente)
+    "FRONTEND_URL": "url-do-seu-frontend",
+    "LOGGIN": "true-ou-false",
+    "DISCORD_WEBHOOK_URL": "seu-discord-webhook-url",
+    "NODE_ENV": "development-ou-production"
   },
   "Host": {
+    // Configuração de CORS (Cross-Origin Resource Sharing)
     "CORS": "*"
   }
 }
@@ -177,20 +183,15 @@ npm run test:watch
 npm run test:coverage
 ```
 
-### Estrutura de Testes
-```
-├── __tests__/
-│   ├── unit/           # Testes unitários
-│   ├── integration/    # Testes de integração
-│   └── fixtures/       # Dados de teste
-```
-
 ## 🚀 Deploy
 
 ### Desenvolvimento
+
+Recomendado: Use o **VS Code** e instale a extensão ofical para **Azure Functions
+
 ```bash
 # Desenvolvimento local
-func start --port 7071
+npm run dev
 
 # Build para produção
 npm run build
