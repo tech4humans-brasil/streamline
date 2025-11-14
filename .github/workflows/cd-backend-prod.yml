@@ -1,0 +1,166 @@
+name: "[CD] Backend - Production"
+run-name: "[CD] Backend Prod by ${{ github.actor }}"
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: 
+
+env:
+  NODE_VERSION: 20
+  PROJECT_PATH: ./Backend
+  ARTIFACT_NAME: build-${{ github.event.repository.name }}-backend-${{ github.run_id }}
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    name: Install Dependencies
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Alter path of project
+        run: |
+          cd ${{ env.PROJECT_PATH }}
+
+      - name: Cache Dependencies
+        id: packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{env.PROJECT_PATH}}/node_modules
+          key: ${{ runner.os }}-backend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-backend-
+
+      - name: Install Dependencies
+        if: steps.packages.outputs.cache-hit != 'true'
+        run: |
+          cd ${{ env.PROJECT_PATH }}
+          npm install
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    needs: [install]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Alter path of project
+        run: |
+          cd ${{ env.PROJECT_PATH }}
+
+      - name: Cache dependencies
+        id: packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{env.PROJECT_PATH}}/node_modules
+          key: ${{ runner.os }}-backend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-backend-
+
+      - name: Build
+        run: |
+              cd ${{ env.PROJECT_PATH }}
+              npm run build
+
+      - name: "Remove Dev Dependencies"
+        shell: bash
+        run: |
+              pushd '${{env.PROJECT_PATH}}'
+              npm prune --production
+        
+      - name: "Zip build artifact"
+        shell: bash
+        run: |
+          pushd '${{env.PROJECT_PATH}}'
+          zip -r ${{env.ARTIFACT_NAME}}.zip * 
+
+      - name: "Upload Artifact of Function App"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.ARTIFACT_NAME}}
+          path:  ${{env.PROJECT_PATH}}/${{env.ARTIFACT_NAME}}.zip
+          if-no-files-found: error
+
+  # test:
+  #   runs-on: ubuntu-latest
+  #   name: Test
+  #   needs: [install]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Use Node.js ${{ env.NODE_VERSION }}
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+
+  #     - name: Alter path of project
+  #       run: |
+  #         cd ${{ env.PROJECT_PATH }}
+
+  #     - name: Cache dependencies
+  #       id: packages
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: |
+  #           ${{env.PROJECT_PATH}}/node_modules
+  #         key: ${{ runner.os }}-backend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
+  #         restore-keys: ${{ runner.os }}-backend-
+
+  #     - name: Test
+  #       run: |
+  #         cd ${{ env.PROJECT_PATH }}
+  #         npm run test
+
+  deploy:
+    name: "Azure Functions Deploy"
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      url: ${{ steps.deployFunctionApp.outputs.app-url }}
+    environment: 
+        name: Production
+        url: ${{ steps.deployFunctionApp.outputs.app-url }}
+    steps:
+      - name: "Download Artifact"
+        uses: actions/download-artifact@v4
+        with:
+            name: ${{ env.ARTIFACT_NAME }}
+
+      - name: "Login to Azure"
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: "Unzip Artifact"
+        shell: bash
+        run: |
+          unzip ${{env.ARTIFACT_NAME}}.zip -d .
+          rm ${{env.ARTIFACT_NAME}}.zip
+
+      - name: "Run process of Azure Functions Deploy"
+        uses: Azure/functions-action@v1
+        id: deployFunctionApp
+        with:
+          app-name: ${{ vars.FUNCTION_NAME }}
+          slot-name: "production"
+          package: .
+

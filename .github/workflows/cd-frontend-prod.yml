@@ -1,17 +1,20 @@
-name: "[CD] Backend"
-run-name: "[CD] Backend by ${{ github.actor }}"
+name: "[CD] Frontend - Production"
+run-name: "[CD] Frontend Prod by ${{ github.actor }}"
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    tags:
+      - 'v*'
   workflow_dispatch: 
 
 env:
   NODE_VERSION: 20
-  PROJECT_PATH: ./Backend
-  ARTIFACT_NAME: build-${{ github.event.repository.name }}-backend-${{ github.run_id }}
+  PROJECT_PATH: ./Frontend
+  ARTIFACT_NAME: build-${{ github.event.repository.name }}frontend-${{ github.run_id }}
+  OUTPUT_PATH: /dist
+  CI: false
+  NODE_OPTIONS: "--max_old_space_size=4096"
+  ENVIROMENT: 
 
 jobs:
   install:
@@ -36,19 +39,21 @@ jobs:
         with:
           path: |
             ${{env.PROJECT_PATH}}/node_modules
-          key: ${{ runner.os }}-backend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-backend-
+          key: ${{ runner.os }}-frontend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-frontend-
 
       - name: Install Dependencies
         if: steps.packages.outputs.cache-hit != 'true'
         run: |
           cd ${{ env.PROJECT_PATH }}
-          npm install
+          npm install --legacy-peer-deps
 
   build:
     runs-on: ubuntu-latest
     name: Build
     needs: [install]
+    environment: 
+        name: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,31 +73,30 @@ jobs:
         with:
           path: |
             ${{env.PROJECT_PATH}}/node_modules
-          key: ${{ runner.os }}-backend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-backend-
+          key: ${{ runner.os }}-frontend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-frontend-
 
       - name: Build
+        env:
+          VITE_BASE_URL: ${{ vars.VITE_BASE_URL }}
+          VITE_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          VITE_GA_TOKEN: ${{ secrets.GA_TOKEN }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         run: |
               cd ${{ env.PROJECT_PATH }}
               npm run build
-
-      - name: "Remove Dev Dependencies"
-        shell: bash
-        run: |
-              pushd '${{env.PROJECT_PATH}}'
-              npm prune --production
         
       - name: "Zip build artifact"
         shell: bash
         run: |
-          pushd '${{env.PROJECT_PATH}}'
+          pushd '${{env.PROJECT_PATH}}'/${{env.OUTPUT_PATH}}
           zip -r ${{env.ARTIFACT_NAME}}.zip * 
 
       - name: "Upload Artifact of Function App"
         uses: actions/upload-artifact@v4
         with:
           name: ${{env.ARTIFACT_NAME}}
-          path:  ${{env.PROJECT_PATH}}/${{env.ARTIFACT_NAME}}.zip
+          path:  ${{env.PROJECT_PATH}}/${{env.OUTPUT_PATH}}/${{env.ARTIFACT_NAME}}.zip
           if-no-files-found: error
 
   # test:
@@ -118,8 +122,8 @@ jobs:
   #       with:
   #         path: |
   #           ${{env.PROJECT_PATH}}/node_modules
-  #         key: ${{ runner.os }}-backend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
-  #         restore-keys: ${{ runner.os }}-backend-
+  #         key: ${{ runner.os }}-frontend-${{ hashFiles('${{env.PROJECT_PATH}}/pnpm-lock.yaml') }}
+  #         restore-keys: ${{ runner.os }}-frontend-
 
   #     - name: Test
   #       run: |
@@ -127,29 +131,18 @@ jobs:
   #         npm run test
 
   deploy:
-    name: "Azure Functions Deploy"
+    name: "Azure Static Webapp Deploy"
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     outputs:
-      url: ${{ steps.deployFunctionApp.outputs.app-url }}
+      url: ${{ steps.builddeploy.outputs.static_web_app_url }}
     environment: 
-        name: ${{ github.ref == 'refs/heads/develop' && 'Development' || 'Production' }}
-        url: ${{ steps.deployFunctionApp.outputs.app-url }}
+        name: Production
     steps:
       - name: "Download Artifact"
         uses: actions/download-artifact@v4
         with:
             name: ${{ env.ARTIFACT_NAME }}
-
-      - name: "Login to Azure"
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: "Unzip Artifact"
         shell: bash
@@ -157,10 +150,14 @@ jobs:
           unzip ${{env.ARTIFACT_NAME}}.zip -d .
           rm ${{env.ARTIFACT_NAME}}.zip
 
-      - name: "Run process of Azure Functions Deploy"
-        uses: Azure/functions-action@v1
-        id: deployFunctionApp
+      - name: Deploy to Azure Static Web Apps
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
         with:
-          app-name: ${{ vars.FUNCTION_NAME }}
-          slot-name: "production"
-          package: .
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          azure_static_web_apps_api_token: ${{ secrets.TOKEN }}
+          action: "upload"
+          app_location: "/"
+          app_artifact_location: "/"
+          skip_app_build: true
+
