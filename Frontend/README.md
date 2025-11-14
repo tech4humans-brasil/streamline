@@ -69,13 +69,9 @@ npm run lint       # Linting do código
 ```env
 # API Configuration
 VITE_BASE_URL=http://localhost:7071/api
-VITE_SENTRY_AUTH_TOKEN=seu-token-sentry-opcional
 
 # Authentication
 VITE_GOOGLE_CLIENT_ID=seu-google-client-id
-
-# Analytics
-VITE_GA_TOKEN=seu-google-analytics-token
 ```
 
 ## 🧩 Componentes Principais
@@ -266,32 +262,6 @@ const className = cn(
 );
 ```
 
-## 🧪 Testes
-
-### Estrutura de Testes
-```
-src/
-├── __tests__/
-│   ├── components/     # Testes de componentes
-│   ├── pages/          # Testes de páginas
-│   ├── hooks/          # Testes de hooks
-│   └── utils/          # Testes de utilitários
-```
-
-### Testing Library Setup
-```typescript
-// Componente de teste wrapper
-const TestWrapper = ({ children }) => (
-  <ChakraProvider theme={theme}>
-    <QueryClient client={testQueryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
-    </QueryClient>
-  </ChakraProvider>
-);
-```
-
 ## 🚀 Build e Deploy
 
 ### Development
@@ -414,7 +384,6 @@ if ('serviceWorker' in navigator) {
 1. **Componentes**: Siga o padrão Atomic Design
 2. **Hooks**: Prefixe com `use` e documente
 3. **Tipos**: Use TypeScript strict mode
-4. **Testes**: Cobertura mínima de 80%
 5. **Commits**: Siga Conventional Commits
 
 ### Code Standards
