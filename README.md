@@ -7,6 +7,8 @@
 
 **Streamline** é uma plataforma completa de automação de processos e workflows, projetada para reduzir o TOIL (Trabalho Operacional Desnecessário) e melhorar a eficiência organizacional através de fluxos de trabalho automatizados e inteligentes.
 
+### [Conheça o Streamline: a ferramenta de automação da T4H agora em Open Source](https://www.youtube.com/watch?v=P6d1OfvwTRE)
+
 ### Para guias, tutoriais e outras informações, consulte a [Streamline Wiki](https://github.com/tech4humans-brasil/streamline/wiki)
 
 ## ✨ Principais Funcionalidades
