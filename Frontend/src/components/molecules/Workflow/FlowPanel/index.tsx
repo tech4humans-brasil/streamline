@@ -71,7 +71,6 @@ const FlowPanel: React.FC = () => {
         type: NodeTypes.Script,
         icon: <BiLogoJavascript size={20} />,
         category: NodeCategory.Automation,
-        requiresPermission: "workflow.script",
       },
     ],
     []
