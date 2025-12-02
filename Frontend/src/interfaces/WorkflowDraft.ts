@@ -11,6 +11,7 @@ export enum NodeTypes {
   Script = "script",
   NewTicket = "new_ticket",
   Clicksign = "clicksign",
+  Delay = "delay",
 }
 
 export enum NodeCategory {
@@ -126,6 +127,13 @@ export interface IClicksign {
   fields: Record<string, string>;
 }
 
+export interface IDelay {
+  name: string;
+  time_value: number;
+  time_unit: "seconds" | "minutes" | "hours" | "days";
+  visible: boolean;
+}
+
 export type IStep = {
   _id: string;
   id: string;
@@ -177,6 +185,10 @@ export type IStep = {
   | {
       type: NodeTypes.Clicksign;
       data: IClicksign;
+    }
+  | {
+      type: NodeTypes.Delay;
+      data: IDelay;
     }
 );
 

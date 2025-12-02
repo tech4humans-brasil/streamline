@@ -427,6 +427,16 @@
         "title": "Interação",
         "description": "Solicita interação manual de um usuário"
       },
+      "delay": {
+        "title": "Aguardar",
+        "description": "Aguarda um determinado tempo antes de continuar",
+        "units": {
+          "seconds": "Segundos",
+          "minutes": "Minutos",
+          "hours": "Horas",
+          "days": "Dias"
+        }
+      },
       "swap_workflow": {
         "title": "Trocar fluxo",
         "description": "Redireciona para outro fluxo de automação"

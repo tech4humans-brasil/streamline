@@ -1,5 +1,5 @@
 import { Connection, ObjectId } from "mongoose";
-import { sendToQueue } from "./sbusOutputs";
+import { sendScheduledToQueue, sendToQueue } from "./sbusOutputs";
 import { InvocationContext } from "@azure/functions";
 import {
   IActivity,
@@ -12,11 +12,13 @@ export default async function sendNextQueue({
   activity,
   context,
   path = "default-source",
+  delay = 0,
 }: {
   conn: Connection;
   activity: IActivity;
   context: InvocationContext;
   path?: "default-source" | "alternative-source";
+  delay?: number;
 }): Promise<void> {
   try {
     const activityWorkflowIndex = activity.workflows.findIndex(
@@ -43,7 +45,7 @@ export default async function sendNextQueue({
       (step) => step.id === currentStep.next[path]
     );
 
-    console.log("Next step", nextStep, !!nextStep);
+    console.log("Next step", nextStep, !!nextStep, delay);
 
     if (nextStep) {
       activity.workflows[activityWorkflowIndex].steps.push({
@@ -55,16 +57,34 @@ export default async function sendNextQueue({
         (step) => step.status === IActivityStepStatus.inQueue
       );
 
-      sendToQueue({
-        context,
-        message: {
-          activity_id: activity._id.toString(),
-          activity_workflow_id: activityWorkflow._id.toString(),
-          activity_step_id: newNextStep._id.toString(),
-          client: conn.name,
-        },
-        queueName: nextStep.type,
-      });
+      const scheduledEnqueueTimeUtc =
+        delay > 0 ? new Date(Date.now() + delay) : undefined;
+
+      console.log("Scheduled enqueue time UTC", scheduledEnqueueTimeUtc);
+
+      if (scheduledEnqueueTimeUtc) {
+        await sendScheduledToQueue({
+          message: {
+            activity_id: activity._id.toString(),
+            activity_workflow_id: activityWorkflow._id.toString(),
+            activity_step_id: newNextStep._id.toString(),
+            client: conn.name,
+          },
+          queueName: nextStep.type,
+          scheduledEnqueueTimeUtc,
+        });
+      } else {
+        sendToQueue({
+          context,
+          message: {
+            activity_id: activity._id.toString(),
+            activity_workflow_id: activityWorkflow._id.toString(),
+            activity_step_id: newNextStep._id.toString(),
+            client: conn.name,
+          },
+          queueName: nextStep.type,
+        });
+      }
     } else {
       for (const exec of activity.workflows) {
         if (exec._id === activityWorkflow._id) {

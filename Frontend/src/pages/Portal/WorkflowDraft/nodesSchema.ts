@@ -204,6 +204,12 @@ const schemas: NodeSchemas = {
     form_id: z.string().min(3, { message: "Selecione um formulário" }),
     fields: z.record(z.string()),
   }),
+  [NodeTypes.Delay]: z.object({
+    name: z.string().min(3, { message: "Nome é obrigatório" }),
+    time_value: z.coerce.number().min(1, { message: "Valor deve ser maior que 0" }),
+    time_unit: z.enum(["seconds", "minutes", "hours", "days"]),
+    visible: z.boolean().default(true),
+  }),
 };
 
 export type SchemaTypes = keyof typeof schemas;
@@ -244,6 +250,7 @@ export const workflowSchema = z.object({
         schemas[NodeTypes.Script],
         schemas[NodeTypes.NewTicket],
         schemas[NodeTypes.Clicksign],
+        schemas[NodeTypes.Delay],
       ]),
       position: z.object({ x: z.number(), y: z.number() }),
       deletable: z.boolean().optional(),

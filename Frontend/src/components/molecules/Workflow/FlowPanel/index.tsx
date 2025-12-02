@@ -5,7 +5,7 @@ import { NodeTypes, NodeCategory } from "@interfaces/WorkflowDraft";
 import PanelItem from "@components/atoms/Workflow/PanelItem";
 import Can from "@components/atoms/Can";
 import { useTranslation } from "react-i18next";
-import { BiMailSend, BiLogoJavascript } from "react-icons/bi";
+import { BiMailSend, BiLogoJavascript, BiTime } from "react-icons/bi";
 import { GoTag, GoWorkflow } from "react-icons/go";
 import { FaWpforms, FaPlusSquare } from "react-icons/fa";
 import { RiWebhookLine } from "react-icons/ri";
@@ -37,6 +37,11 @@ const FlowPanel: React.FC = () => {
       {
         type: NodeTypes.SwapWorkflow,
         icon: <GoWorkflow size={20} />,
+        category: NodeCategory.Flow,
+      },
+      {
+        type: NodeTypes.Delay,
+        icon: <BiTime size={20} />,
         category: NodeCategory.Flow,
       },
 

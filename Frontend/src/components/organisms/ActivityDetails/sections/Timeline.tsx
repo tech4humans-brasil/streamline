@@ -18,7 +18,7 @@ import { IStep, NodeTypes } from "@interfaces/WorkflowDraft";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { GoMilestone, GoTag, GoWorkflow } from "react-icons/go";
 import { FaEye, FaPlusSquare, FaWpforms } from "react-icons/fa";
-import { BiGitRepoForked, BiLogoJavascript, BiMailSend } from "react-icons/bi";
+import { BiGitRepoForked, BiLogoJavascript, BiMailSend, BiTime } from "react-icons/bi";
 import useActivity from "@hooks/useActivity";
 import ExtraFields from "./ExtraFields";
 import { BsSend, BsChevronDown, BsExclamationTriangle } from "react-icons/bs";
@@ -173,6 +173,8 @@ const TimelineStepItem = ({
         return AiFillSignature;
       case NodeTypes.Script:
         return BiLogoJavascript;
+      case NodeTypes.Delay:
+        return BiTime;
       default:
         return FaWpforms;
     }
@@ -200,6 +202,8 @@ const TimelineStepItem = ({
         return "pink";
       case NodeTypes.Script:
         return "purple";
+      case NodeTypes.Delay:
+        return "teal";
       default:
         return "gray";
     }
@@ -227,7 +231,7 @@ const TimelineStepItem = ({
   if (!step) return null;
 
   return (
-    <Box position="relative">
+    <Box position="relative" opacity={data.status === IActivityStepStatus.inQueue ? 0.5 : 1}>
       <Box
         position="absolute"
         left="-9"
@@ -277,11 +281,9 @@ const TimelineStepItem = ({
               </Button>
             </Link>
           )}
-
           {documents && (
             <DocumentsContent documents={documents} t={t} />
           )}
-
           {
             data.status === IActivityStepStatus.error && (
               <Text fontSize="sm" color="red.500">
@@ -310,6 +312,8 @@ const getStepDescription = (
       return "Novo ticket criado";
     case NodeTypes.Clicksign:
       return "Documento para assinatura";
+    case NodeTypes.Delay:
+      return "Aguardando temporizador";
     default:
       return step.data?.name || "Ação executada";
   }

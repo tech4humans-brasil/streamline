@@ -8,6 +8,7 @@ import WebRequest from "./WebRequest";
 import Script from "./Script";
 import NewTicket from "./NewTicket";
 import Clicksign from "./Clicksign";
+import Delay from "./Delay";
 
 export default {
   circle: CircleNode,
@@ -20,4 +21,5 @@ export default {
   script: Script,
   new_ticket: NewTicket,
   clicksign: Clicksign,
+  delay: Delay,
 };

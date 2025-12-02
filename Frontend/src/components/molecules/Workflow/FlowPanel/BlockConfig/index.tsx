@@ -558,6 +558,50 @@ const BlockConfig: React.FC<BlockConfigProps> = ({ type, data, onSave }) => {
           </>
         );
 
+      case NodeTypes.Delay:
+        return (
+          <>
+            <Text
+              input={{
+                label: "Nome",
+                id: "name",
+                placeholder: "Nome do bloco",
+                required: true,
+              }}
+            />
+            <NumberInput
+              input={{
+                label: "Tempo de Espera",
+                id: "time_value",
+                placeholder: "Valor numérico",
+                required: true,
+              }}
+              min={1}
+            />
+            <Select
+              input={{
+                label: "Unidade",
+                id: "time_unit",
+                placeholder: "Selecione a unidade de tempo",
+                options: [
+                  { label: "Segundos", value: "seconds" },
+                  { label: "Minutos", value: "minutes" },
+                  { label: "Horas", value: "hours" },
+                  { label: "Dias", value: "days" },
+                ],
+                required: true,
+              }}
+            />
+            <Switch
+              input={{
+                label: "Visivel",
+                id: "visible",
+                required: true,
+              }}
+            />
+          </>
+        );
+
       default:
         return <h1>Default</h1>;
     }
