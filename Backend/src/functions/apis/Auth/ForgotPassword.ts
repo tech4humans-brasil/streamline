@@ -18,14 +18,17 @@ const recaptchaService = new RecaptchaService();
 
 export const handler: HttpHandler = async (_, req, context) => {
   const { email, acronym, captchaToken } = req.body as Body;
+  const isAdmin = context.functionName === "AdminForgotPassword";
 
-  const isCaptchaValid = await recaptchaService.verify({
-    token: captchaToken,
-    recaptchaAction: "forgot_password",
-  });
+  if (!isAdmin) {
+    const isCaptchaValid = await recaptchaService.verify({
+      token: captchaToken,
+      recaptchaAction: "forgot_password",
+    });
 
-  if (!isCaptchaValid) {
-    return res.unauthorized("Captcha token is invalid");
+    if (!isCaptchaValid) {
+      return res.unauthorized("Captcha token is invalid");
+    }
   }
 
   const adminConn = await connectAdmin();
@@ -53,17 +56,19 @@ export const handler: HttpHandler = async (_, req, context) => {
     });
   }
 
-  if (user.forgotPassword.code_expiration && user.forgotPassword.code_expiration < new Date()) {
-    if (user.forgotPassword.code_attempts >= 3) {
-      return res.unauthorized("Too many code attempts");
-    }
+  if (!isAdmin) {
+    if (user.forgotPassword.code_expiration && user.forgotPassword.code_expiration > new Date()) {
+      if (user.forgotPassword.code_attempts >= 3) {
+        return res.forbidden("Too many code attempts");
+      }
 
-    user.forgotPassword.code_attempts++;
-    await user.save();
-  } else {
-    user.forgotPassword.code_expiration = new Date(Date.now() + 10 * 10 * 1000);
-    user.forgotPassword.code_attempts = 0;
-    await user.save();
+      user.forgotPassword.code_attempts++;
+      await user.save();
+    } else {
+      user.forgotPassword.code_expiration = new Date(Date.now() + 10 * 10 * 1000);
+      user.forgotPassword.code_attempts = 0;
+      await user.save();
+    }
   }
 
   const token = await jwt.signResetPassword({
@@ -76,9 +81,8 @@ export const handler: HttpHandler = async (_, req, context) => {
     <p>Ela ocorreu em ${new Date().toLocaleString()}.</p>
     <p>Se você reconhece essa ação, clique no botão abaixo para prosseguir:</p>
     <div class="button-container">
-        <a href="${
-          process.env.FRONTEND_URL
-        }/auth/alter-password/${token}" class="button">REDEFINIR SENHA</a>
+        <a href="${process.env.FRONTEND_URL
+    }/auth/alter-password/${token}" class="button">REDEFINIR SENHA</a>
     </div>
  `;
 
@@ -100,7 +104,7 @@ export default new Http(handler)
     body: schema.object().shape({
       email: schema.string().email().required(),
       acronym: schema.string().required(),
-      captchaToken: schema.string().optional(),
+      captchaToken: schema.string().required(),
     }),
   }))
   .configure({
@@ -108,5 +112,20 @@ export default new Http(handler)
     options: {
       methods: ["POST"],
       route: "auth/forgot-password",
+    },
+  });
+
+new Http(handler)
+  .setSchemaValidator((schema) => ({
+    body: schema.object().shape({
+      email: schema.string().email().required(),
+      acronym: schema.string().required(),
+    }),
+  }))
+  .configure({
+    name: "AdminForgotPassword",
+    options: {
+      methods: ["POST"],
+      route: "auth/forgot-password/admin",
     },
   });

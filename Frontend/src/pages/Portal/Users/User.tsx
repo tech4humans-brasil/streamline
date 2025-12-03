@@ -20,7 +20,7 @@ import { createOrUpdateUser, getUser, getUserForms } from "@apis/users";
 import Password from "@components/atoms/Inputs/Password";
 import { IUserRoles } from "@interfaces/User";
 import Can from "@components/atoms/Can";
-import { forgotPassword } from "@apis/auth";
+import { forgotPasswordAdmin } from "@apis/auth";
 import useAuth from "@hooks/useAuth";
 import { useTranslation } from "react-i18next";
 
@@ -65,10 +65,13 @@ const Schema = z
       path: ["password"],
     }
   )
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Senhas não coincidem",
-    path: ["confirmPassword"],
-  });
+  .refine(
+    (data) => !data.password || (data.password && /[!@#$%^&*(),.?":{}|<>]/.test(data.password) && /\d/.test(data.password)),
+    {
+      message: "Senha precisa ter caracteres especiais e números",
+      path: ["confirmPassword"],
+    }
+  );
 
 type UniversityFormInputs = z.infer<typeof Schema>;
 
@@ -121,7 +124,7 @@ export default function User() {
 
   const { mutateAsync: mutateAsyncReset, isPending: isPendingReset } =
     useMutation({
-      mutationFn: forgotPassword,
+      mutationFn: forgotPasswordAdmin,
       onSuccess: () => {
         toast({
           title: t(`user.reseted`),

@@ -44,6 +44,17 @@ export const forgotPassword = async (data: {
   return response.data;
 };
 
+export const forgotPasswordAdmin = async (data: {
+  email: string;
+  acronym: string;
+}): Promise<Response<unknown>> => {
+  const response = await api.post<Response<unknown>>(
+    "/auth/forgot-password/admin",
+    data
+  );
+  return response.data;
+};
+
 export const alterPassword = async (data: {
   password: string;
   confirmPassword: string;
