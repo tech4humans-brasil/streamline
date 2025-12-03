@@ -38,6 +38,10 @@ export type IUser = {
     code: string | null;
     expiration: Date | null;
   };
+  forgotPassword: {
+    code_attempts: number;
+    code_expiration: Date | null;
+  };
 } & mongoose.Document;
 
 const userEquipmentAllocationSchema = new Schema<UserEquipmentAllocation>({
@@ -101,6 +105,10 @@ export const schema: Schema = new Schema<IUser>(
     twoStepVerification: {
       code: { type: String, default: null },
       expiration: { type: Date, default: null },
+    },
+    forgotPassword: {
+      code_attempts: { type: Number, default: 0 },
+      code_expiration: { type: Date, default: null },
     },
   },
   {

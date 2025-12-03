@@ -48,7 +48,22 @@ export const handler: HttpHandler = async (_, req, context) => {
   });
 
   if (!user) {
-    return res.notFound("User or password not found");
+    return res.success({
+      success: true,
+    });
+  }
+
+  if (user.forgotPassword.code_expiration && user.forgotPassword.code_expiration < new Date()) {
+    if (user.forgotPassword.code_attempts >= 3) {
+      return res.unauthorized("Too many code attempts");
+    }
+
+    user.forgotPassword.code_attempts++;
+    await user.save();
+  } else {
+    user.forgotPassword.code_expiration = new Date(Date.now() + 10 * 10 * 1000);
+    user.forgotPassword.code_attempts = 0;
+    await user.save();
   }
 
   const token = await jwt.signResetPassword({

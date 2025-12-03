@@ -62,6 +62,8 @@ export const handler: HttpHandler = async (_, req, context) => {
     100000 + Math.random() * 900000
   ).toString();
   user.twoStepVerification.code = verificationCode;
+  user.forgotPassword.code_attempts = 0;
+  user.forgotPassword.code_expiration = null;
 
   await user.save();
 
