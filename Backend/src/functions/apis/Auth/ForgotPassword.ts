@@ -6,13 +6,27 @@ import AdminClient from "../../../models/admin/Client";
 import UserRepository from "../../../repositories/User";
 import { sendEmail } from "../../../services/email";
 import emailTemplate from "../../../utils/emailTemplate";
+import { RecaptchaService } from "../../../services/recaptcha";
 
 interface Body {
   email: string;
   acronym: string;
+  captchaToken?: string;
 }
+
+const recaptchaService = new RecaptchaService();
+
 export const handler: HttpHandler = async (_, req, context) => {
-  const { email, acronym } = req.body as Body;
+  const { email, acronym, captchaToken } = req.body as Body;
+
+  const isCaptchaValid = await recaptchaService.verify({
+    token: captchaToken,
+    recaptchaAction: "forgot_password",
+  });
+
+  if (!isCaptchaValid) {
+    return res.unauthorized("Captcha token is invalid");
+  }
 
   const adminConn = await connectAdmin();
 
@@ -71,6 +85,7 @@ export default new Http(handler)
     body: schema.object().shape({
       email: schema.string().email().required(),
       acronym: schema.string().required(),
+      captchaToken: schema.string().optional(),
     }),
   }))
   .configure({

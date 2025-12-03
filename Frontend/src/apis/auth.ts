@@ -7,6 +7,7 @@ export const login = async (data: {
   email: string;
   password: string;
   acronym: string;
+  captchaToken: string;
 }): Promise<LoginResponse> => {
   const response = await api.post<LoginResponse>("/auth/login", data);
   return response.data;
@@ -34,6 +35,7 @@ export const samlGoogle = async (data: {
 export const forgotPassword = async (data: {
   email: string;
   acronym: string;
+  captchaToken: string;
 }): Promise<Response<unknown>> => {
   const response = await api.post<Response<unknown>>(
     "/auth/forgot-password",
