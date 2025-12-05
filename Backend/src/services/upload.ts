@@ -38,9 +38,7 @@ class BlobUploader {
     const containerClient = this.blobServiceClient.getContainerClient(
       this.containerName
     );
-    await containerClient.createIfNotExists({
-      access: "blob",
-    });
+    await containerClient.createIfNotExists();
     const blobClient = containerClient.getBlockBlobClient(blobName);
 
     await blobClient.uploadData(content, {
@@ -65,9 +63,7 @@ class BlobUploader {
     const containerClient = this.blobServiceClient.getContainerClient(
       String(this.containerName)
     );
-    await containerClient.createIfNotExists({
-      access: "blob",
-    });
+    await containerClient.createIfNotExists();
     const buffer = Buffer.from(base64.split(",")[1], "base64");
 
     const blockBlobClient = containerClient.getBlockBlobClient(name);
@@ -108,7 +104,7 @@ class BlobUploader {
     const containerClient = this.blobServiceClient.getContainerClient(
       String(this.containerName)
     );
-    await containerClient.createIfNotExists({ access: "blob" });
+    await containerClient.createIfNotExists();
     const blockBlobClient = containerClient.getBlockBlobClient(file.fileName);
     const sas = await blockBlobClient.generateSasUrl({
       expiresOn: new Date(new Date().valueOf() + 2 * 60 * 1000),

@@ -98,6 +98,7 @@ const emailTemplate = async ({
   let logo = LOGO;
   if (slug) {
     const connAdmin = await connectAdmin();
+    const blobUploader = new BlobUploader(slug);
     const admin = await new AdminRepository(connAdmin).findOne({
       where: {
         acronym: slug,
@@ -107,10 +108,10 @@ const emailTemplate = async ({
       },
     });
 
-    logo = admin?.logo?.url?.split("?")[0] ?? LOGO;
+    if (admin?.logo) {
+      logo = (await blobUploader.updateSas(admin.logo, MAX_TIME)).url;
+    }
   }
-
-  console.log(logo);
 
   return {
     html: html.replace("{{content}}", content).replace("{{logo}}", logo),
