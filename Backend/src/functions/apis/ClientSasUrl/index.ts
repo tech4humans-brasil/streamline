@@ -54,7 +54,7 @@ export default new Http(handler)
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ])
         .required(),
-      size: schema.string().required().min(3).max(255),
+      size: schema.number().required().min(1).max(1024 * 1024 * 10), // 10MB
     }),
   }))
   .configure({
