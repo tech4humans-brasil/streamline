@@ -65,10 +65,22 @@ const Schema = z
       path: ["password"],
     }
   )
+  .superRefine(
+    (data, ctx) => {
+      if (!data.password || (data.password && /[!@#$%^&*(),.?":{}|<>]/.test(data.password) && /\d/.test(data.password))) {
+        return;
+      }
+      ctx.addIssue({  
+        code: z.ZodIssueCode.custom,
+        message: "Senha precisa ter caracteres especiais e números",
+        path: ["password"],
+      });  
+    }
+  )
   .refine(
-    (data) => !data.password || (data.password && /[!@#$%^&*(),.?":{}|<>]/.test(data.password) && /\d/.test(data.password)),
+    (data) => data.password === data.confirmPassword,
     {
-      message: "Senha precisa ter caracteres especiais e números",
+      message: "As senhas não coincidem",
       path: ["confirmPassword"],
     }
   );

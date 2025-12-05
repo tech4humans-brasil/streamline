@@ -44,11 +44,12 @@ export class RecaptchaService {
       return null;
     }
 
-    if (response.tokenProperties.valid) {
-      return response.riskAnalysis.score > 0.6 ? true : false;
-    } else {
-      console.log("The action attribute in your reCAPTCHA tag does not match the action you are expecting to score");
+    if (response.tokenProperties.action !== recaptchaAction) {
+      console.log(`The reCAPTCHA action did not match. Expected: ${recaptchaAction}, Got: ${response.tokenProperties.action}`);
       return null;
     }
+
+    const scoreThreshold = parseFloat(process.env.RECAPTCHA_SCORE_THRESHOLD) || 0.6;
+    return response.riskAnalysis.score > scoreThreshold;
   }
 }

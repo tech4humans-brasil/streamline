@@ -161,7 +161,7 @@ export default new Http(handler)
       password: schema.string().required(),
       email: schema.string().required(),
       acronym: schema.string().required(),
-      captchaToken: schema.string().optional(),
+      captchaToken: schema.string().required(),
     }),
   }))
   .configure({
