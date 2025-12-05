@@ -55,6 +55,8 @@ class ResponseUseCases {
     if (field.type === FieldTypes.File && typeof value === "object") {
       const file: FileUploaded = value as FileUploaded;
 
+      await this.blobUploader.validateStoredFile(file);
+
       mapped = file;
     }
 

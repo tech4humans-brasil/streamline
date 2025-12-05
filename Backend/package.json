@@ -26,6 +26,7 @@
     "bcrypt": "^5.1.1",
     "cheerio": "1.0.0-rc.12",
     "cron-parser": "^4.9.0",
+    "file-type": "^21.1.1",
     "google-auth-library": "^9.14.0",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
@@ -53,7 +54,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "azure-functions-core-tools",
-      "bcrypt"
+      "bcrypt",
+      "protobufjs"
     ]
   }
 }
