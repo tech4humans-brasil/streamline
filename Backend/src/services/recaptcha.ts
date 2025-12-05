@@ -2,7 +2,7 @@ import { RecaptchaEnterpriseServiceClient } from "@google-cloud/recaptcha-enterp
 
 const projectID = process.env.GOOGLE_CLOUD_PROJECT_ID;
 const recaptchaKey = process.env.RECAPTCHA_SITE_KEY;
-const recaptchaAction = process.env.GOOGLE_JSON_AUTH_CREDENTIALS;
+const googleAuthCredentials = process.env.GOOGLE_JSON_AUTH_CREDENTIALS;
 
 export class RecaptchaService {
   private projectID: string;
@@ -13,7 +13,7 @@ export class RecaptchaService {
   constructor() {
     this.projectID = projectID;
     this.recaptchaKey = recaptchaKey;
-    this.credentials = JSON.parse(recaptchaAction.replace(/\n/g, "\\n").replace(/\r/g, "\\r"));
+    this.credentials = JSON.parse(googleAuthCredentials.replace(/\n/g, "\\n").replace(/\r/g, "\\r"));
 
     this.client = new RecaptchaEnterpriseServiceClient({
       projectId: this.projectID,
