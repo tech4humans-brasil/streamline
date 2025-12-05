@@ -65,7 +65,7 @@ export const handler: HttpHandler = async (_, req, context) => {
       user.forgotPassword.code_attempts++;
       await user.save();
     } else {
-      user.forgotPassword.code_expiration = new Date(Date.now() + 10 * 10 * 1000);
+      user.forgotPassword.code_expiration = new Date(Date.now() + 10 * 60 * 1000);  
       user.forgotPassword.code_attempts = 0;
       await user.save();
     }
@@ -128,4 +128,5 @@ new Http(handler)
       methods: ["POST"],
       route: "auth/forgot-password/admin",
     },
+    permission: "user.forgot-password",
   });
