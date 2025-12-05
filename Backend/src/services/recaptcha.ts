@@ -40,16 +40,28 @@ export class RecaptchaService {
     const [response] = await this.client.createAssessment(request);
 
     if (!response.tokenProperties.valid) {
-      console.log(`The CreateAssessment call failed because the token was: ${response.tokenProperties.invalidReason}`);
-      return null;
+      throw {
+        status: 400,
+        message: `The CreateAssessment call failed because the token was: ${response.tokenProperties.invalidReason}`,
+      };
     }
 
     if (response.tokenProperties.action !== recaptchaAction) {
-      console.log(`The reCAPTCHA action did not match. Expected: ${recaptchaAction}, Got: ${response.tokenProperties.action}`);
-      return null;
+      throw {
+        status: 400,
+        message: `The CreateAssessment call failed because the action was: ${response.tokenProperties.action}`,
+      };
     }
 
     const scoreThreshold = parseFloat(process.env.RECAPTCHA_SCORE_THRESHOLD) || 0.6;
-    return response.riskAnalysis.score > scoreThreshold;
+
+    if (response.riskAnalysis.score < scoreThreshold) {
+      throw {
+        status: 400,
+        message: `The score was: ${response.riskAnalysis.score}`,
+      };
+    }
+
+    return true;
   }
 }
