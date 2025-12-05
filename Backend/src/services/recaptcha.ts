@@ -46,7 +46,7 @@ export class RecaptchaService {
       };
     }
 
-    if (response.tokenProperties.action !== recaptchaAction) {
+    if (!!response.tokenProperties.action && response.tokenProperties.action !== recaptchaAction) {
       throw {
         status: 400,
         message: `The CreateAssessment call failed because the action was: ${response.tokenProperties.action}`,
