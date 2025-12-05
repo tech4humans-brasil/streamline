@@ -82,6 +82,7 @@ jobs:
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           VITE_GA_TOKEN: ${{ secrets.GA_TOKEN }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
         run: |
               cd ${{ env.PROJECT_PATH }}
               npm run build

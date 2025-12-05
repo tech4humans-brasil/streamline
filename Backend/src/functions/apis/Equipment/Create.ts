@@ -32,8 +32,8 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
-      inventoryNumber: schema.string().required(),
-      equipmentType: schema.string().required(),
+      inventoryNumber: schema.string().required().min(1).max(255),
+      equipmentType: schema.string().required().min(1).max(255),
       invoice: schema
         .object()
         .shape({
@@ -46,7 +46,7 @@ export default new Http(handler)
         .optional()
         .default(null)
         .nullable(),
-      brandName: schema.string().optional().default(null).nullable(),
+      brandName: schema.string().optional().default(null).nullable().min(1).max(100),
       status: schema
         .string()
         .optional()
@@ -57,9 +57,9 @@ export default new Http(handler)
         .optional()
         .default("new")
         .oneOf(["new", "used", "broken", "damaged", "lost", "discarded"]),
-      modelDescription: schema.string().optional().default(null).nullable(),
-      serialNumber: schema.string().optional().default(null).nullable(),
-      additionalNotes: schema.string().optional().default(null).nullable(),
+      modelDescription: schema.string().optional().default(null).nullable().max(512),
+      serialNumber: schema.string().optional().default(null).nullable().min(1).max(100),
+      additionalNotes: schema.string().optional().default(null).nullable().max(255),
     }),
   }))
   .configure({

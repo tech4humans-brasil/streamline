@@ -26,15 +26,15 @@ import { useEffect } from "react";
 
 const Schema = z.object({
   _id: z.string().optional(),
-  formName: z.string(),
+  formName: z.string().min(1).max(255),
   inventoryNumber: z.string(),
-  equipmentType: z.string(),
-  brandName: z.string().optional(),
+  equipmentType: z.string().min(1).max(255),
+  brandName: z.string().max(100).optional(),
   status: z.nativeEnum(IEquipmentStatus),
   situation: z.nativeEnum(IEquipmentSituation),
-  modelDescription: z.string().optional(),
-  serialNumber: z.string().optional(),
-  additionalNotes: z.string().optional(),
+  modelDescription: z.string().max(512).optional(),
+  serialNumber: z.string().max(100).optional(),
+  additionalNotes: z.string().max(255).optional(),
   invoice: z
     .object({
       name: z.string(),

@@ -2,6 +2,8 @@ import React, { useCallback, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import ReCAPTCHA from "react-google-recaptcha";
+import Recaptcha from "@components/atoms/Recaptcha";
 import {
   Button,
   Box,
@@ -44,6 +46,7 @@ type FormData = z.infer<typeof schema>;
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const redirect = searchParams.get("redirect") ?? "/portal";
 
@@ -85,7 +88,10 @@ const Login: React.FC = () => {
   }, [navigate, configData?.acronym]);
 
   const onSubmit = handleSubmit(async (data) => {
-    await mutateAsync(data);
+    const token = await recaptchaRef.current?.executeAsync();
+    if (token) {
+      await mutateAsync({ ...data, captchaToken: token });
+    }
   });
 
   useEffect(() => {
@@ -230,6 +236,8 @@ const Login: React.FC = () => {
                     }),
                   }}
                 />
+
+                <Recaptcha ref={recaptchaRef} />
 
                 <Button
                   mt={4}

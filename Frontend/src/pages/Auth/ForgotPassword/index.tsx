@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,6 +26,8 @@ import LocaleSwap from "@components/atoms/LocaleSwap";
 import { useConfig } from "@hooks/useConfig";
 import Icon from "@components/atoms/Icon";
 import SwitchTheme from "@components/molecules/SwitchTheme";
+import Recaptcha from "@components/atoms/Recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const schema = z.object({
   acronym: z
@@ -41,6 +43,7 @@ type FormData = z.infer<typeof schema>;
 const ForgotPassword: React.FC = () => {
   const { t } = useTranslation();
   const { slug } = useLocation().state as { slug: string };
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const { data: configData, isLoading: configLoading, isError } = useConfig(slug);
 
@@ -87,7 +90,10 @@ const ForgotPassword: React.FC = () => {
   }, [navigate]);
 
   const onSubmit = handleSubmit(async (data) => {
-    await mutateAsync({ ...data, acronym: slug });
+    const token = await recaptchaRef.current?.executeAsync();
+    if (token) {
+      await mutateAsync({ ...data, acronym: slug, captchaToken: token });
+    }
   });
 
   if (configLoading) {
@@ -184,6 +190,8 @@ const ForgotPassword: React.FC = () => {
                     }),
                   }}
                 />
+
+                <Recaptcha ref={recaptchaRef} />
 
                 <Button
                   mt={4}

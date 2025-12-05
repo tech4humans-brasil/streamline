@@ -95,7 +95,11 @@ export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
       name: schema.string().required().min(3).max(255),
-      password: schema.string().min(6).max(255).optional(),
+      password: schema.string().min(6).max(255).test({  
+        name: "password",  
+        message: "Password must need special characters and numbers",  
+        test: (value) => !value || (/[!@#$%^&*(),.?":{}|<>]/.test(value) && /\d/.test(value)),  
+      }).optional(),
       email: schema.string().required().email(),
       isExternal: schema.boolean().default(false),
       roles: schema

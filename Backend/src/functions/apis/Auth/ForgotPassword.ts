@@ -6,13 +6,30 @@ import AdminClient from "../../../models/admin/Client";
 import UserRepository from "../../../repositories/User";
 import { sendEmail } from "../../../services/email";
 import emailTemplate from "../../../utils/emailTemplate";
+import { RecaptchaService } from "../../../services/recaptcha";
 
 interface Body {
   email: string;
   acronym: string;
+  captchaToken?: string;
 }
+
+const recaptchaService = new RecaptchaService();
+
 export const handler: HttpHandler = async (_, req, context) => {
-  const { email, acronym } = req.body as Body;
+  const { email, acronym, captchaToken } = req.body as Body;
+  const isAdmin = context.functionName === "AdminForgotPassword";
+
+  if (!isAdmin) {
+    const isCaptchaValid = await recaptchaService.verify({
+      token: captchaToken,
+      recaptchaAction: "forgot_password",
+    });
+
+    if (!isCaptchaValid) {
+      return res.unauthorized("Captcha token is invalid");
+    }
+  }
 
   const adminConn = await connectAdmin();
 
@@ -34,7 +51,24 @@ export const handler: HttpHandler = async (_, req, context) => {
   });
 
   if (!user) {
-    return res.notFound("User or password not found");
+    return res.success({
+      success: true,
+    });
+  }
+
+  if (!isAdmin) {
+    if (user.forgotPassword.code_expiration && user.forgotPassword.code_expiration > new Date()) {
+      if (user.forgotPassword.code_attempts >= 3) {
+        return res.forbidden("Too many code attempts");
+      }
+
+      user.forgotPassword.code_attempts++;
+      await user.save();
+    } else {
+      user.forgotPassword.code_expiration = new Date(Date.now() + 10 * 60 * 1000);  
+      user.forgotPassword.code_attempts = 0;
+      await user.save();
+    }
   }
 
   const token = await jwt.signResetPassword({
@@ -47,9 +81,8 @@ export const handler: HttpHandler = async (_, req, context) => {
     <p>Ela ocorreu em ${new Date().toLocaleString()}.</p>
     <p>Se você reconhece essa ação, clique no botão abaixo para prosseguir:</p>
     <div class="button-container">
-        <a href="${
-          process.env.FRONTEND_URL
-        }/auth/alter-password/${token}" class="button">REDEFINIR SENHA</a>
+        <a href="${process.env.FRONTEND_URL
+    }/auth/alter-password/${token}" class="button">REDEFINIR SENHA</a>
     </div>
  `;
 
@@ -71,6 +104,7 @@ export default new Http(handler)
     body: schema.object().shape({
       email: schema.string().email().required(),
       acronym: schema.string().required(),
+      captchaToken: schema.string().required(),
     }),
   }))
   .configure({
@@ -79,4 +113,20 @@ export default new Http(handler)
       methods: ["POST"],
       route: "auth/forgot-password",
     },
+  });
+
+new Http(handler)
+  .setSchemaValidator((schema) => ({
+    body: schema.object().shape({
+      email: schema.string().email().required(),
+      acronym: schema.string().required(),
+    }),
+  }))
+  .configure({
+    name: "AdminForgotPassword",
+    options: {
+      methods: ["POST"],
+      route: "auth/forgot-password/admin",
+    },
+    permission: "user.forgot-password",
   });

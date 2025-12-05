@@ -1,6 +1,5 @@
 import { BlobSASPermissions, BlobServiceClient } from "@azure/storage-blob";
-import { ObjectId } from "mongoose";
-import { access } from "node:fs";
+import { fileTypeFromBuffer } from "file-type";
 
 const AZURE_STORAGE_CONNECTION_STRING =
   process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -28,19 +27,50 @@ class BlobUploader {
     this.containerName = containerName;
   }
 
+  private async validateBlob(content: Buffer, mimeType: string): Promise<void> {
+
+    const type = await fileTypeFromBuffer(content);
+
+    if (type && type.mime !== mimeType) {
+      const aliases: Record<string, string[]> = {
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+          "application/xlsx",
+        ],
+        "application/vnd.ms-excel": ["application/xls"],
+        "application/gzip": ["application/x-gzip"],
+      };
+
+      const allowedAliases = aliases[type.mime];
+      if (allowedAliases && allowedAliases.includes(mimeType)) {
+        return;
+      }
+
+      throw new Error(
+        `Invalid file type. Expected ${mimeType}, but got ${type.mime}`
+      );
+    }
+
+    if (
+      !type &&
+      (mimeType.startsWith("image/") || mimeType === "application/pdf")
+    ) {
+      throw new Error(`Invalid file type. Expected ${mimeType}`);
+    }
+  }
+
   async uploadBufferToBlob(
     blobName: string,
     contentType: string,
     content: Buffer
   ): Promise<FileUploaded> {
+    await this.validateBlob(content, contentType);
+
     blobName = `${Date.now()}@${blobName}`;
 
     const containerClient = this.blobServiceClient.getContainerClient(
       this.containerName
     );
-    await containerClient.createIfNotExists({
-      access: "blob",
-    });
+    await containerClient.createIfNotExists();
     const blobClient = containerClient.getBlockBlobClient(blobName);
 
     await blobClient.uploadData(content, {
@@ -65,10 +95,10 @@ class BlobUploader {
     const containerClient = this.blobServiceClient.getContainerClient(
       String(this.containerName)
     );
-    await containerClient.createIfNotExists({
-      access: "blob",
-    });
+    await containerClient.createIfNotExists();
     const buffer = Buffer.from(base64.split(",")[1], "base64");
+
+    await this.validateBlob(buffer, mimeType);
 
     const blockBlobClient = containerClient.getBlockBlobClient(name);
     await blockBlobClient.upload(buffer, Buffer.byteLength(base64), {
@@ -86,6 +116,24 @@ class BlobUploader {
     };
 
     return fileUploaded;
+  }
+
+  async validateStoredFile(file: FileUploaded): Promise<void> {
+    const containerClient = this.blobServiceClient.getContainerClient(
+      file.containerName || this.containerName
+    );
+    const blobClient = containerClient.getBlockBlobClient(file.name);
+
+    const properties = await blobClient.getProperties();
+    const size = properties.contentLength;
+
+    if (!size) {
+      throw new Error("File is empty");
+    }
+
+    const buffer = await blobClient.downloadToBuffer(0, Math.min(size, 4100));
+
+    await this.validateBlob(buffer, file.mimeType);
   }
 
   async updateSas(
@@ -108,7 +156,7 @@ class BlobUploader {
     const containerClient = this.blobServiceClient.getContainerClient(
       String(this.containerName)
     );
-    await containerClient.createIfNotExists({ access: "blob" });
+    await containerClient.createIfNotExists();
     const blockBlobClient = containerClient.getBlockBlobClient(file.fileName);
     const sas = await blockBlobClient.generateSasUrl({
       expiresOn: new Date(new Date().valueOf() + 2 * 60 * 1000),
