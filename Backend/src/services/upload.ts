@@ -130,10 +130,6 @@ class BlobUploader {
     if (!size) {
       throw new Error("File is empty");
     }
-
-    const buffer = await blobClient.downloadToBuffer(0, Math.min(size, 4100));
-
-    await this.validateBlob(buffer, file.mimeType);
   }
 
   async updateSas(
