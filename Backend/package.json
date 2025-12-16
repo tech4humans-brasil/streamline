@@ -28,6 +28,7 @@
     "cron-parser": "^4.9.0",
     "file-type": "^21.1.1",
     "google-auth-library": "^9.14.0",
+    "googleapis": "^169.0.0",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.5.0",

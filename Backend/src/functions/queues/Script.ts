@@ -14,6 +14,7 @@ import sendNextQueue from "../../utils/sendNextQueue";
 import axios from "axios";
 import runJavaScriptCode from "../../services/vm";
 import { IActivityStepStatus } from "../../models/client/Activity";
+import { google } from "googleapis";
 
 interface TMessage extends GenericMessage {}
 
@@ -125,6 +126,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
           vars,
           activity,
           axios,
+          google,
         };
 
         let result = await runJavaScriptCode(`(${script})()`, context, {
