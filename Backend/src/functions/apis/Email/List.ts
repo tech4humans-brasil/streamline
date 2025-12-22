@@ -58,8 +58,8 @@ export default new Http(handler)
           .number()
           .optional()
           .transform((v) => Number(v)),
-      })
-      .optional(),
+        project: schema.string().required(),
+      }),
   }))
   .configure({
     name: "EmailList",

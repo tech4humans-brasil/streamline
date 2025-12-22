@@ -60,9 +60,8 @@ export default new Http(handler)
           .number()
           .optional()
           .transform((v) => Number(v)),
-        project: schema.string().optional(),
+        project: schema.string().required(),
       })
-      .optional(),
   }))
   .configure({
     name: "WorkflowList",
