@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/src/functions/**/*.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
+    "watch": "NODE_OPTIONS='--max-old-space-size=8192' tsc -w",
     "clean": "rimraf dist",
     "prestart": "npm run clean && npm run build",
     "start": "func start",

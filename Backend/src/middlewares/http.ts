@@ -211,13 +211,13 @@ export default class Http {
   };
 
   public setSchemaValidator = (callback: callbackSchema): this => {
-    const { body, params, headers } = callback(yup);
+    const { body, params, headers, query } = callback(yup);
 
     this.schemaValidator = yup.object().shape({
       body: body ?? yup.object().shape({}),
       params: params ?? yup.object().shape({}),
       headers: headers ?? yup.object().shape({}),
-      query: yup.object().shape({}),
+      query: query ?? yup.object().shape({}),
     });
 
     return this;

@@ -88,9 +88,8 @@ export default new Http(handler)
         active: schema.boolean().optional(),
         name: schema.string().min(3).max(255).optional().default(undefined),
         slug: schema.string().min(3).max(255).optional().default(undefined),
-        project: schema.string().optional(),
-      })
-      .optional(),
+        project: schema.string().required(),
+      }),
   }))
   .configure({
     name: "FormsList",

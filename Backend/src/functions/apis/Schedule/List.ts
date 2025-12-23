@@ -62,9 +62,8 @@ export default new Http(handler)
           .number()
           .optional()
           .transform((v) => Number(v)),
-        project: schema.string().optional(),
-      })
-      .optional(),
+        project: schema.string().required(),
+      }),
   }))
   .configure({
     name: "ScheduleList",

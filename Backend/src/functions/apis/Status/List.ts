@@ -63,9 +63,8 @@ export default new Http(handler)
           .transform((v) => Number(v)),
         name: schema.string().optional(),
         type: schema.mixed().oneOf(["active", "inactive"]).optional(),
-        project: schema.string().optional(),
-      })
-      .optional(),
+        project: schema.string().required(),
+      }),
   }))
   .configure({
     name: "StatusList",
