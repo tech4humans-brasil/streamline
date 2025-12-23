@@ -45,12 +45,14 @@ const handler: HttpHandler = async (conn, req, context) => {
     where: {
       ...where,
       ...whereUser,
+      active: true,
     },
     select: {
       _id: 1,
       name: 1,
       description: 1,
       permissions: 1,
+      active: 1,
     },
   });
 

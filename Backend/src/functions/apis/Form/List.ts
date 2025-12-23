@@ -2,6 +2,7 @@ import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import { IFormType } from "../../../models/client/Form";
 import FormRepository from "../../../repositories/Form";
+import ProjectRepository from "../../../repositories/Project";
 import FilterQueryBuilder, {
   WhereEnum,
 } from "../../../utils/filterQueryBuilder";
@@ -28,25 +29,47 @@ const handler: HttpHandler = async (conn, req) => {
   const { page = 1, limit = 20, ...filters } = req.query as Query;
 
   const formRepository = new FormRepository(conn);
+  const projectRepository = new ProjectRepository(conn);
+
+  const activeProjects = await projectRepository.find({
+    where: { active: { $ne: false } },
+    select: { _id: 1 },
+  });
+  const activeProjectIds = activeProjects.map(p => p._id.toString());
 
   const where = filterQueryBuilder.build(filters);
 
-  const forms = await formRepository.find({
-    skip: (page - 1) * limit,
-    where,
-    limit,
-    select: {
-      name: 1,
-      type: 1,
-      active: 1,
-      slug: 1,
-    },
-    sort: {
-      type: 1,
-    },
-  });
+  if (where.project) {
+    const projectFilter = String(where.project);
+    if (!activeProjectIds.includes(projectFilter)) {
+      where.project = { $in: [] };
+    }
+  } else {
+    where.project = { $in: activeProjectIds };
+  }
 
-  const total = await formRepository.count({ where });
+  const [total, forms] = await Promise.all([
+    formRepository.count({ where }),
+    formRepository.find({
+      skip: (page - 1) * limit,
+      where,
+      limit,
+      populate: [{
+        path: 'project',
+        select: { active: 1 },
+      }] as any,
+      select: {
+        name: 1,
+        type: 1,
+        active: 1,
+        slug: 1,
+      },
+      sort: {
+        type: 1,
+      },
+    }),
+  ]);
+
   const totalPages = Math.ceil(total / limit);
 
   return res.success({
@@ -55,7 +78,7 @@ const handler: HttpHandler = async (conn, req) => {
       page: Number(page),
       total,
       totalPages,
-      count: forms.length + (page - 1) * limit,
+      count: forms.length,
     },
   });
 };

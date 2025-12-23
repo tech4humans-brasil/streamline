@@ -62,6 +62,7 @@ class BaseRepository<T extends Document> {
     populate?: {
       path: string;
       select?: Record<string, number>;
+      match?: Record<string, any>;
     }[];
   }): Promise<T[]> {
     return this.model

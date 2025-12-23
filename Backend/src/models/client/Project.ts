@@ -23,6 +23,7 @@ export interface IProject extends mongoose.Document {
   workflows: ObjectId[];
   status: ObjectId;
   variables: mongoose.Types.DocumentArray<IVariable>;
+  active: boolean;
 }
 
 const variableSchema = new Schema<IVariable>({
@@ -58,6 +59,7 @@ export const schema: Schema = new Schema(
     workflows: [{ type: Schema.Types.ObjectId, ref: "Workflow" }],
     status: { type: Schema.Types.ObjectId, ref: "Status" },
     variables: [variableSchema],
+    active: { type: Boolean, required: true, default: true },
   },
   {
     timestamps: true,

@@ -1,6 +1,7 @@
 import { Connection, ObjectId } from "mongoose";
 import Form, { IForm } from "../../models/client/Form";
 import BaseRepository from "../base";
+import ProjectRepository from "../Project";
 import moment from "moment";
 
 /**
@@ -27,6 +28,13 @@ export default class FormRepository extends BaseRepository<IForm> {
     institutes?: string[] | ObjectId[];
   }): Promise<IForm[]> {
     const now = moment().toDate();
+    const projectRepository = new ProjectRepository(this.model.db);
+
+    const activeProjects = await projectRepository.find({
+      where: { active: { $ne: false } },
+      select: { _id: 1 },
+    });
+    const activeProjectIds = activeProjects.map(p => p._id);
 
     return this.find({
       where: {
@@ -49,6 +57,12 @@ export default class FormRepository extends BaseRepository<IForm> {
                 "period.open": { $lte: now },
                 "period.close": null,
               },
+            ],
+          },
+          {
+            $or: [
+              { project: { $in: activeProjectIds } },
+              { project: null },
             ],
           },
           ...(!!options.institutes ? [{

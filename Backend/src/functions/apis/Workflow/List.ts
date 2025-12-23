@@ -1,6 +1,7 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import WorkflowRepository from "../../../repositories/Workflow";
+import ProjectRepository from "../../../repositories/Project";
 import FilterQueryBuilder, {
   WhereEnum,
 } from "../../../utils/filterQueryBuilder";
@@ -18,21 +19,48 @@ const filterQueryBuilder = new FilterQueryBuilder({
 const handler: HttpHandler = async (conn, req, context) => {
   const { page = 1, limit = 20, ...filter } = req.query as Query;
   const workflowRepository = new WorkflowRepository(conn);
+  const projectRepository = new ProjectRepository(conn);
+
+  const activeProjects = await projectRepository.find({
+    where: { active: { $ne: false } },
+    select: { _id: 1 },
+  });
+  const activeProjectIds = activeProjects.map(p => p._id.toString());
 
   const where = filterQueryBuilder.build(filter);
 
-  const workflows = await workflowRepository.find({
-    skip: (page - 1) * limit,
-    limit,
-    where,
-    select: {
-      _id: 1,
-      name: 1,
-      active: 1,
-    },
-  });
+  // Ajusta a lógica de filtro de projeto
+  if (where.project) {
+    // Se o usuário filtrou um projeto, checamos se ele está ativo
+    const projectFilter = String(where.project);
+    if (!activeProjectIds.includes(projectFilter)) {
+      // Se o projeto filtrado não está ativo, forçamos um resultado vazio
+      where.project = { $in: [] };
+    }
+  } else {
+    // Se o usuário não filtrou projeto, mostramos todos os de projetos ativos
+    where.project = { $in: activeProjectIds };
+  }
 
-  const total = await workflowRepository.count({ where });
+  // Executa count e find em PARALELO (Mais rápido)
+  const [total, workflows] = await Promise.all([
+    workflowRepository.count({ where }),
+    workflowRepository.find({
+      skip: (page - 1) * limit,
+      limit,
+      where,
+      populate: [{
+        path: 'project',
+        select: { active: 1 },
+      }] as any,
+      select: {
+        _id: 1,
+        name: 1,
+        active: 1,
+      },
+    }),
+  ]);
+
   const totalPages = Math.ceil(total / limit);
 
   return res.success({
@@ -41,7 +69,7 @@ const handler: HttpHandler = async (conn, req, context) => {
       page: Number(page),
       total,
       totalPages,
-      count: workflows.length + (page - 1) * limit,
+      count: workflows.length,
     },
   });
 };

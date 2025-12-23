@@ -13,12 +13,30 @@ const filterQueryBuilder = new FilterQueryBuilder({
 
 const handler: HttpHandler = async (conn, req) => {
   const filters = req.query as { project: string };
+  const projectRepository = new ProjectRepository(conn);
+
+  const activeProjects = await projectRepository.find({
+    where: { active: { $ne: false } },
+    select: { _id: 1 },
+  });
+  const activeProjectIds = activeProjects.map(p => p._id.toString());
 
   const where = filterQueryBuilder.build(filters);
 
+  if (where.project) {
+    const projectFilter = String(where.project);
+    if (!activeProjectIds.includes(projectFilter)) {
+      where.project = { $in: [] };
+    }
+  } else {
+    where.project = { $in: activeProjectIds };
+  }
+
+  const projectWhere = where;
+
   const getWorkflows = new WorkflowRepository(conn).find({
     where: {
-      ...where,
+      ...projectWhere,
       active: true,
       published: { $exists: true },
     },
@@ -31,7 +49,7 @@ const handler: HttpHandler = async (conn, req) => {
   const getFormsCreated = new Form(conn)
     .model()
     .find({
-      ...where,
+      ...projectWhere,
       type: IFormType.TimeTrigger,
       active: true,
       published: { $exists: true },
@@ -41,7 +59,9 @@ const handler: HttpHandler = async (conn, req) => {
       name: 1,
     });
 
-  const getProjects = new ProjectRepository(conn).find({});
+  const getProjects = projectRepository.find({
+    where: { active: { $ne: false } },
+  });
 
   const [workflowsResponse, formsCreatedResponse, projectsResponse] =
     await Promise.all([getWorkflows, getFormsCreated, getProjects]);

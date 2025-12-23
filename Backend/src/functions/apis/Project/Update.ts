@@ -5,13 +5,13 @@ import { IProject } from "../../../models/client/Project";
 
 const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params;
-  const { name, description } = req.body as IProject;
+  const { name, description, active } = req.body as IProject;
 
   const projectRepository = new ProjectRepository(conn);
 
   const updateProject = await projectRepository.findByIdAndUpdate({
     id,
-    data: { name, description },
+    data: { name, description, active },
   });
 
   if (!updateProject) {
@@ -26,6 +26,7 @@ export default new Http(handler)
     body: schema.object().shape({
       name: schema.string().optional().min(3).max(255),
       description: schema.string().optional().max(255),
+      active: schema.boolean().optional(),
     }),
     params: schema.object().shape({
       id: schema.string().required(),

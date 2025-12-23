@@ -18,6 +18,7 @@ export interface IProject {
   forms: string[];
   workflows: string[];
   status: string;
+  active: boolean;
 }
 
 export interface IVariable {
