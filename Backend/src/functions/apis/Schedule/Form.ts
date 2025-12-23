@@ -6,6 +6,7 @@ import FilterQueryBuilder, {
   WhereEnum,
 } from "../../../utils/filterQueryBuilder";
 import ProjectRepository from "../../../repositories/Project";
+import { applyActiveProjectsFilter } from "../../../utils/activeProjectsFilter";
 
 const filterQueryBuilder = new FilterQueryBuilder({
   project: { type: WhereEnum.EQUAL, alias: "project" },
@@ -15,24 +16,8 @@ const handler: HttpHandler = async (conn, req) => {
   const filters = req.query as { project: string };
   const projectRepository = new ProjectRepository(conn);
 
-  const activeProjects = await projectRepository.find({
-    where: { active: { $ne: false } },
-    select: { _id: 1 },
-  });
-  const activeProjectIds = activeProjects.map(p => p._id.toString());
-
-  const where = filterQueryBuilder.build(filters);
-
-  if (where.project) {
-    const projectFilter = String(where.project);
-    if (!activeProjectIds.includes(projectFilter)) {
-      where.project = { $in: [] };
-    }
-  } else {
-    where.project = { $in: activeProjectIds };
-  }
-
-  const projectWhere = where;
+  const initialWhere = filterQueryBuilder.build(filters);
+  const { where: projectWhere } = await applyActiveProjectsFilter(conn, initialWhere);
 
   const getWorkflows = new WorkflowRepository(conn).find({
     where: {

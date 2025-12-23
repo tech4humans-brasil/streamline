@@ -547,7 +547,7 @@
     "deactivated": "Projeto desativado com sucesso",
     "deactivateError": "Erro ao desativar projeto",
     "deactivateTitle": "Desativar Projeto",
-    "deactivateConfirmation": "Tem certeza que deseja desativar o projeto? Essa ação é irreversível.",
+    "deactivateConfirmation": "Tem certeza que deseja desativar o projeto? Ele ficará oculto nas listagens e se tornará inacessível.",
     "confirmDeactivate": "Confirmar Desativação"
   },
   "variables": {

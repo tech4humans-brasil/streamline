@@ -438,7 +438,7 @@
     "deactivated": "Project deactivated successfully",
     "deactivateError": "Error deactivating project",
     "deactivateTitle": "Deactivate Project",
-    "deactivateConfirmation": "Are you sure you want to deactivate the project? This action is irreversible.",
+    "deactivateConfirmation": "Are you sure you want to deactivate the project? It will be hidden from lists and become inaccessible.",
     "confirmDeactivate": "Confirm Deactivation"
   },
   "variables": {

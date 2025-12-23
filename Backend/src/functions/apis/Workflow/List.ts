@@ -1,10 +1,10 @@
 import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import WorkflowRepository from "../../../repositories/Workflow";
-import ProjectRepository from "../../../repositories/Project";
 import FilterQueryBuilder, {
   WhereEnum,
 } from "../../../utils/filterQueryBuilder";
+import { applyActiveProjectsFilter } from "../../../utils/activeProjectsFilter";
 
 interface Query {
   page?: number;
@@ -19,30 +19,10 @@ const filterQueryBuilder = new FilterQueryBuilder({
 const handler: HttpHandler = async (conn, req, context) => {
   const { page = 1, limit = 20, ...filter } = req.query as Query;
   const workflowRepository = new WorkflowRepository(conn);
-  const projectRepository = new ProjectRepository(conn);
 
-  const activeProjects = await projectRepository.find({
-    where: { active: { $ne: false } },
-    select: { _id: 1 },
-  });
-  const activeProjectIds = activeProjects.map(p => p._id.toString());
+  const initialWhere = filterQueryBuilder.build(filter);
+  const { where } = await applyActiveProjectsFilter(conn, initialWhere);
 
-  const where = filterQueryBuilder.build(filter);
-
-  // Ajusta a lógica de filtro de projeto
-  if (where.project) {
-    // Se o usuário filtrou um projeto, checamos se ele está ativo
-    const projectFilter = String(where.project);
-    if (!activeProjectIds.includes(projectFilter)) {
-      // Se o projeto filtrado não está ativo, forçamos um resultado vazio
-      where.project = { $in: [] };
-    }
-  } else {
-    // Se o usuário não filtrou projeto, mostramos todos os de projetos ativos
-    where.project = { $in: activeProjectIds };
-  }
-
-  // Executa count e find em PARALELO (Mais rápido)
   const [total, workflows] = await Promise.all([
     workflowRepository.count({ where }),
     workflowRepository.find({
