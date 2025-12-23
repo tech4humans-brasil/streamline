@@ -28,9 +28,9 @@ const DeactivateProject: React.FC = () => {
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: deactivateProject,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
-      queryClient.invalidateQueries({ queryKey: ["project", project] });
+      queryClient.invalidateQueries({ queryKey: ["project", variables] });
       toast({
         title: t("project.deactivated"),
         status: "success",

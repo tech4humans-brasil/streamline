@@ -87,14 +87,14 @@ const VariableForm: React.FC<VariableFormProps> = () => {
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createOrUpdateVariable,
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       toast({
         title: t("variables.saved"),
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      queryClient.setQueryData(["variables", project ?? ""], data);
+      queryClient.setQueryData(["variables", variables.project_id], data);
       methods.reset(data);
     },
     onError: () => {

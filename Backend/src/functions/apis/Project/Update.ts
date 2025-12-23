@@ -11,30 +11,67 @@ const handler: HttpHandler = async (conn, req) => {
 
   const projectRepository = new ProjectRepository(conn);
 
+  // If project is being deactivated, use a transaction to ensure atomicity
+  if (active === false) {
+    const session = await conn.startSession();
+    
+    try {
+      let updatedProject: IProject | null = null;
+
+      await session.withTransaction(async () => {
+        // Update the project within the transaction
+        updatedProject = await projectRepository.findByIdAndUpdate(
+          {
+            id,
+            data: { name, description, active: false },
+          },
+          { session }
+        );
+
+        if (!updatedProject) {
+          throw new Error("Project not found");
+        }
+
+        // Cascade deactivation to related forms and workflows
+        const formRepository = new FormRepository(conn);
+        const workflowRepository = new WorkflowRepository(conn);
+
+        await Promise.all([
+          formRepository.updateMany(
+            {
+              where: { project: id },
+              data: { active: false },
+            },
+            { session }
+          ),
+          workflowRepository.updateMany(
+            {
+              where: { project: id },
+              data: { active: false },
+            },
+            { session }
+          ),
+        ]);
+      });
+
+      if (!updatedProject) {
+        return res.notFound("Project not found");
+      }
+
+      return res.success(updatedProject);
+    } finally {
+      await session.endSession();
+    }
+  }
+
+  // For other updates (not deactivation), proceed without transaction
   const updateProject = await projectRepository.findByIdAndUpdate({
     id,
     data: { name, description, active },
   });
 
   if (!updateProject) {
-    return res.notFound("Status not found");
-  }
-
-  // If project is being deactivated, cascade deactivation to related forms and workflows
-  if (active === false) {
-    const formRepository = new FormRepository(conn);
-    const workflowRepository = new WorkflowRepository(conn);
-
-    await Promise.all([
-      formRepository.updateMany({
-        where: { project: id },
-        data: { active: false },
-      }),
-      workflowRepository.updateMany({
-        where: { project: id },
-        data: { active: false },
-      }),
-    ]);
+    return res.notFound("Project not found");
   }
 
   return res.success(updateProject);

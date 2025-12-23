@@ -5,6 +5,7 @@ import {
   UpdateQuery,
   QueryOptions,
   ObjectId,
+  ClientSession,
 } from "mongoose";
 
 class BaseRepository<T extends Document> {
@@ -88,26 +89,33 @@ class BaseRepository<T extends Document> {
     return this.model.findOneAndUpdate(where, data, { new: true }).exec();
   }
 
-  async updateMany({
-    where,
-    data,
-  }: {
-    where: Parameters<Model<T>["updateMany"]>[0];
-    data: Parameters<Model<T>["updateMany"]>[1];
-  }) {
-    return this.model.updateMany(where, data).exec();
+  async updateMany(
+    {
+      where,
+      data,
+    }: {
+      where: Parameters<Model<T>["updateMany"]>[0];
+      data: Parameters<Model<T>["updateMany"]>[1];
+    },
+    options?: { session?: ClientSession }
+  ) {
+    return this.model.updateMany(where, data, options).exec();
   }
 
-  async findByIdAndUpdate({
-    id,
-    data,
-  }: {
-    id: string | ObjectId;
-    data: UpdateQuery<T>;
-  }): Promise<T | null> {
+  async findByIdAndUpdate(
+    {
+      id,
+      data,
+    }: {
+      id: string | ObjectId;
+      data: UpdateQuery<T>;
+    },
+    options?: { session?: ClientSession }
+  ): Promise<T | null> {
     return this.model
       .findByIdAndUpdate(id, data, {
         new: true,
+        ...options,
       })
       .exec();
   }
