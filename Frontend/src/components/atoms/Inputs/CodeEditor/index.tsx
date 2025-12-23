@@ -284,17 +284,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ input }) => {
                   <Button onClick={onClose} mr={3}>
                     {t("common.cancel")}
                   </Button>
-                  <Can permission="workflow.script">
-                    <Button
-                      onClick={() => {
-                        field.onChange(editorValue); // Atualiza o valor do formulário
-                        onClose();
-                      }}
-                      colorScheme="blue"
-                    >
-                      {t("common.save")}
-                    </Button>
-                  </Can>
+                  <Button
+                    onClick={() => {
+                      field.onChange(editorValue);
+                      onClose();
+                    }}
+                    colorScheme="blue"
+                  >
+                    {t("common.save")}
+                  </Button>
                 </ModalFooter>
               </ModalContent>
             </Modal>
