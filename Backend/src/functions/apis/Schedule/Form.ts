@@ -41,7 +41,11 @@ const handler: HttpHandler = async (conn, req) => {
       name: 1,
     });
 
-  const getProjects = new ProjectRepository(conn).find({});
+  const getProjects = new ProjectRepository(conn).find({
+    where: {
+      active: { $ne: false },
+    },
+  });
 
   const [workflowsResponse, formsCreatedResponse, projectsResponse] =
     await Promise.all([getWorkflows, getFormsCreated, getProjects]);

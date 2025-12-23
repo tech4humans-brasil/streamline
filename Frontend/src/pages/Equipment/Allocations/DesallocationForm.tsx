@@ -68,14 +68,14 @@ const DeallocationForm: React.FC<DeallocationFormProps> = ({
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: updateAllocation,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast({
         title: t(`allocation.updated`),
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      queryClient.invalidateQueries({ queryKey: ["allocations", userId] });
+      queryClient.invalidateQueries({ queryKey: ["allocations", variables.userId] });
       onClose();
     },
     onError: () => {

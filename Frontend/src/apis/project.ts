@@ -3,7 +3,7 @@ import { IProject } from "@interfaces/Project";
 import Response from "@interfaces/Response";
 import api from "@services/api";
 
-type Project = Pick<IProject, "_id" | "name" | "description" | "permissions">;
+type Project = Pick<IProject, "_id" | "name" | "description" | "permissions" | "active">;
 type ReqProjects = Response<{ projects: Project[] } & IPagination>;
 type ReqProject = Response<IProject>;
 
@@ -81,4 +81,10 @@ export const getProjectForms = async () => {
   return res.data.data;
 };
 
+export const deactivateProject = async (projectId: string) => {
+  const res = await api.put<ReqProject>(`/projects/${projectId}`, {
+    active: false,
+  });
 
+  return res.data.data;
+};

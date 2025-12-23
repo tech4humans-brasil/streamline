@@ -9,6 +9,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import VariableForm from "../Variables";
+import DeactivateProject from "../DeactivateProject";
 import { FaPen } from "react-icons/fa";
 
 const Navbar: React.FC = () => {
@@ -140,6 +141,12 @@ const Navbar: React.FC = () => {
         {projectData && (
           <Can permission="project.update">
             <VariableForm />
+          </Can>
+        )}
+
+        {projectData && projectData.active && (
+          <Can permission="project.update">
+            <DeactivateProject />
           </Can>
         )}
 

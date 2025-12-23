@@ -433,7 +433,13 @@
     "edited": "Project edited successfully",
     "cancel": "Cancel",
     "submit": "Save Changes",
-    "error": "Error saving project"
+    "error": "Error saving project",
+    "deactivate": "Deactivate",
+    "deactivated": "Project deactivated successfully",
+    "deactivateError": "Error deactivating project",
+    "deactivateTitle": "Deactivate Project",
+    "deactivateConfirmation": "Are you sure you want to deactivate the project? It will be hidden from lists and become inaccessible.",
+    "confirmDeactivate": "Confirm Deactivation"
   },
   "variables": {
     "create": "Register Variables",
