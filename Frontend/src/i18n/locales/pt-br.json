@@ -542,7 +542,13 @@
     "edited": "Projeto editado com sucesso",
     "cancel": "Cancelar",
     "submit": "Salvar Alterações",
-    "error": "Erro ao salvar projeto"
+    "error": "Erro ao salvar projeto",
+    "deactivate": "Desativar",
+    "deactivated": "Projeto desativado com sucesso",
+    "deactivateError": "Erro ao desativar projeto",
+    "deactivateTitle": "Desativar Projeto",
+    "deactivateConfirmation": "Tem certeza que deseja desativar o projeto? Ele ficará oculto nas listagens e se tornará inacessível.",
+    "confirmDeactivate": "Confirmar Desativação"
   },
   "variables": {
     "create": "Cadastrar Variáveis",

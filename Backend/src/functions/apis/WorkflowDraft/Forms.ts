@@ -34,7 +34,10 @@ const handler: HttpHandler = async (conn, req) => {
     };
 
   const projects = await projectRepository.find({
-    where: whereUser,
+    where: {
+      ...whereUser,
+      active: { $ne: false },
+    },
     select: {
       _id: 1,
     },
