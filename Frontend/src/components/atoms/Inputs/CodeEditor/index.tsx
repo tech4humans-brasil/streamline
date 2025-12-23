@@ -20,7 +20,6 @@ import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
 import { useTranslation } from "react-i18next";
-import Can from "@components/atoms/Can";
 
 interface CodeEditorProps {
   input: {
@@ -284,17 +283,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ input }) => {
                   <Button onClick={onClose} mr={3}>
                     {t("common.cancel")}
                   </Button>
-                  <Can permission="workflow.script">
-                    <Button
-                      onClick={() => {
-                        field.onChange(editorValue); // Atualiza o valor do formulário
-                        onClose();
-                      }}
-                      colorScheme="blue"
-                    >
-                      {t("common.save")}
-                    </Button>
-                  </Can>
+                  <Button
+                    onClick={() => {
+                      field.onChange(editorValue);
+                      onClose();
+                    }}
+                    colorScheme="blue"
+                  >
+                    {t("common.save")}
+                  </Button>
                 </ModalFooter>
               </ModalContent>
             </Modal>
