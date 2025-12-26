@@ -24,6 +24,7 @@ const Schema = z.object({
   description: z
     .string()
     .min(3, { message: "Descrição deve ter no mínimo 3 caracteres" }),
+  active: z.boolean().default(true),
 });
 
 type UniversityFormInputs = z.infer<typeof Schema>;
@@ -68,6 +69,9 @@ export default function Project() {
 
   const methods = useForm<UniversityFormInputs>({
     resolver: zodResolver(Schema),
+    defaultValues: {
+      active: true,
+    },
   });
 
   const {
