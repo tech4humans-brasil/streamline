@@ -10,6 +10,7 @@ const handler: HttpHandler = async (conn, req) => {
   const status = (
     await new Status(conn).model().find().where({
       type: StatusType.PROGRESS,
+      project,
     })
   ).map((s) => ({
     value: s._id,
@@ -44,6 +45,7 @@ const handler: HttpHandler = async (conn, req) => {
       })
       .where({
         active: true,
+        project,
       })
   ).map((w) => ({
     value: w._id,
@@ -60,7 +62,7 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     query: schema.object({
-      workflow: schema.string().required(),
+      project: schema.string().required(),
     }),
   }))
   .configure({
