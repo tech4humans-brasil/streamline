@@ -302,7 +302,7 @@ export default function Workflow() {
             )}
 
             {
-              isCreated && (
+              (isCreated || isExternal) && (
                 <CreatableSelect
                   isMulti
                   input={{
