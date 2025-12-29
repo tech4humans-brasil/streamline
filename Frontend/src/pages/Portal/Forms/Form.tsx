@@ -301,14 +301,18 @@ export default function Workflow() {
               />
             )}
 
-            <CreatableSelect
-              isMulti
-              input={{
-                id: "categories",
-                label: t("common.fields.categories"),
-                options: formsData?.categories ?? [],
-              }}
-            />
+            {
+              isCreated && (
+                <CreatableSelect
+                  isMulti
+                  input={{
+                    id: "categories",
+                    label: t("common.fields.categories"),
+                    options: formsData?.categories ?? [],
+                  }}
+                />
+              )
+            }
 
             <Flex gap="4">
               {(isCreated || isTimerTrigger) && (
