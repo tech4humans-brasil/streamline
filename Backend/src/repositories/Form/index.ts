@@ -1,4 +1,4 @@
-import { Connection, ObjectId } from "mongoose";
+import { Connection, ObjectId, FilterQuery } from "mongoose";
 import Form, { IForm } from "../../models/client/Form";
 import BaseRepository from "../base";
 import moment from "moment";
@@ -9,6 +9,21 @@ import moment from "moment";
 export default class FormRepository extends BaseRepository<IForm> {
   constructor(connection: Connection) {
     super(new Form(connection).model());
+  }
+
+  /**
+   * Retrieves distinct categories from forms based on the provided filter.
+   * 
+   * @param where - Filter query to limit the scope of distinct categories search
+   * @returns Array of distinct category objects
+   */
+  async findDistinctCategories(where: FilterQuery<IForm> = {}): Promise<{ value: string; label: string }[]> {
+    return this.model.distinct("categories", where).lean().then((docs) =>
+      docs.map((c: string) => ({
+        value: c,
+        label: c,
+      }))
+    );
   }
 
   /**

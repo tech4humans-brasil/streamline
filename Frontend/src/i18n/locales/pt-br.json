@@ -25,6 +25,7 @@
     "create": "Criar",
     "fields": {
       "name": "Nome",
+      "categories": "Categorias",
       "yes": "Sim",
       "no": "Não",
       "allocation": "Alocação",

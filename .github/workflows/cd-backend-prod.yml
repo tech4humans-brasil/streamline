@@ -5,7 +5,13 @@ on:
   push:
     tags:
       - 'v*'
+    paths-ignore: 
+      - "Frontend/**"
   workflow_dispatch: 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: 20

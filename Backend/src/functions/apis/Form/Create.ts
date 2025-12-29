@@ -73,6 +73,7 @@ export default new Http(handler)
         return s.nullable().default(null);
       }),
       sla: schema.number().nullable().default(null),
+      categories: schema.array(schema.string()).optional().nullable().default([]),
       active: schema.boolean().default(true),
       period: schema.object().shape({
         open: schema.string().optional().nullable(),

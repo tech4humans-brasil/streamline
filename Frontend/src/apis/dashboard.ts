@@ -56,6 +56,7 @@ interface IOpenForm {
     | "description"
     | "period"
     | "published"
+    | "categories"
     | "visibilities"
     | "url"
     | "type"
