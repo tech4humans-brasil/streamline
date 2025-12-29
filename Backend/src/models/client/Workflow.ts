@@ -29,7 +29,8 @@ export const schema: Schema = new Schema(
   {
     timestamps: true,
   }
-).index({ name: 1, version: 1 }, { unique: true });
+).index({ name: 1, version: 1 }, { unique: true })
+  .index({project: 1, active: 1}, {partialFilterExpression: { "active": true }});
 
 export default class Workflow {
   conn: mongoose.Connection;
