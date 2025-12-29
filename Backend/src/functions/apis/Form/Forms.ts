@@ -45,7 +45,6 @@ const handler: HttpHandler = async (conn, req) => {
       })
       .where({
         active: true,
-        project,
       })
   ).map((w) => ({
     value: w._id,

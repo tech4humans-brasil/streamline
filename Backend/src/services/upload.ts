@@ -77,13 +77,15 @@ class BlobUploader {
       blobHTTPHeaders: { blobContentType: contentType },
     });
 
-    return {
+    const fileUploaded = await this.updateSas({
       name: blobName,
       url: blobClient.url,
       mimeType: contentType,
       size: content.byteLength.toString(),
       containerName: this.containerName,
-    };
+    });
+
+    return fileUploaded;
   }
 
   async uploadFileToBlob(
