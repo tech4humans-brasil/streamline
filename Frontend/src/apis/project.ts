@@ -35,11 +35,8 @@ export const createProject = async (data: ProjectFormData) => {
 };
 
 export const updateProject = async (data: ProjectFormData & { _id: string }) => {
-  const { name, description, _id } = data;
-  const res = await api.put<ReqProject>(`/projects/${_id}`, {
-    name,
-    description,
-  });
+  const { _id, ...payload } = data;
+  const res = await api.put<ReqProject>(`/projects/${_id}`, payload);
 
   return res.data.data;
 };

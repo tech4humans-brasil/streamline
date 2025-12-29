@@ -68,7 +68,8 @@ export const createForm = async (data: Omit<Form, "_id">) => {
 };
 
 export const updateForm = async (data: Form) => {
-  const res = await api.put<ReqForm>(`/form/${data._id}`, data);
+  const { _id, ...payload } = data;
+  const res = await api.put<ReqForm>(`/form/${_id}`, payload);
 
   return res.data.data;
 };

@@ -40,7 +40,8 @@ export const createWorkflow = async (
 };
 
 export const updateWorkflow = async (data: IWorkflow) => {
-  const res = await api.put<ReqWorkflow>(`/workflow/${data._id}`, data);
+  const { _id, ...payload } = data;
+  const res = await api.put<ReqWorkflow>(`/workflow/${_id}`, payload);
 
   return res.data.data;
 };
