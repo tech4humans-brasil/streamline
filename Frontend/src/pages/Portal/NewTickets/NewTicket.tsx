@@ -9,6 +9,11 @@ import {
   Input,
   InputGroup,
   InputRightAddon,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
   Spinner,
   Stack,
   Tag,
@@ -64,6 +69,25 @@ const NewTicket: React.FC = () => {
       )
       ?.sort((a, b) => a?.name.localeCompare(b?.name));
   }, [forms, institute_id, search]);
+
+  const filteredFormsGroupedByCategory = useMemo(() => {
+    if (!filteredForms) return { categories: [], forms: [] };
+
+    const categories = filteredForms.reduce<Record<string, typeof filteredForms>>((acc, form) => {
+      form.categories?.forEach((category) => {
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(form);
+      });
+      return acc;
+    }, {} as Record<string, typeof filteredForms>);
+
+    const forms = filteredForms.filter((form) => !form.categories?.length);
+
+    return { categories, forms };
+
+  }, [filteredForms]);  
 
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     startTransition(() => {
@@ -139,7 +163,27 @@ const NewTicket: React.FC = () => {
             <Box p={6}>
 
               <VStack spacing={4}>
-                {filteredForms?.map((form) => (
+                {Object.entries(filteredFormsGroupedByCategory.categories)?.map(([category, forms]) => (
+                  <Accordion key={category} w="100%" allowToggle>
+                    <AccordionItem>
+                      <AccordionButton w="100%" my={5}>
+                        <Text fontSize="lg" fontWeight="bold" flex="1" textAlign="left">
+                          {category}
+                        </Text>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <VStack spacing={4} align="stretch">
+                          {forms.map((form) => (
+                            <FormItem key={form._id} form={form} />
+                          ))}
+                        </VStack>
+                      </AccordionPanel>
+                    </AccordionItem>
+                  </Accordion>
+                ))}
+
+                {filteredFormsGroupedByCategory.forms.map((form) => (
                   <FormItem key={form._id} form={form} />
                 ))}
               </VStack>

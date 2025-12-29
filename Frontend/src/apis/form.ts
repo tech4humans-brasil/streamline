@@ -104,6 +104,7 @@ export const getFormBySlug = async ({
 };
 
 type ReqFormForms = Response<{
+  categories: { label: string; value: string }[];
   status: { label: string; value: string }[];
   workflows: { label: string; value: string }[];
   institutes: { label: string; value: string }[];

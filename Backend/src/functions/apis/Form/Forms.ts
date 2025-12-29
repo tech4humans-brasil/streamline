@@ -3,58 +3,60 @@ import res from "../../../utils/apiResponse";
 import Status, { StatusType } from "../../../models/client/Status";
 import Workflow from "../../../models/client/Workflow";
 import Institute from "../../../models/client/Institute";
+import FormRepository from "../../../repositories/Form";
 
 const handler: HttpHandler = async (conn, req) => {
   const { project } = req.query as { project: string };
 
-  const status = (
-    await new Status(conn).model().find().where({
-      type: StatusType.PROGRESS,
-      project,
-    })
-  ).map((s) => ({
-    value: s._id,
-    label: s.name,
-  }));
-
-  const workflows = (
-    await new Workflow(conn)
+  const [status, workflows, institutes, categories] = await Promise.all([
+    new Status(conn)
       .model()
-      .find()
-      .select({
-        _id: 1,
-        name: 1,
+      .find({
+        type: StatusType.PROGRESS,
+        project,
       })
-      .where({
+      .select({ _id: 1, name: 1 })
+      .lean()
+      .then((docs) =>
+        docs.map((s: any) => ({
+          value: s._id,
+          label: s.name,
+        }))
+      ),
+    new Workflow(conn)
+      .model()
+      .find({
         active: true,
         published: { $exists: true },
         project,
       })
-  ).map((w) => ({
-    value: w._id,
-    label: w.name,
-  }));
-
-  const institutes = (
-    await new Institute(conn)
+      .select({ _id: 1, name: 1 })
+      .lean()
+      .then((docs) =>
+        docs.map((w: any) => ({
+          value: w._id,
+          label: w.name,
+        }))
+      ),
+    new Institute(conn)
       .model()
-      .find()
-      .select({
-        _id: 1,
-        acronym: 1,
-      })
-      .where({
-        active: true,
-      })
-  ).map((w) => ({
-    value: w._id,
-    label: w.acronym,
-  }));
+      .find({ active: true })
+      .select({ _id: 1, acronym: 1 })
+      .lean()
+      .then((docs) =>
+        docs.map((i: any) => ({
+          value: i._id,
+          label: i.acronym,
+        }))
+      ),
+    new FormRepository(conn).findDistinctCategories(),
+  ]);
 
   return res.success({
     status,
     workflows,
     institutes,
+    categories,
   });
 };
 

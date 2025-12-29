@@ -12,7 +12,7 @@ interface IOpenForm {
   } | null;
   forms: Pick<
     IForm,
-    "_id" | "name" | "slug" | "description" | "period" | "published"
+    "_id" | "name" | "slug" | "description" | "period" | "published" | "categories"
   >[];
 }
 
@@ -38,6 +38,7 @@ const handler: HttpHandler = async (conn, req) => {
       published: 1,
       institute: 1,
       visibilities: 1,
+      categories: 1,
     },
   });
 

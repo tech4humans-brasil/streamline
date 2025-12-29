@@ -21,6 +21,7 @@ export type IForm = {
   published: ObjectId | string | null;
   institute: [ObjectId | string] | null;
   visibilities: Array<ObjectId | string> | null;
+  categories: Array<string> | null;
   workflow: ObjectId | string | null;
   project: ObjectId | string | null;
 } & mongoose.Document;
@@ -41,6 +42,7 @@ export const schema = new Schema<IForm>(
     },
     url: { type: String, required: false, default: null },
     sla: { type: Number, required: false, default: null },
+    categories: { type: [String], required: false, default: [], index: true },
     type: {
       type: String,
       required: true,

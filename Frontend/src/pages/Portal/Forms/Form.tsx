@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import { IFormType } from "@interfaces/Form";
 import NumberInput from "@components/atoms/Inputs/NumberInput";
 import { getProjects } from "@apis/project";
+import CreatableSelect from "@components/atoms/Inputs/CreatableSelect";
 
 const statusSchema = z
   .object({
@@ -37,6 +38,7 @@ const statusSchema = z
     initial_status: z.string().optional().nullable(),
     type: z.enum(["created", "external", "interaction", "time-trigger"]),
     workflow: z.string().optional().nullable(),
+    categories: z.array(z.string()).optional().nullable().default([]),
     period: z.object({
       open: z.string().nullable(),
       close: z.string().nullable(),
@@ -298,6 +300,15 @@ export default function Workflow() {
                 }}
               />
             )}
+
+            <CreatableSelect
+              isMulti
+              input={{
+                id: "categories",
+                label: t("common.fields.categories"),
+                options: formsData?.categories ?? [],
+              }}
+            />
 
             <Flex gap="4">
               {(isCreated || isTimerTrigger) && (

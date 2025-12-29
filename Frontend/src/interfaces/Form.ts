@@ -19,6 +19,7 @@ type IForm = {
   published: boolean;
   institute: [string] | null;
   visibilities: [string] | null;
+  categories: [string] | null;
 } & (
   | {
       type: "created";
