@@ -15,8 +15,9 @@ import axios from "axios";
 import runJavaScriptCode from "../../services/vm";
 import { IActivityStepStatus } from "../../models/client/Activity";
 import { google } from "googleapis";
+import { DiscordLogger } from "../../utils/discordLogger";
 
-interface TMessage extends GenericMessage {}
+interface TMessage extends GenericMessage { }
 
 const handler: QueueWrapperHandler<TMessage> = async (
   conn,
@@ -127,6 +128,7 @@ const handler: QueueWrapperHandler<TMessage> = async (
           activity,
           axios,
           google,
+          DiscordLogger,
         };
 
         let result = await runJavaScriptCode(`(${script})()`, context, {
