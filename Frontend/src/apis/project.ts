@@ -4,6 +4,7 @@ import Response from "@interfaces/Response";
 import api from "@services/api";
 
 type Project = Pick<IProject, "_id" | "name" | "description" | "permissions" | "active">;
+type ProjectFormData = Pick<IProject, "name" | "description">;
 type ReqProjects = Response<{ projects: Project[] } & IPagination>;
 type ReqProject = Response<IProject>;
 
@@ -27,25 +28,24 @@ export const getProject = async ({
   return res.data.data;
 };
 
-export const createProject = async (
-  data: Omit<Project, "_id" | "permissions">
-) => {
+export const createProject = async (data: ProjectFormData) => {
   const res = await api.post<ReqProject>("/projects", data);
 
   return res.data.data;
 };
 
-export const updateProject = async (data: Project) => {
-  const res = await api.put<ReqProject>(`/projects/${data._id}`, data);
+export const updateProject = async (data: ProjectFormData & { _id: string }) => {
+  const { _id, ...payload } = data;
+  const res = await api.put<ReqProject>(`/projects/${_id}`, payload);
 
   return res.data.data;
 };
 
 export const createOrUpdateProject = async (
-  data: Omit<Project, "_id" | "permissions"> & { _id?: string }
+  data: ProjectFormData & { _id?: string }
 ) => {
   if (data?._id) {
-    return updateProject(data as Project);
+    return updateProject(data as ProjectFormData & { _id: string });
   }
 
   return createProject(data);
@@ -82,9 +82,7 @@ export const getProjectForms = async () => {
 };
 
 export const deactivateProject = async (projectId: string) => {
-  const res = await api.put<ReqProject>(`/projects/${projectId}`, {
-    active: false,
-  });
+  const res = await api.put<ReqProject>(`/projects/${projectId}/deactivate`, {});
 
   return res.data.data;
 };

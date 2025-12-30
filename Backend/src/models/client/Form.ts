@@ -70,7 +70,8 @@ export const schema = new Schema<IForm>(
   {
     timestamps: true,
   }
-).index({ slug: 1, status: 1, "period.open": 1, "period.close": 1 });
+).index({ slug: 1, status: 1, "period.open": 1, "period.close": 1 })
+  .index({project: 1, active: 1}, {partialFilterExpression: { "active": true }});
 
 export default class Form {
   conn: mongoose.Connection;
