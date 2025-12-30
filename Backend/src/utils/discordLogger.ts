@@ -10,7 +10,7 @@ interface DiscordLoggerConfig {
 
 export interface LogField {
   name: string;
-  value: any;
+  value: unknown;
   inline?: boolean;
 }
 
@@ -24,7 +24,7 @@ const COLORS = {
 export class DiscordLogger {
   constructor(private readonly config: DiscordLoggerConfig) {
     if (!config || !config.webhookUrl) {
-      throw new Error("DiscordLogger: 'webhookUrl' é obrigatório na configuração.");
+      throw new Error("DiscordLogger: 'webhookUrl' is required in the configuration.");
     }
   }
 
@@ -57,14 +57,19 @@ export class DiscordLogger {
     }
   }
 
-  async logDeep(request: any, response: any, color: keyof typeof COLORS = "INFO") {
+  async logDeep(request: unknown, response: unknown) {
     try {
       const titleString = `🎟️ ***TICKET*** [${this.config.protocol}] | REQ NO. ${this.config.requestId} - ${this.config.requestName}`;
+
+      const maxBodyLength = 900;
       const requestString = JSON.stringify(request, null, 2);
       const responseString = JSON.stringify(response, null, 2);
 
+      const truncatedRequest = requestString.length > maxBodyLength ? `${requestString.substring(0, maxBodyLength)}...` : requestString;
+      const truncatedResponse = responseString.length > maxBodyLength ? `${responseString.substring(0, maxBodyLength)}...` : responseString;
+
       await axios.post(this.config.webhookUrl, {
-        content: titleString + "\n📤 ***REQUEST***:```json" + requestString + "```\n📥 ***RESPONSE***:```json" + responseString + "```",
+        content: titleString + "\n📤 ***REQUEST***:```json" + truncatedRequest + "```\n📥 ***RESPONSE***:```json" + truncatedResponse + "```",
         embeds: null,
         attachments: []
       });

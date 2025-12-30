@@ -123,12 +123,14 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const { result, error } = await (async () => {
       try {
+        const discordLogger = DiscordLogger;
+
         const context = {
           vars,
           activity,
           axios,
           google,
-          DiscordLogger,
+          discordLogger
         };
 
         let result = await runJavaScriptCode(`(${script})()`, context, {
