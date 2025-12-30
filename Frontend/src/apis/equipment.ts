@@ -9,6 +9,7 @@ type Equipment = Pick<
   | "brandName"
   | "equipmentType"
   | "inventoryNumber"
+  | "legacyInventoryNumber"
   | "situation"
   | "status"
   | "allocations"

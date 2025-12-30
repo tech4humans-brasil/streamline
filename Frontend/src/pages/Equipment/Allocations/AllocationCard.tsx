@@ -38,7 +38,12 @@ const AllocationCard: React.FC<AllocationCardProps> = ({ allocation }) => {
           <Flex justify="space-between" direction="column" gap={4}>
             <Flex justify="flex-start" align="center" gap={2}>
               <FaLaptop size={20} />
-              <Text fontSize="lg">{allocation.equipment.inventoryNumber}</Text>
+              <Text fontSize="lg" fontWeight="bold">#{allocation.equipment.inventoryNumber}</Text>
+              {allocation.equipment.legacyInventoryNumber && (
+                <Text fontSize="sm" color="gray.500">
+                  ({allocation.equipment.legacyInventoryNumber})
+                </Text>
+              )}
             </Flex>
             <Flex
               borderRadius="md"

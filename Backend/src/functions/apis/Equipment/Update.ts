@@ -9,7 +9,6 @@ import EquipmentRepository from "../../../repositories/Equipment";
 
 interface DtoEquipment {
   formName?: string;
-  inventoryNumber?: string;
   equipmentType?: string;
   brandName?: string;
   status?: IEquipmentStatus;
@@ -43,7 +42,6 @@ export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
       formName: schema.string().optional().min(3).max(255),
-      inventoryNumber: schema.string().optional().min(3).max(255),
       equipmentType: schema.string().optional().min(3).max(255),
       brandName: schema.string().optional().max(255),
       status: schema

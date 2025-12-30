@@ -27,7 +27,8 @@ import { useEffect } from "react";
 const Schema = z.object({
   _id: z.string().optional(),
   formName: z.string().min(1).max(255),
-  inventoryNumber: z.string(),
+  inventoryNumber: z.number().optional(),
+  legacyInventoryNumber: z.string().optional(),
   equipmentType: z.string().min(1).max(255),
   brandName: z.string().max(100).optional(),
   status: z.nativeEnum(IEquipmentStatus),
@@ -111,20 +112,38 @@ export function EquipmentForm({
         </CardHeader>
 
         <CardBody display="flex" flexDirection="column" gap="4">
+
+          {isEditing && (
+            <Flex justify="space-between" gap="4" direction={["row", "row"]}>
+              {equipment?.inventoryNumber && (
+                <Text
+                  input={{
+                    id: "inventoryNumber",
+                    label: t("common.fields.inventoryNumber"),
+                    placeholder: "-",
+                    isDisabled: true,
+                  }}
+                />
+              )}
+              
+              {equipment?.legacyInventoryNumber && (
+                <Text
+                  input={{
+                    id: "legacyInventoryNumber",
+                    label: t("common.fields.legacyInventoryNumber"),
+                    placeholder: "-",
+                    isDisabled: true,
+                  }}
+                />
+              )}
+            </Flex>
+          )}
           <Flex justify="space-between" gap="4" direction={["column", "row"]}>
             <Text
               input={{
                 id: "formName",
                 label: t("common.fields.name"),
                 placeholder: t("common.fields.name"),
-                required: true,
-              }}
-            />
-            <Text
-              input={{
-                id: "inventoryNumber",
-                label: t("common.fields.inventoryNumber"),
-                placeholder: t("common.fields.inventoryNumber"),
                 required: true,
               }}
             />

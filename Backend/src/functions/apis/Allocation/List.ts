@@ -20,6 +20,7 @@ const handler: HttpHandler = async (conn, req) => {
         select: {
           formName: 1,
           inventoryNumber: 1,
+          legacyInventoryNumber: 1,
           status: 1,
           situation: 1,
         },

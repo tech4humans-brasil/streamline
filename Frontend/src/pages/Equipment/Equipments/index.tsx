@@ -1,5 +1,5 @@
 import { equipmentsForms, getEquipments } from "@apis/equipment";
-import { Box, Button, Flex, Heading } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text as ChakraText, Tooltip } from "@chakra-ui/react";
 import Can from "@components/atoms/Can";
 import Select from "@components/atoms/Inputs/Select";
 import Text from "@components/atoms/Inputs/Text";
@@ -11,6 +11,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BiEdit, BiRefresh } from "react-icons/bi";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { equipmentTypes, techBrands } from "./constants";
 
 const columns = [
   {
@@ -92,12 +93,42 @@ const Equipments: React.FC = () => {
   const data = useMemo(() => {
     if (!equipments) return [];
 
-    return equipments.map((equipment) => ({
-      ...equipment,
-      status: t(`common.fields.${equipment.status}`),
-      action: <Action {...equipment} />,
-    }));
-  }, [equipments]);
+    return equipments.map((equipment) => {
+      const typeConfig = equipmentTypes.find(
+        (et) => et.value === equipment.equipmentType
+      );
+      const brandConfig = techBrands.find(
+        (tb) => tb.value === equipment.brandName
+      );
+
+      return {
+        ...equipment,
+        // Mostrar inventoryNumber e legacyInventoryNumber juntos com estilização
+        inventoryNumber: equipment.legacyInventoryNumber ? (
+          <Flex align="center" gap={2}>
+            <Tooltip label="ID Único" hasArrow>
+              <ChakraText>#{equipment.inventoryNumber}</ChakraText>
+            </Tooltip>
+            <Tooltip label="ID Legado" hasArrow>
+              <ChakraText 
+                fontSize="sm" 
+                color="gray.500"
+                cursor="help"
+              >
+                ({equipment.legacyInventoryNumber})
+              </ChakraText>
+            </Tooltip>
+          </Flex>
+        ) : (
+          <ChakraText fontWeight="bold">#{equipment.inventoryNumber}</ChakraText>
+        ),
+        equipmentType: typeConfig?.label || equipment.equipmentType,
+        brandName: brandConfig?.label || equipment.brandName,
+        status: t(`common.fields.${equipment.status}`),
+        action: <Action {...equipment} />,
+      };
+    });
+  }, [equipments, t]);
 
   return (
     <Box width="100%" p={[4, 10]}>
@@ -117,8 +148,15 @@ const Equipments: React.FC = () => {
       <Filter.Container>
         <Text
           input={{
-            label: "Id",
+            label: "ID",
             id: "inventoryNumber",
+          }}
+        />
+
+        <Text
+          input={{
+            label: "ID Legado",
+            id: "legacyInventoryNumber",
           }}
         />
 
@@ -134,10 +172,13 @@ const Equipments: React.FC = () => {
             label: t("common.fields.type"),
             id: "equipmentType",
             options:
-              forms?.types?.map((type) => ({
-                label: type,
-                value: type,
-              })) || [],
+              forms?.types?.map((type) => {
+                const typeConfig = equipmentTypes.find((et) => et.value === type);
+                return {
+                  label: typeConfig?.label || type,
+                  value: type,
+                };
+              }) || [],
           }}
           isLoading={isFetchingForms}
         />
@@ -147,10 +188,13 @@ const Equipments: React.FC = () => {
             label: t("common.fields.brand"),
             id: "brandName",
             options:
-              forms?.brandNames?.map((brand) => ({
-                label: brand,
-                value: brand,
-              })) || [],
+              forms?.brandNames?.map((brand) => {
+                const brandConfig = techBrands.find((tb) => tb.value === brand);
+                return {
+                  label: brandConfig?.label || brand,
+                  value: brand,
+                };
+              }) || [],
           }}
           isLoading={isFetchingForms}
         />
