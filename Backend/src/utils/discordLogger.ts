@@ -59,7 +59,7 @@ export class DiscordLogger {
 
   async logDeep(request: unknown, response: unknown) {
     try {
-      const titleString = `🎟️ ***TICKET*** [${this.config.protocol}] | REQ NO. ${this.config.requestId} - ${this.config.requestName}`;
+      const titleString = `🎟️ ***TICKET*** [${this.config.protocol}] | REQ NO. ${this.config.requestId ?? 'N/A'} - ${this.config.requestName ?? 'Unknown'}`;
 
       const maxBodyLength = 900;
       const requestString = JSON.stringify(request, null, 2);
