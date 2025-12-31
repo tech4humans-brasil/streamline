@@ -133,7 +133,8 @@ const userEquipmentAllocationSchema = new Schema<UserEquipmentAllocation>({
 export interface IEquipment extends mongoose.Document {
   _id: mongoose.Types.ObjectId | string;
   formName: string;
-  inventoryNumber: string;
+  inventoryNumber: number; // New id will be stored here
+  legacyInventoryNumber?: string; // Old id will be put here
   equipmentType: string;
   brandName?: string;
   status: IEquipmentStatus;
@@ -148,7 +149,8 @@ export interface IEquipment extends mongoose.Document {
 export const schema: Schema = new Schema<IEquipment>(
   {
     formName: { type: String, required: true },
-    inventoryNumber: { type: String, required: true, index: true },
+    inventoryNumber: { type: Number, required: true, unique: true, index: true },
+    legacyInventoryNumber: { type: String, index: true },
     equipmentType: { type: String, required: true },
     brandName: { type: String, required: false },
     status: {
@@ -174,6 +176,27 @@ export const schema: Schema = new Schema<IEquipment>(
   .index({ situation: 1 })
   .index({ status: 1 })
   .index({ equipmentType: 1 });
+
+schema.pre<IEquipment>("validate", async function (next) {
+  const doc = this;
+
+  if (doc.isNew && !doc.inventoryNumber) {
+    try {
+      const counter = await this.db.model("Counter").findOneAndUpdate(
+        { _id: "equipment_inventory_id" },
+        { $inc: { seq: 1} },
+        { new: true, upsert: true }
+      );
+
+      doc.inventoryNumber = counter.seq;
+      next();
+    } catch (error: any) {
+      next(error);
+    }
+  } else {
+    next();
+  }
+});
 
 class Equipment {
   conn: Connection;

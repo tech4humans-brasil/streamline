@@ -33,6 +33,7 @@
       "serial": "Nº Serial",
       "sla": "SLA",
       "inventoryNumber": "Número de inventário",
+      "legacyInventoryNumber": "ID legado",
       "brand": "Marca",
       "situation": "Situação",
       "due_date": "Prazo",

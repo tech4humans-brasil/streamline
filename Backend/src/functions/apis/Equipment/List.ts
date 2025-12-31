@@ -12,7 +12,8 @@ interface Query {
 }
 
 const filterQueryBuilder = new FilterQueryBuilder({
-  inventoryNumber: WhereEnum.ILIKE,
+  inventoryNumber: WhereEnum.NUMBER,
+  legacyInventoryNumber: WhereEnum.ILIKE,
   equipmentType: WhereEnum.EQUAL,
   status: WhereEnum.EQUAL,
   brandName: WhereEnum.EQUAL,

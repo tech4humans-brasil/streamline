@@ -8,21 +8,8 @@ const handler: HttpHandler = async (conn, req) => {
 
   const equipmentRepository = new EquipmentRepository(conn);
 
-  // Disallows creating equipment with same type and same inventory number
-  const equipmentExists = await equipmentRepository.findOne({
-    where: {
-      equipmentType: data.equipmentType,
-      inventoryNumber: data.inventoryNumber,
-    },
-  });
-
-  if (equipmentExists) {
-    return res.conflict("Equipment already exists");
-  }
-
   const equipment = await equipmentRepository.create({
     ...data,
-    inventoryNumber: data.inventoryNumber.toLocaleUpperCase().trim(),
     status: IEquipmentStatus.available,
   });
 
@@ -32,7 +19,7 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .setSchemaValidator((schema) => ({
     body: schema.object().shape({
-      inventoryNumber: schema.string().required().min(1).max(255),
+      formName: schema.string().required().min(1).max(255),
       equipmentType: schema.string().required().min(1).max(255),
       invoice: schema
         .object()

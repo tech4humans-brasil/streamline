@@ -25,7 +25,7 @@ const InputEquipment: React.FC<InputEquipmentProps> = ({ input }) => {
     const groupedEquipments = equipments?.equipments?.reduce((acc, e) => {
       const group = acc[e.equipmentType] || [];
       group.push({
-        label: `${e.inventoryNumber} - ${e.brandName}`,
+        label: `#${e.inventoryNumber}${e.legacyInventoryNumber ? ` (${e.legacyInventoryNumber})` : ''} - ${e.brandName}`,
         value: e._id,
       });
       acc[e.equipmentType] = group;

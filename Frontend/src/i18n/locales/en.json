@@ -74,7 +74,25 @@
       "by": "Created by",
       "anonymous": "Anonymous",
       "initialStatus": "Initial Status",
-      "workflow": "Workflow"
+      "workflow": "Workflow",
+      "serial": "Serial Number",
+      "inventoryNumber": "Inventory Number",
+      "legacyInventoryNumber": "Legacy ID",
+      "brand": "Brand",
+      "situation": "Condition",
+      "available": "Available",
+      "allocated": "Allocated",
+      "discarded": "Discarded",
+      "office": "Office",
+      "new": "New",
+      "used": "Used",
+      "broken": "Broken",
+      "damaged": "Damaged",
+      "lost": "Lost",
+      "invoice": "Invoice",
+      "additionalNotes": "Additional Notes",
+      "startDate": "Start Date",
+      "endDate": "End Date"
     },
     "actions": {
       "copy": {

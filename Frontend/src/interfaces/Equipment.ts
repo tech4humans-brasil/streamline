@@ -56,7 +56,8 @@ export interface IReturn {
 export interface IEquipment {
   _id: string;
   formName: string;
-  inventoryNumber: string;
+  legacyInventoryNumber?: string;
+  inventoryNumber: number;
   equipmentType: string;
   brandName?: string;
   status: IEquipmentStatus;
