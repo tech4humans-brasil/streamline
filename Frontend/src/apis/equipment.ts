@@ -23,6 +23,11 @@ type ReqEquipments = Response<
 
 type reqEquipment = Response<IEquipment>;
 
+type EquipmentInput = Omit<
+  IEquipment,
+  "_id" | "allocations" | "inventoryNumber" | "legacyInventoryNumber"
+>;
+
 export const getEquipments = async ({
   queryKey: [, query],
 }: {
@@ -44,7 +49,7 @@ export const getEquipment = async ({
 };
 
 export const createEquipment = async (
-  data: Omit<IEquipment, "_id" | "allocations">
+  data: EquipmentInput
 ) => {
   const res = await api.post<reqEquipment>("/equipments", data);
 
@@ -53,7 +58,7 @@ export const createEquipment = async (
 
 export const updateEquipment = async (
   id: string,
-  data: Omit<IEquipment, "_id" | "allocations">
+  data: EquipmentInput
 ) => {
   const res = await api.put<reqEquipment>(`/equipment/${id}`, data);
 
@@ -61,7 +66,7 @@ export const updateEquipment = async (
 };
 
 export const createOrUpdateEquipment = async (
-  data: Omit<IEquipment, "_id" | "allocations"> & { _id?: string }
+  data: EquipmentInput & { _id?: string }
 ) => {
   if (data._id) {
     return updateEquipment(data._id, data);

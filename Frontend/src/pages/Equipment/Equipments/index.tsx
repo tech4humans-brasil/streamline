@@ -93,14 +93,10 @@ const Equipments: React.FC = () => {
   const data = useMemo(() => {
     if (!equipments) return [];
 
-    return equipments.map((equipment) => {
-      const typeConfig = equipmentTypes.find(
-        (et) => et.value === equipment.equipmentType
-      );
-      const brandConfig = techBrands.find(
-        (tb) => tb.value === equipment.brandName
-      );
+    const typeMap = new Map(equipmentTypes.map((i) => [i.value, i.label]));
+    const brandMap = new Map(techBrands.map((i) => [i.value, i.label]));
 
+    return equipments.map((equipment) => {
       return {
         ...equipment,
         // Mostrar inventoryNumber e legacyInventoryNumber juntos com estilização
@@ -122,8 +118,8 @@ const Equipments: React.FC = () => {
         ) : (
           <ChakraText fontWeight="bold">#{equipment.inventoryNumber}</ChakraText>
         ),
-        equipmentType: typeConfig?.label || equipment.equipmentType,
-        brandName: brandConfig?.label || equipment.brandName,
+        equipmentType: typeMap.get(equipment.equipmentType) || equipment.equipmentType,
+        brandName: (equipment.brandName && brandMap.get(equipment.brandName)) || equipment.brandName,
         status: t(`common.fields.${equipment.status}`),
         action: <Action {...equipment} />,
       };

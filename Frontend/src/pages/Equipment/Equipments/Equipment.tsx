@@ -8,6 +8,7 @@ import { IReturn } from "@interfaces/Equipment";
 import { EquipmentForm } from "./components/EquipmentForm";
 import { AllocationsTimeline } from "./components/AllocationsTimeline";
 import { ReturnDetailsModal } from "./components/ReturnDetailsModal";
+import { EquipmentFormInputs } from "./components/EquipmentForm";
 
 export default function Equipment() {
   const { t } = useTranslation();
@@ -57,7 +58,7 @@ export default function Equipment() {
   }, [navigate]);
 
   const handleSubmit = useCallback(
-    async (data: any) => {
+    async (data: EquipmentFormInputs) => {
       // Remover campos que nunca devem ser enviados
       const { inventoryNumber, legacyInventoryNumber, ...submitData } = data;
       

@@ -48,7 +48,7 @@ const Schema = z.object({
     .nullable(),
 });
 
-type EquipmentFormInputs = z.infer<typeof Schema>;
+export type EquipmentFormInputs = z.infer<typeof Schema>;
 
 interface EquipmentFormProps {
   equipment?: EquipmentFormInputs;
