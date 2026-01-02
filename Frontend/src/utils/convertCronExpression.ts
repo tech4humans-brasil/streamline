@@ -44,7 +44,7 @@ export function convertFromCron(cron: string) {
     return {
       interval: Number(hour.split("/")[1]),
       schedule: "hour",
-      time: `${formatMinute(minute)}:00`,
+      time: `00:${minute.padStart(2, '0')}`,
       day: "*"
     };
   }
