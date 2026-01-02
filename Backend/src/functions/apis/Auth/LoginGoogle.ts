@@ -87,7 +87,7 @@ export const handler: HttpHandler = async (_, req, context) => {
   }
 
   const blobUploader = new BlobUploader(user._id.toString());
-  if (true) {
+  if (picture && !user.photo_url?.url) {
     try {
       const response = await axios.get(picture, {
         responseType: "arraybuffer",
