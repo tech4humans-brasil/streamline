@@ -40,6 +40,15 @@ export function convertFromCron(cron: string) {
     };
   }
 
+  if (hour.includes("/")) {
+    return {
+      interval: Number(hour.split("/")[1]),
+      schedule: "hour",
+      time: `${formatMinute(minute)}:00`,
+      day: "*"
+    };
+  }
+
   if (hour !== "*") {
     return {
       interval: Number(hour),
