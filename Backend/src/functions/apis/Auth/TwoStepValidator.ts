@@ -52,6 +52,7 @@ export const handler: HttpHandler = async (_, req) => {
     slug: acronym,
     client: conn.name,
     tutorials: user.tutorials,
+    photo_url: false,
     permissions,
   });
 

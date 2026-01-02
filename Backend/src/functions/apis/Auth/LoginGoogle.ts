@@ -10,6 +10,8 @@ import UserRepository from "../../../repositories/User";
 import { Permissions } from "../../../services/permissions";
 import { IUserProviders, IUserRoles } from "../../../models/client/User";
 import InstituteRepository from "../../../repositories/Institute";
+import BlobUploader, { FileUploaded } from "../../../services/upload";
+import axios from "axios";
 
 interface Body {
   credential: string;
@@ -23,6 +25,7 @@ interface GoogleUserToken {
   email_verified: boolean;
   name: string;
   jti: string;
+  picture: string;
 }
 
 export const handler: HttpHandler = async (_, req, context) => {
@@ -52,6 +55,7 @@ export const handler: HttpHandler = async (_, req, context) => {
   const userRepository = new UserRepository(conn);
 
   const email = payload.email;
+  const picture = payload.picture ?? null;
 
   let user = await userRepository.findOne({
     where: {
@@ -59,7 +63,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     },
   });
 
-  if (!user.active) {
+  if (user && !user.active) {
     return res.notFound("User not found");
   }
 
@@ -82,11 +86,36 @@ export const handler: HttpHandler = async (_, req, context) => {
     user.institutes.push(institute);
   }
 
+  const blobUploader = new BlobUploader(user._id.toString());
+  if (true) {
+    try {
+      const response = await axios.get(picture, {
+        responseType: "arraybuffer",
+      });
+      const buffer = Buffer.from(response.data);
+      const contentType = response.headers["content-type"];
+
+      const fileUploaded = await blobUploader.uploadBufferToBlob(
+        "profile_picture",
+        contentType,
+        buffer
+      );
+      
+      user.photo_url = fileUploaded;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   user.last_login = new Date();
   user.save();
 
   const permissions = Permissions.getPermissionsByRoles(user.roles);
-
+  
+  let updatedUserPhoto: FileUploaded | null = null;
+  if (user.photo_url) {
+    updatedUserPhoto = await blobUploader.updateSas(user.photo_url, 86400 * 30);
+  }
   const token = await jwt.sign({
     id: user._id,
     name: user.name,
@@ -98,6 +127,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     client: conn.name,
     tutorials: user.tutorials,
     permissions,
+    photo_url: updatedUserPhoto?.url ?? user.photo_url,
   });
 
   return res.success({

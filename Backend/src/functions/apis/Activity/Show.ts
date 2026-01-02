@@ -23,6 +23,10 @@ const handler: HttpHandler = async (conn, req) => {
 
   const blobUploader = new BlobUploader(req.user.id);
 
+  if (activity?.users[0]?.photo_url) {
+    activity.users[0].photo_url = await blobUploader.updateSas(activity.users[0].photo_url);
+  }
+
   // Processa campos do formulário
   for (const field of activity.form_draft.fields) {
     if (field.type === FieldTypes.File) {

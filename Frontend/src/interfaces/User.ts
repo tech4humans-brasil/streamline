@@ -22,6 +22,7 @@ type IUser = {
   matriculation?: string;
   institutes: Array<IInstitute>;
   active: boolean;
+  photo_url?: string;
   roles: IUserRoles[];
   allocations: UserEquipmentAllocation[];
 };

@@ -91,6 +91,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
       email: 1,
       matriculation: 1,
       institutes: 1,
+      photo_url: 1,
     },
   });
 

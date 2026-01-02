@@ -10,4 +10,5 @@ export default interface JwtData {
   client: string;
   permissions: string[];
   tutorials: string[];
+  photo_url?: string;
 }

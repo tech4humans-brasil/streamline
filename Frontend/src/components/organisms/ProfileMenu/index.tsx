@@ -31,6 +31,7 @@ const AvatarMenu: React.FC = () => {
   const roles = auth?.roles ?? [];
   const matriculation = auth?.matriculation;
   const email = auth?.email;
+  const photo_url = auth?.photo_url;
 
   const handleLogout = useCallback(() => {
     setAuth(null);
@@ -73,7 +74,7 @@ const AvatarMenu: React.FC = () => {
       <Flex align="center" gap={2} onClick={onOpen} cursor="pointer">
         <Avatar
           name={userName ?? "Usuário"}
-          src="https://bit.ly/broken-link"
+          src={photo_url ?? undefined}
           size="sm"
         />
         <Hide above="md">
@@ -87,7 +88,7 @@ const AvatarMenu: React.FC = () => {
             <Flex align="center" gap={2}>
               <Avatar
                 name={userName ?? "Usuário"}
-                src="https://bit.ly/broken-link"
+                src={photo_url ?? undefined}
                 size="sm"
               />
               <Text fontWeight="bold">{userName}</Text>
