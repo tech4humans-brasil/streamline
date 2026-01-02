@@ -26,7 +26,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, accepted }) => {
       w="fit-content"
     >
       <Flex alignItems="center" gap={3}>
-        <Avatar name={user.name} src={user.photo_url?.url ?? undefined} size="sm" />
+        <Avatar name={user.name} src={user.photo_url?.url} size="sm" />
         <Box>
           <Text fontSize="sm" fontWeight={"bold "} noOfLines={1}>
             {user.name}

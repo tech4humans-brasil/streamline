@@ -1,4 +1,5 @@
 import IInstitute from "./Institute";
+import { FileUploaded } from "./Answer";
 
 export enum IUserRoles {
   admin = "admin",
@@ -22,7 +23,7 @@ type IUser = {
   matriculation?: string;
   institutes: Array<IInstitute>;
   active: boolean;
-  photo_url?: string;
+  photo_url?: FileUploaded;
   roles: IUserRoles[];
   allocations: UserEquipmentAllocation[];
 };
