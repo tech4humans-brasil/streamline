@@ -4,13 +4,13 @@ import FormRepository from "../../../repositories/Form";
 
 const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params as { id: string };
-  const { fields } = req.query as { fields: boolean };
+  const { fields } = req.query as { fields: string };
 
   const formRepository = new FormRepository(conn);
 
   const form = await formRepository.findOne({
     where: { _id: id },
-    populate: fields
+    populate: fields === "true"
       ? [
           {
             path: "published",
@@ -32,7 +32,7 @@ export default new Http(handler)
       id: schema.string().required(),
     }),
     query: schema.object({
-      fields: schema.string().transform((value) => value === "true"),
+      fields: schema.string().optional(),
     }),
   }))
   .configure({
