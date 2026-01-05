@@ -69,7 +69,7 @@ export class DiscordLogger {
       const truncatedResponse = responseString.length > maxBodyLength ? `${responseString.substring(0, maxBodyLength)}...` : responseString;
 
       await axios.post(this.config.webhookUrl, {
-        content: titleString + "\n📤 ***REQUEST***:```json" + truncatedRequest + "```\n📥 ***RESPONSE***:```json" + truncatedResponse + "```",
+        content: titleString + "\n📤 ***REQUEST***:```json\n" + truncatedRequest + "```\n📥 ***RESPONSE***:```json\n" + truncatedResponse + "```",
         embeds: null,
         attachments: []
       });
