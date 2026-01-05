@@ -43,11 +43,11 @@ export const handler: HttpHandler = async (_, req) => {
 
   const blobUploader = new BlobUploader(client.acronym);
   if (client.logo) {
-    await blobUploader.updateSas(client.logo);
+    await blobUploader.updateSas(client.logo, 86400 * 30);
   }
 
   if (client.icon) {
-    await blobUploader.updateSas(client.icon);
+    await blobUploader.updateSas(client.icon, 86400 * 30);
   }
 
   await client.save();

@@ -1,5 +1,6 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
 import { IInstitute } from "./Institute";
+import { FileUploaded } from "../../services/upload";
 
 export enum IUserRoles {
   admin = "admin",
@@ -31,6 +32,7 @@ export type IUser = {
   institutes: mongoose.Types.DocumentArray<IInstitute>;
   active: boolean;
   providers: IUserProviders[];
+  photo_url?: FileUploaded | null;
   isExternal: boolean;
   tutorials: string[];
   last_login: Date | null;
@@ -73,6 +75,7 @@ export const schema: Schema = new Schema<IUser>(
     email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
     active: { type: Boolean, default: true, index: true },
+    photo_url: { type: Object, default: null },
     isExternal: { type: Boolean, default: false, index: true },
     allocations: { type: [userEquipmentAllocationSchema], default: [] },
     matriculation: {

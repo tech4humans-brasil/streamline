@@ -251,7 +251,8 @@
   "role": {
     "admin": "Administrador(a)",
     "external": "Externo(a)",
-    "student": "Usuário(a)"
+    "student": "Usuário(a)",
+    "equipment": "Equipamento"
   },
   "state": {
     "active": "Ativo",
