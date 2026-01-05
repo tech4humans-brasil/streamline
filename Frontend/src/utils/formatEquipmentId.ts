@@ -1,5 +1,5 @@
 import { equipmentTypes } from "@pages/Equipment/Equipments/constants";
-
+const typeToPrefixMap = new Map(equipmentTypes.map((t) => [t.value, t.prefix]));
 /**
  * Formats an equipment ID with its type prefix
  * @param equipmentType - The equipment type (e.g., "notebook", "monitor")
@@ -10,9 +10,6 @@ export function formatEquipmentId(
   equipmentType: string,
   inventoryNumber: number
 ): string {
-  const type = equipmentTypes.find((t) => t.value === equipmentType);
-  const prefix = type?.prefix || "UNK"; // UNK = Unknown if type not found
-  
+  const prefix = typeToPrefixMap.get(equipmentType) || "UNK"; // UNK = Unknown if type not found
   return `${prefix}-${inventoryNumber}`;
 }
-

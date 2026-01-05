@@ -9,6 +9,9 @@ import {
   CardHeader,
   Flex,
   Heading,
+  Input,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft } from "react-icons/fa";
@@ -81,7 +84,6 @@ export function EquipmentForm({
   const {
     handleSubmit,
     watch,
-    setValue,
   } = methods;
 
   const isAllocated = watch("status") === IEquipmentStatus.allocated;
@@ -95,12 +97,8 @@ export function EquipmentForm({
   useEffect(() => {
     if (equipment) {
       methods.reset(equipment);
-      // Define o valor formatado do inventoryNumber para exibição
-      if (equipment.inventoryNumber && equipment.equipmentType) {
-        setValue("inventoryNumber", formattedInventoryNumber as any);
-      }
     }
-  }, [equipment, formattedInventoryNumber, methods, setValue]);
+  }, [equipment, methods]);
 
   return (
     <FormProvider {...methods}>
@@ -128,14 +126,14 @@ export function EquipmentForm({
           {isEditing && (
             <Flex justify="space-between" gap="4" direction={["row", "row"]}>
               {equipment?.inventoryNumber && (
-                <Text
-                  input={{
-                    id: "inventoryNumber",
-                    label: t("common.fields.inventoryNumber"),
-                    placeholder: "-",
-                    isDisabled: true,
-                  }}
-                />
+                <FormControl>
+                  <FormLabel>{t("common.fields.inventoryNumber")}</FormLabel>
+                  <Input
+                    value={formattedInventoryNumber}
+                    isDisabled
+                    placeholder="-"
+                  />
+                </FormControl>
               )}
               
               {equipment?.legacyInventoryNumber && (
