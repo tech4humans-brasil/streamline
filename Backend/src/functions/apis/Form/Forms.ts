@@ -13,7 +13,14 @@ const handler: HttpHandler = async (conn, req) => {
       .model()
       .find({
         type: StatusType.PROGRESS,
-        project,
+        $or: [
+          {
+            project: { $eq: null },
+          },
+          {
+            project,
+          },
+        ],
       })
       .select({ _id: 1, name: 1 })
       .lean()
