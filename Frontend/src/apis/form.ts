@@ -45,7 +45,7 @@ export const getFormWithFields = async ({
   queryKey: string[];
 }) => {
   const res = await api.get<ReqFormWithFields>(`/form/${id}`, {
-    params: { fields: true },
+    params: { fields: "true" },
   });
 
   return {
