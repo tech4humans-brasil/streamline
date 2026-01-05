@@ -26,7 +26,7 @@ export default class ScheduleRepository extends BaseRepository<ISchedule> {
         (s) => s.status === ScheduleStatus.COMPLETED
       ).length;
 
-      if (countRepeatSuccess < schedule.repeat) {
+      if (countRepeatSuccess >= schedule.repeat) {
         schedule.active = false;
         return null;
       }
