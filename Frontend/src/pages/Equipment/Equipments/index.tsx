@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { BiEdit, BiRefresh } from "react-icons/bi";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { equipmentTypes, techBrands } from "./constants";
+import { formatEquipmentId } from "@utils/formatEquipmentId";
 
 const columns = [
   {
@@ -97,13 +98,15 @@ const Equipments: React.FC = () => {
     const brandMap = new Map(techBrands.map((i) => [i.value, i.label]));
 
     return equipments.map((equipment) => {
+      const formattedId = formatEquipmentId(equipment.equipmentType, equipment.inventoryNumber);
+      
       return {
         ...equipment,
-        // Mostrar inventoryNumber e legacyInventoryNumber juntos com estilização
+        // Mostrar inventoryNumber com prefixo (ex: NTB-123) e legacyInventoryNumber se existir
         inventoryNumber: equipment.legacyInventoryNumber ? (
           <Flex align="center" gap={2}>
             <Tooltip label="ID Único" hasArrow>
-              <ChakraText>#{equipment.inventoryNumber}</ChakraText>
+              <ChakraText fontWeight="bold">{formattedId}</ChakraText>
             </Tooltip>
             <Tooltip label="ID Legado" hasArrow>
               <ChakraText 
@@ -116,7 +119,7 @@ const Equipments: React.FC = () => {
             </Tooltip>
           </Flex>
         ) : (
-          <ChakraText fontWeight="bold">#{equipment.inventoryNumber}</ChakraText>
+          <ChakraText fontWeight="bold">{formattedId}</ChakraText>
         ),
         equipmentType: typeMap.get(equipment.equipmentType) || equipment.equipmentType,
         brandName: (equipment.brandName && brandMap.get(equipment.brandName)) || equipment.brandName,

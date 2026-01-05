@@ -2,42 +2,52 @@ export const equipmentTypes = [
   {
     label: "Notebook",
     value: "notebook",
+    prefix: "NTB",
   },
   {
     label: "Monitor",
     value: "monitor",
+    prefix: "MTR",
   },
   {
     label: "Suporte Notebook",
     value: "suporte-notebook",
+    prefix: "SPT"
   },
   {
     label: "Impressora",
     value: "impressora",
+    prefix: "IMP"
   },
   {
     label: "Headset",
     value: "headset",
+    prefix: "HST",
   },
   {
     label: "Mouse e Teclado",
     value: "mouse-keyboard",
+    prefix: "KTM",
   },
   {
     label: "Mouse",
     value: "mouse",
+    prefix: "MOU",
   },
   {
     label: "Cadeira",
     value: "cadeira",
+    prefix: "CDR",
   },
   {
     label: "Mesa",
     value: "mesa",
+    prefix: "MSA"
   },
   {
     label: "Hub USB",
     value: "hub-usb",
+    prefix: "HUB",
   },
 ];
 

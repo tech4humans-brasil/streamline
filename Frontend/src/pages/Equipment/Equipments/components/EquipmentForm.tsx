@@ -22,7 +22,8 @@ import {
   IEquipmentStatus,
 } from "@interfaces/Equipment";
 import { equipmentTypes, techBrands } from "../constants";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { formatEquipmentId } from "@utils/formatEquipmentId";
 
 const Schema = z.object({
   _id: z.string().optional(),
@@ -80,15 +81,26 @@ export function EquipmentForm({
   const {
     handleSubmit,
     watch,
+    setValue,
   } = methods;
 
   const isAllocated = watch("status") === IEquipmentStatus.allocated;
 
+  // Calcula o ID formatado com o prefixo (ex: NTB-123)
+  const formattedInventoryNumber = useMemo(() => {
+    if (!equipment?.inventoryNumber || !equipment?.equipmentType) return "";
+    return formatEquipmentId(equipment.equipmentType, equipment.inventoryNumber);
+  }, [equipment?.equipmentType, equipment?.inventoryNumber]);
+
   useEffect(() => {
     if (equipment) {
       methods.reset(equipment);
+      // Define o valor formatado do inventoryNumber para exibição
+      if (equipment.inventoryNumber && equipment.equipmentType) {
+        setValue("inventoryNumber", formattedInventoryNumber as any);
+      }
     }
-  }, [equipment]);
+  }, [equipment, formattedInventoryNumber, methods, setValue]);
 
   return (
     <FormProvider {...methods}>
