@@ -9,6 +9,9 @@ import {
   CardHeader,
   Flex,
   Heading,
+  Input,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft } from "react-icons/fa";
@@ -22,7 +25,8 @@ import {
   IEquipmentStatus,
 } from "@interfaces/Equipment";
 import { equipmentTypes, techBrands } from "../constants";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { formatEquipmentId } from "@utils/formatEquipmentId";
 
 const Schema = z.object({
   _id: z.string().optional(),
@@ -84,11 +88,17 @@ export function EquipmentForm({
 
   const isAllocated = watch("status") === IEquipmentStatus.allocated;
 
+  // Calcula o ID formatado com o prefixo (ex: NTB-123)
+  const formattedInventoryNumber = useMemo(() => {
+    if (!equipment?.inventoryNumber || !equipment?.equipmentType) return "";
+    return formatEquipmentId(equipment.equipmentType, equipment.inventoryNumber);
+  }, [equipment?.equipmentType, equipment?.inventoryNumber]);
+
   useEffect(() => {
     if (equipment) {
       methods.reset(equipment);
     }
-  }, [equipment]);
+  }, [equipment, methods]);
 
   return (
     <FormProvider {...methods}>
@@ -116,14 +126,14 @@ export function EquipmentForm({
           {isEditing && (
             <Flex justify="space-between" gap="4" direction={["row", "row"]}>
               {equipment?.inventoryNumber && (
-                <Text
-                  input={{
-                    id: "inventoryNumber",
-                    label: t("common.fields.inventoryNumber"),
-                    placeholder: "-",
-                    isDisabled: true,
-                  }}
-                />
+                <FormControl>
+                  <FormLabel>{t("common.fields.inventoryNumber")}</FormLabel>
+                  <Input
+                    value={formattedInventoryNumber}
+                    isDisabled
+                    placeholder="-"
+                  />
+                </FormControl>
               )}
               
               {equipment?.legacyInventoryNumber && (
