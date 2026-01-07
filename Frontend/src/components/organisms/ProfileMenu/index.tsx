@@ -31,7 +31,7 @@ const AvatarMenu: React.FC = () => {
   const roles = auth?.roles ?? [];
   const matriculation = auth?.matriculation;
   const email = auth?.email;
-  const photo_url = auth?.photo_url;
+  const photo_url = auth?.photo_url?.url;
 
   const handleLogout = useCallback(() => {
     setAuth(null);

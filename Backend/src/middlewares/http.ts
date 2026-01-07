@@ -14,9 +14,9 @@ import { Connection } from "mongoose";
 import { IInstitute } from "../models/client/Institute";
 import { Permissions } from "../services/permissions";
 import { IUserRoles } from "../models/client/User";
-import Sentry from "../services/sentry";
 import LogRepository from "../repositories/Log";
 import { ILog } from "../models/client/Log";
+import { FileUploaded } from "../services/upload";
 
 const hasBody = ["POST", "PUT", "PATCH"];
 
@@ -40,6 +40,7 @@ interface User {
   institutes: IInstitute[];
   slug: string;
   permissions: Array<string>;
+  photo_url: FileUploaded;
 }
 
 export type HttpHandler = (

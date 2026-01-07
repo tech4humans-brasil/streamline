@@ -6,7 +6,7 @@ import { convertDateTime } from "@utils/date";
 
 interface CommentItemProps {
   comment: Omit<IComment, "user"> & {
-    user: Pick<IUser, "name" | "_id" | "email">;
+    user: Pick<IUser, "name" | "_id" | "email" | "photo_url">;
   };
 }
 
@@ -24,6 +24,7 @@ const CommentItem: React.FC<CommentItemProps> = memo(({ comment }) => {
         <Avatar
           size="sm"
           name={comment.user.name}
+          src={comment.user.photo_url?.url}
           bg="blue.500"
           color="white"
         />

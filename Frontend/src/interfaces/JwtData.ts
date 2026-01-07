@@ -1,3 +1,4 @@
+import { FileUploaded } from "./Answer";
 import { IUserRoles } from "./User";
 
 export default interface JwtData {
@@ -10,5 +11,5 @@ export default interface JwtData {
   client: string;
   permissions: string[];
   tutorials: string[];
-  photo_url?: string;
+  photo_url?: FileUploaded;
 }

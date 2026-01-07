@@ -12,76 +12,89 @@ const handler: HttpHandler = async (conn, req) => {
 
   const isAdmin = req.user.roles.includes(IUserRoles.admin);
   const isExternalUser = req.user.roles.includes(IUserRoles.external);
+  
+  const sasCache = new Map<string, Promise<any>>();
+  const blobUploader = new BlobUploader(req.user.id);
 
-  const activity = await activityRepository.findById({
-    id,
-  });
+  const getSasToken = (fileObj: any) => {
+    if (!fileObj || !fileObj.url) return Promise.resolve(fileObj);
+    
+    if (!sasCache.has(fileObj.url)) {
+      const promise = blobUploader.updateSas(fileObj).then(res => res);
+      sasCache.set(fileObj.url, promise);
+    }
+    return sasCache.get(fileObj.url);
+  };
+
+  const activity = await activityRepository.findById({ id });
 
   if (!activity) {
     return res.notFound("Activity not found");
   }
 
-  const blobUploader = new BlobUploader(req.user.id);
+  const mainUserPhotoPromise = (async () => {
+    if (activity?.users[0]?.photo_url) {
+      activity.users[0].photo_url = await getSasToken(activity.users[0].photo_url);
+    }
+  })();
 
-  if (activity?.users[0]?.photo_url) {
-    activity.users[0].photo_url = await blobUploader.updateSas(activity.users[0].photo_url);
-  }
-
-  // Processa campos do formulário
-  for (const field of activity.form_draft.fields) {
-    if (field.type === FieldTypes.File) {
-      if (!field.value) continue;
-      await blobUploader.updateSas(field.value);
+  const formFieldsPromise = Promise.all(activity.form_draft.fields.map(async (field) => {
+    if (field.type === FieldTypes.File && field.value) {
+      field.value = await getSasToken(field.value);
     }
 
-    // Regra de visibilidade: Admin sempre vê todos os campos, outros usuários seguem a regra de visibilidade
     if (!isAdmin && !field.visible && field.value && typeof field.value === "string") {
       field.value = field.value.replace(/.(?=.{2,}$)/g, "*");
     }
-  }
+  }));
 
-  // Processa interações
-  for (const interactions of activity.interactions) {
-    for (const answers of interactions.answers) {
-      if (!answers.data) {
-        continue;
-      }
-      for (const field of answers.data.fields) {
-        if (field.type === FieldTypes.File) {
-          if (!field.value) continue;
-          await blobUploader.updateSas(field.value);
+  const interactionsPromise = Promise.all(activity.interactions.map(async (interaction) => {
+    await Promise.all(interaction.answers.map(async (answer) => {
+      if (!answer.data) return;
+      
+      await Promise.all(answer.data.fields.map(async (field) => {
+        if (field.type === FieldTypes.File && field.value) {
+          field.value = await getSasToken(field.value);
         }
-      }
+      }));
+    }));
+  }));
+
+  const commentsPromise = Promise.all(activity.comments.map(async (comment) => {
+    if (comment.user.photo_url) {
+      comment.user.photo_url = await getSasToken(comment.user.photo_url);
     }
+  }));
+
+  let userInteractionSteps: Set<string> | null = null;
+  
+  if (isExternalUser && activity.workflows?.length) {
+    userInteractionSteps = new Set();
+    activity.interactions.forEach(interaction => {
+      const hasAnswered = interaction.answers.some(a => String(a.user) === req.user.id);
+      if (hasAnswered && interaction.activity_step_id) {
+        userInteractionSteps!.add(interaction.activity_step_id.toString());
+      }
+    });
   }
 
-  // Processa workflows
-  if (activity.workflows?.length) {
+  const workflowsProcessing = () => {
+    if (!activity.workflows?.length) return;
+
     for (const workflow of activity.workflows) {
-      for (const step of workflow.workflow_draft.steps) {
+      workflow.workflow_draft.steps.forEach(step => {
         if (step.data) {
-          // @ts-ignore0
-          step.data = {
-            name: step.data.name,
-            visible: step.data.visible,
-          };
+           (step.data as any) = { name: step.data.name, visible: step.data.visible };
         }
-      }
+      });
+
       if (isExternalUser) {
         workflow.workflow_draft.steps = workflow.workflow_draft.steps.filter((step) => {
-          if (step.type === NodeTypes.ChangeStatus) {
-            return true;
-          }
-
+          if (step.type === NodeTypes.ChangeStatus) return true;
+          
           if (step.type === NodeTypes.Interaction) {
-            const interaction = activity.interactions.find(
-              (interaction) => interaction.activity_step_id === step._id
-            );
-            return interaction?.answers.some(
-              (answer) => String(answer.user) === req.user.id
-            ) || false;
+            return userInteractionSteps?.has(step._id?.toString() ?? "") || false;
           }
-
           return false;
         });
       } else if (!isAdmin) {
@@ -90,8 +103,16 @@ const handler: HttpHandler = async (conn, req) => {
         );
       }
     }
-  }
+  };
 
+  await Promise.all([
+    mainUserPhotoPromise,
+    formFieldsPromise,
+    interactionsPromise,
+    commentsPromise,
+    Promise.resolve(workflowsProcessing())
+  ]);
+  
   return res.success(activity);
 };
 

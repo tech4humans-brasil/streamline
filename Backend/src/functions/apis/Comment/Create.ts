@@ -23,6 +23,7 @@ const handler: HttpHandler = async (conn, req) => {
             email: req.user.email,
             matriculation: req.user.matriculation,
             institutes: req.user.institutes,
+            photo_url: req.user.photo_url,
           },
           content: data.content,
         },
@@ -39,8 +40,8 @@ const handler: HttpHandler = async (conn, req) => {
   <p>${newComment.user.name} comentou em sua atividade.</p>
   <p>Comentário: ${newComment.content}</p>
   <p>Para visualizar a atividade, acesse: 
-    <a href="${process.env.FRONTEND_URL}/activity/${comment._id}">
-      Visualizar atividade
+    <a href="${process.env.FRONTEND_URL}/portal/activity/${comment._id}">
+      Acessar o ticket
     </a>
   </p>
 `;

@@ -127,7 +127,7 @@ export const handler: HttpHandler = async (_, req, context) => {
     client: conn.name,
     tutorials: user.tutorials,
     permissions,
-    photo_url: updatedUserPhoto?.url ?? user.photo_url,
+    photo_url: updatedUserPhoto ?? user.photo_url,
   });
 
   return res.success({
