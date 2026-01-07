@@ -140,6 +140,7 @@ jobs:
       contents: read
     outputs:
       url: ${{ steps.deployFunctionApp.outputs.app-url }}
+      url2: ${{ steps.deployFunctionApp2.outputs.app-url }}
     environment: 
         name: Production
         url: ${{ steps.deployFunctionApp.outputs.app-url }}
@@ -169,4 +170,13 @@ jobs:
           app-name: ${{ vars.FUNCTION_NAME }}
           slot-name: "production"
           package: .
+
+      - name: "Run process of Azure Functions Deploy"
+        uses: Azure/functions-action@v1
+        id: deployFunctionApp2
+        with:
+          app-name: ${{ vars.FUNCTION_NAME_2 }}
+          slot-name: "production"
+          package: .
+      
 
