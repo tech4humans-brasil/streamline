@@ -136,16 +136,25 @@ class BlobUploader {
 
   async updateSas(
     file: FileUploaded,
-    expiresOn = 86400
+    expiresOn = 3600 // Padrão de 1 hora
   ): Promise<FileUploaded> {
     const containerClient = this.blobServiceClient.getContainerClient(
       file.containerName
     );
     const blockBlobClient = containerClient.getBlockBlobClient(file.name);
+
+    const durationMs = expiresOn < 100000000 ? expiresOn * 1000 : expiresOn;
+    const now = new Date();
+    const windowMs = 24 * 60 * 60 * 1000;
+
+    const stableExpiryTime = Math.ceil(now.getTime() / windowMs) * windowMs + durationMs;
+    const stableExpiryDate = new Date(stableExpiryTime);
+
     const sas = await blockBlobClient.generateSasUrl({
-      expiresOn: new Date(new Date().valueOf() + expiresOn),
+      expiresOn: stableExpiryDate,
       permissions: BlobSASPermissions.parse("r"),
     });
+    
     file.url = sas;
     return file;
   }
