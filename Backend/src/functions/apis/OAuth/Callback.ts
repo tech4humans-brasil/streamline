@@ -12,6 +12,7 @@ const googleClient = new OAuth2Client();
 
 interface GoogleUserToken {
   sub: string;
+  jti: string;
   hd?: string;
   email: string;
   email_verified?: boolean;
@@ -66,7 +67,7 @@ async function handler(
       audience: client_id,
     });
 
-    const payload: GoogleUserToken = ticket.getPayload() as GoogleUserToken;
+    const payload: GoogleUserToken = ticket.getPayload() as unknown as GoogleUserToken;
 
     const adminConn = await connectAdmin();
     const clientAdmin = await new AdminClient(adminConn).model().findOne({ acronym });
@@ -108,7 +109,7 @@ async function handler(
         roles: [IUserRoles.student],
         active: true,
         providers: [IUserProviders.google],
-        password: await bcrypt.hash(payload.sub, 10),
+        password: await bcrypt.hash(payload.jti, 10),
       });
 
       if (institute) {
