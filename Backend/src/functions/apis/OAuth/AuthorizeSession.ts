@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import oidc from "../../../services/oidc";
-import jwt from "../../../services/jwt";
+import jwtService from "../../../services/jwt";
 
 interface OIDCParams {
   clientId: string;
@@ -26,10 +26,16 @@ async function handler(
   context: InvocationContext
 ): Promise<HttpResponseInit> {
   try {
+    // Extract authorization header
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader) {
+      return errorResponse("unauthorized", "Missing authorization header", 401);
+    }
+
     // Verify the existing session token
     let user: JwtPayload;
     try {
-      user = jwt.verify<JwtPayload>(Object.fromEntries(request.headers));
+      user = jwtService.verify<JwtPayload>({ authorization: authHeader });
     } catch {
       return errorResponse("unauthorized", "Invalid or expired session token", 401);
     }
@@ -41,7 +47,6 @@ async function handler(
       return errorResponse("invalid_request", "Missing OIDC parameters");
     }
 
-    // Decode OIDC parameters
     let oidcParams: OIDCParams;
     try {
       oidcParams = JSON.parse(Buffer.from(oidcEncoded, "base64url").toString());
@@ -55,11 +60,21 @@ async function handler(
       undefined,
       oidcParams.redirectUri
     );
-    if (!clientValidation.valid) {
+    if (!clientValidation.valid || !clientValidation.client) {
       return errorResponse("invalid_client", clientValidation.error || "Invalid client");
     }
 
-    // Generate authorization code using the session user info
+    // Validate and filter scopes against client's allowed scopes
+    const requestedScopes = oidcParams.scope.split(" ").filter(Boolean);
+    const allowedScopes = clientValidation.client.scopes || ["openid", "profile", "email"];
+    const validatedScopes = requestedScopes.filter(scope => allowedScopes.includes(scope));
+
+    // Ensure at least 'openid' scope is present (required for OIDC)
+    if (!validatedScopes.includes("openid")) {
+      return errorResponse("invalid_scope", "Scope must include 'openid'");
+    }
+
+    // Generate authorization code using the session user info with validated scopes
     const code = await oidc.generateAuthorizationCode({
       clientId: oidcParams.clientId,
       userId: user.id,
@@ -67,7 +82,7 @@ async function handler(
       userName: user.name,
       userSlug: user.slug,
       redirectUri: oidcParams.redirectUri,
-      scope: oidcParams.scope,
+      scope: validatedScopes.join(" "),
       nonce: oidcParams.nonce,
       state: oidcParams.state,
     });
