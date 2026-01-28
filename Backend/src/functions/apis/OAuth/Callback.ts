@@ -58,8 +58,18 @@ async function handler(
       undefined,
       oidcParams.redirectUri
     );
-    if (!clientValidation.valid) {
-      return errorResponse("invalid_client", clientValidation.error);
+    if (!clientValidation.valid || !clientValidation.client) {
+      return errorResponse("invalid_client", clientValidation.error || "Invalid client");
+    }
+
+    // Validate and filter scopes against client's allowed scopes
+    const requestedScopes = oidcParams.scope.split(" ").filter(Boolean);
+    const allowedScopes = clientValidation.client.scopes || ["openid", "profile", "email"];
+    const validatedScopes = requestedScopes.filter(scope => allowedScopes.includes(scope));
+
+    // Ensure at least 'openid' scope is present (required for OIDC)
+    if (!validatedScopes.includes("openid")) {
+      return errorResponse("invalid_scope", "Scope must include 'openid'");
     }
 
     const ticket = await googleClient.verifyIdToken({
@@ -120,7 +130,7 @@ async function handler(
     user.last_login = new Date();
     await user.save();
 
-    // Generate authorization code
+    // Generate authorization code with validated scopes
     const code = await oidc.generateAuthorizationCode({
       clientId: oidcParams.clientId,
       userId: user._id.toString(),
@@ -128,7 +138,7 @@ async function handler(
       userName: user.name,
       userSlug: acronym,
       redirectUri: oidcParams.redirectUri,
-      scope: oidcParams.scope,
+      scope: validatedScopes.join(" "),
       nonce: oidcParams.nonce,
       state: oidcParams.state,
     });

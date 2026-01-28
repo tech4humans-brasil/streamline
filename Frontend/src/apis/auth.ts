@@ -103,3 +103,10 @@ export const oidcCallback = async (data: {
   const response = await api.post<OIDCCallbackResponse>("/oauth/callback", data);
   return response.data;
 };
+
+export const oidcAuthorizeSession = async (data: {
+  oidc: string;
+}): Promise<OIDCCallbackResponse> => {
+  const response = await api.post<OIDCCallbackResponse>("/oauth/authorize-session", data);
+  return response.data;
+};

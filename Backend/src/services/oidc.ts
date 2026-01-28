@@ -1,9 +1,26 @@
-import * as jose from "jose";
-import type { JWK, JWTPayload } from "jose";
+import * as jwt from "jsonwebtoken";
 import * as crypto from "crypto";
 import * as bcrypt from "bcrypt";
 
-type JoseKey = CryptoKey | crypto.KeyObject;
+export interface JWK {
+  kty: string;
+  alg?: string;
+  use?: string;
+  kid?: string;
+  [key: string]: string | undefined;
+}
+
+export interface JWTPayload {
+  iss?: string;
+  sub?: string;
+  aud?: string | string[];
+  iat?: number;
+  exp?: number;
+  nbf?: number;
+  jti?: string;
+  [key: string]: unknown;
+}
+
 import { connectAdmin } from "./mongo";
 import OIDCClient, { IOIDCClient } from "../models/admin/OIDCClient";
 import OIDCAuthorizationCode, { IOIDCAuthorizationCode } from "../models/admin/OIDCAuthorizationCode";
@@ -21,14 +38,14 @@ const ENV_KEY_ID = process.env.OIDC_KEY_ID || "oidc-key-1";
 
 let cachedKeyPair: {
   kid: string;
-  privateKey: JoseKey;
-  publicKey: JoseKey;
+  privateKey: crypto.KeyObject;
+  publicKey: crypto.KeyObject;
 } | null = null;
 
 async function getSigningKey(): Promise<{
   kid: string;
-  privateKey: JoseKey;
-  publicKey: JoseKey;
+  privateKey: crypto.KeyObject;
+  publicKey: crypto.KeyObject;
 }> {
   // Return cached key if available
   if (cachedKeyPair) {
@@ -45,8 +62,8 @@ async function getSigningKey(): Promise<{
   const privateKeyPem = ENV_PRIVATE_KEY.replace(/\\n/g, "\n");
   const publicKeyPem = ENV_PUBLIC_KEY.replace(/\\n/g, "\n");
 
-  const privateKey = await jose.importPKCS8(privateKeyPem, "RS256");
-  const publicKey = await jose.importSPKI(publicKeyPem, "RS256");
+  const privateKey = crypto.createPrivateKey(privateKeyPem);
+  const publicKey = crypto.createPublicKey(publicKeyPem);
 
   cachedKeyPair = {
     kid: ENV_KEY_ID,
@@ -67,8 +84,8 @@ export async function getPublicKeys(): Promise<JWK[]> {
   }
 
   const publicKeyPem = ENV_PUBLIC_KEY.replace(/\\n/g, "\n");
-  const publicKey = await jose.importSPKI(publicKeyPem, "RS256");
-  const jwk = await jose.exportJWK(publicKey);
+  const publicKey = crypto.createPublicKey(publicKeyPem);
+  const jwk = publicKey.export({ format: "jwk" }) as JWK;
 
   return [{
     ...jwk,
@@ -180,20 +197,22 @@ export async function generateIdToken(params: {
 }): Promise<string> {
   const { kid, privateKey } = await getSigningKey();
 
-  const now = Math.floor(Date.now() / 1000);
-
-  const idToken = await new jose.SignJWT({
-    sub: params.sub,
-    email: params.email,
-    name: params.name,
-    nonce: params.nonce,
-  })
-    .setProtectedHeader({ alg: "RS256", kid })
-    .setIssuer(ISSUER_URL)
-    .setAudience(params.aud)
-    .setIssuedAt(now)
-    .setExpirationTime(now + ID_TOKEN_EXPIRY)
-    .sign(privateKey);
+  const idToken = jwt.sign(
+    {
+      sub: params.sub,
+      email: params.email,
+      name: params.name,
+      nonce: params.nonce,
+    },
+    privateKey,
+    {
+      algorithm: "RS256",
+      keyid: kid,
+      issuer: ISSUER_URL,
+      audience: params.aud,
+      expiresIn: ID_TOKEN_EXPIRY,
+    }
+  );
 
   return idToken;
 }
@@ -208,21 +227,23 @@ export async function generateAccessToken(params: {
 }): Promise<string> {
   const { kid, privateKey } = await getSigningKey();
 
-  const now = Math.floor(Date.now() / 1000);
-
-  const accessToken = await new jose.SignJWT({
-    sub: params.sub,
-    email: params.email,
-    name: params.name,
-    slug: params.slug,
-    scope: params.scope,
-  })
-    .setProtectedHeader({ alg: "RS256", kid })
-    .setIssuer(ISSUER_URL)
-    .setAudience(params.aud)
-    .setIssuedAt(now)
-    .setExpirationTime(now + ACCESS_TOKEN_EXPIRY)
-    .sign(privateKey);
+  const accessToken = jwt.sign(
+    {
+      sub: params.sub,
+      email: params.email,
+      name: params.name,
+      slug: params.slug,
+      scope: params.scope,
+    },
+    privateKey,
+    {
+      algorithm: "RS256",
+      keyid: kid,
+      issuer: ISSUER_URL,
+      audience: params.aud,
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+    }
+  );
 
   return accessToken;
 }
@@ -300,15 +321,16 @@ export async function verifyAccessToken(token: string): Promise<{
   error?: string;
 }> {
   try {
-    const { kid, publicKey } = await getSigningKey();
+    const { publicKey } = await getSigningKey();
 
-    const { payload } = await jose.jwtVerify(token, publicKey, {
+    const payload = jwt.verify(token, publicKey, {
       issuer: ISSUER_URL,
-    });
+    }) as JWTPayload;
 
     return { valid: true, payload };
   } catch (error) {
-    return { valid: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return { valid: false, error: errorMessage };
   }
 }
 

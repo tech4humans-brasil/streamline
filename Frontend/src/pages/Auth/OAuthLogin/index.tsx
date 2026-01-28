@@ -28,7 +28,7 @@ import Icon from "@components/atoms/Icon";
 import SwitchTheme from "@components/molecules/SwitchTheme";
 import LocaleSwap from "@components/atoms/LocaleSwap";
 import { useConfig } from "@hooks/useConfig";
-import { oidcCallback } from "@apis/auth";
+import { oidcCallback, oidcAuthorizeSession } from "@apis/auth";
 
 interface OIDCParams {
   clientId: string;
@@ -45,6 +45,7 @@ const OAuthLogin: React.FC = () => {
   const [searchParams] = useSearchParams();
   const toast = useToast();
   const [error, setError] = useState<string | null>(null);
+  const [isAutoAuthorizing, setIsAutoAuthorizing] = useState(false);
 
   // Get OIDC encoded string from URL or sessionStorage (fallback for COOP issues)
   const oidcEncoded = useMemo(() => {
@@ -93,6 +94,30 @@ const OAuthLogin: React.FC = () => {
 
   // Get configuration (including Google client ID)
   const { data: configData, isLoading: configLoading, isError } = useConfig(acronym);
+
+  // Mutation for session-based authorization (auto-authorize if already logged in)
+  const { mutateAsync: authorizeSession } = useMutation({
+    mutationFn: oidcAuthorizeSession,
+    onSuccess: ({ data }) => {
+      // Clean up sessionStorage and redirect
+      sessionStorage.removeItem(OIDC_STORAGE_KEY);
+      sessionStorage.removeItem(OIDC_STORAGE_KEY + "_slug");
+      window.location.href = data.redirect_uri;
+    },
+    onError: () => {
+      // If session auth fails, show the regular login options
+      setIsAutoAuthorizing(false);
+    },
+  });
+
+  // Check for existing session and auto-authorize
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token && oidcEncoded && !isAutoAuthorizing) {
+      setIsAutoAuthorizing(true);
+      authorizeSession({ oidc: oidcEncoded });
+    }
+  }, [oidcEncoded, authorizeSession, isAutoAuthorizing]);
 
   // Mutation for OIDC callback
   const { mutateAsync, isPending } = useMutation({
@@ -190,19 +215,23 @@ const OAuthLogin: React.FC = () => {
     );
   }
 
-  // Show loading state while fetching config
-  if (configLoading) {
+  // Show loading state while fetching config or auto-authorizing
+  if (configLoading || isAutoAuthorizing) {
     return (
       <Box
         p={4}
         display="flex"
-        flexDirection="row"
+        flexDirection="column"
         alignItems="center"
         justifyContent="center"
         height="100vh"
         bg="bg.page"
+        gap={4}
       >
         <Spinner size="xl" />
+        {isAutoAuthorizing && (
+          <Text color="text.secondary">Autorizando...</Text>
+        )}
       </Box>
     );
   }
