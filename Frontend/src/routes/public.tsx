@@ -6,6 +6,7 @@ import Register from "@pages/Auth/Register";
 import ForgotPassword from "@pages/Auth/ForgotPassword";
 import AlterPassword from "@pages/Auth/AlterPassword";
 import TwoStep from "@pages/Auth/TwoStep";
+import OAuthLogin from "@pages/Auth/OAuthLogin";
 
 const routes: RouteType = [
   {
@@ -27,6 +28,10 @@ const routes: RouteType = [
   {
     path: "/auth/alter-password/:token",
     element: <AlterPassword />,
+  },
+  {
+    path: "/oauth/login",
+    element: <OAuthLogin />,
   },
   {
     path: "*",
