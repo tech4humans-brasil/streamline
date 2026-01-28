@@ -1,19 +1,23 @@
-import jwt = require("jsonwebtoken");
+import * as jwt from "jsonwebtoken";
 
-const secret = process.env.JWT_SECRET;
-const secretResetPassword = process.env.JWT_RESET_PASSWORD_SECRET;
+const secret = process.env.JWT_SECRET as string;
+const secretResetPassword = process.env.JWT_RESET_PASSWORD_SECRET as string;
 
 if (!secret || !secretResetPassword) {
   throw new Error("JWT_SECRET is not defined");
 }
 
-const sign = (payload: any, expiresIn = "1d") =>
-  jwt.sign(payload, secret, { expiresIn });
+const sign = (
+  payload: string | object | Buffer,
+  expiresIn: jwt.SignOptions["expiresIn"] = "1d"
+) => jwt.sign(payload, secret, { expiresIn });
 
-const signResetPassword = (payload: any, expiresIn = "10m") =>
-  jwt.sign(payload, secretResetPassword, { expiresIn });
+const signResetPassword = (
+  payload: string | object | Buffer,
+  expiresIn: jwt.SignOptions["expiresIn"] = "10m"
+) => jwt.sign(payload, secretResetPassword, { expiresIn });
 
-const verifyResetPassword = (header: Object) => {
+const verifyResetPassword = <T>(header: Record<string, string | string[] | undefined>): T => {
   const token = getTokenFromHeaders(header);
   const err = {
     status: 401,
@@ -24,14 +28,10 @@ const verifyResetPassword = (header: Object) => {
     throw err;
   }
 
-  return jwt.verify(token, secretResetPassword, function (err, decoded) {
-    if (err) throw err;
-
-    return decoded;
-  });
+  return jwt.verify(token, secretResetPassword) as T;
 };
 
-const verify = (header: Object) => {
+const verify = <T>(header: Record<string, string | string[] | undefined>): T => {
   const token = getTokenFromHeaders(header);
   const err = {
     status: 401,
@@ -42,18 +42,14 @@ const verify = (header: Object) => {
     throw err;
   }
 
-  return jwt.verify(token, secret, function (err, decoded) {
-    if (err) throw err;
-
-    return decoded;
-  });
+  return jwt.verify(token, secret) as T;
 };
 
 const decode = (token: string) => jwt.decode(token);
 
-const getTokenFromHeaders = (headers: Object) => {
+const getTokenFromHeaders = (headers: Record<string, string | string[] | undefined>) => {
   const authHeader = headers["authorization"] || headers["Authorization"];
-  if (!authHeader) {
+  if (!authHeader || Array.isArray(authHeader)) {
     return null;
   }
   const token = authHeader.split(" ")[1];
