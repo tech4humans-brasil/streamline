@@ -125,6 +125,11 @@ export async function validateClient(
   return { valid: true, client };
 }
 
+export function isSlugAllowedForClient(client: IOIDCClient, slug: string): boolean {
+  const allowed = client.allowedSlugs;
+  return Array.isArray(allowed) && allowed.length > 0 && allowed.includes(slug);
+}
+
 export async function generateAuthorizationCode(params: {
   clientId: string;
   userId: string;
@@ -341,7 +346,12 @@ export async function registerClient(params: {
   description?: string;
   redirectUris: string[];
   scopes?: string[];
+  allowedSlugs: string[];
 }): Promise<IOIDCClient> {
+  if (!params.allowedSlugs?.length) {
+    throw new Error("allowedSlugs is required and must contain at least one slug");
+  }
+
   const conn = await connectAdmin();
   const clientModel = new OIDCClient(conn).model();
 
@@ -354,6 +364,7 @@ export async function registerClient(params: {
     description: params.description,
     redirectUris: params.redirectUris,
     scopes: params.scopes || ["openid", "profile", "email"],
+    allowedSlugs: params.allowedSlugs,
     active: true,
   });
 
@@ -380,6 +391,7 @@ export function getDiscoveryMetadata() {
 export default {
   getPublicKeys,
   validateClient,
+  isSlugAllowedForClient,
   generateAuthorizationCode,
   validateAuthorizationCode,
   generateIdToken,

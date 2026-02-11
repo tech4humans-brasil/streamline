@@ -8,6 +8,8 @@ export interface IOIDCClient extends mongoose.Document {
   description?: string;
   redirectUris: string[];
   scopes: string[];
+  /** Tenant slugs this client is allowed to use. Required; at least one slug. */
+  allowedSlugs: string[];
   active: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -42,6 +44,14 @@ export const schema = new Schema<IOIDCClient>(
       type: String, 
       default: ["openid", "profile", "email"] 
     }],
+    allowedSlugs: {
+      type: [String],
+      required: true,
+      validate: {
+        validator: (v: string[]) => Array.isArray(v) && v.length > 0,
+        message: "allowedSlugs must contain at least one slug",
+      },
+    },
     active: { 
       type: Boolean, 
       default: true 

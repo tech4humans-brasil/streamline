@@ -72,6 +72,15 @@ async function handler(
       return errorResponse("invalid_scope", "Scope must include 'openid'");
     }
 
+    if (!oidc.isSlugAllowedForClient(clientValidation.client, acronym)) {
+      return redirectError(
+        oidcParams.redirectUri,
+        "access_denied",
+        "This application is not allowed for this tenant",
+        oidcParams.state
+      );
+    }
+
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: client_id,
