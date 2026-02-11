@@ -43,8 +43,17 @@ async function handler(
     }
 
     const validation = await oidc.validateClient(clientId, undefined, redirectUri);
-    if (!validation.valid) {
-      return errorResponse("invalid_client", validation.error);
+    if (!validation.valid || !validation.client) {
+      return errorResponse("invalid_client", validation.error ?? "Invalid client");
+    }
+
+    if (!oidc.isSlugAllowedForClient(validation.client, slug)) {
+      return redirectError(
+        redirectUri,
+        "access_denied",
+        "This application is not allowed for this tenant",
+        state
+      );
     }
 
     const oidcParams = Buffer.from(

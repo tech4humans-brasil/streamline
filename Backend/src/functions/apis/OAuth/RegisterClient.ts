@@ -9,6 +9,7 @@ interface Body {
   description?: string;
   redirectUris: string[];
   scopes?: string[];
+  allowedSlugs: string[];
 }
 
 export const handler: HttpHandler = async (conn, req, context) => {
@@ -22,6 +23,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
       description: body.description,
       redirectUris: body.redirectUris,
       scopes: body.scopes,
+      allowedSlugs: body.allowedSlugs,
     });
 
     return res.created({
@@ -30,6 +32,7 @@ export const handler: HttpHandler = async (conn, req, context) => {
       description: client.description,
       redirectUris: client.redirectUris,
       scopes: client.scopes,
+      allowedSlugs: client.allowedSlugs,
     });
   } catch (error) {
     if (error.code === 11000) {
@@ -48,6 +51,7 @@ export default new Http(handler)
       description: schema.string().optional(),
       redirectUris: schema.array().of(schema.string().url()).min(1).required(),
       scopes: schema.array().of(schema.string()).optional(),
+      allowedSlugs: schema.array().of(schema.string()).min(1).required(),
     }),
   }))
   .configure({
