@@ -2,7 +2,7 @@ import QueueWrapper, {
   GenericMessage,
   QueueWrapperHandler,
 } from "../../middlewares/queue";
-import { IActivityStepStatus } from "../../models/client/Activity";
+import { IActivity, IActivityStepStatus } from "../../models/client/Activity";
 import { CallbackStatus } from "../../models/client/Callback";
 import { FieldTypes } from "../../models/client/FormDraft";
 import { IWebRequest, NodeTypes } from "../../models/client/WorkflowDraft";
@@ -13,10 +13,13 @@ import WorkflowRepository from "../../repositories/Workflow";
 import WorkflowDraftRepository from "../../repositories/WorkflowDraft";
 import BlobUploader from "../../services/upload";
 import { decrypt } from "../../utils/crypto";
+import {
+  createJsonSafeVars,
+  createSafeActivityForBody,
+} from "../../utils/jsonBodySanitization";
 import replaceSmartValues from "../../utils/replaceSmartValues";
 import sendNextQueue from "../../utils/sendNextQueue";
 import axios from "axios";
-import safeStringify from "safe-stable-stringify";
 
 interface TMessage extends GenericMessage {}
 
@@ -135,6 +138,11 @@ const handler: QueueWrapperHandler<TMessage> = async (
       vars["callback_id"] = callback._id.toString();
     }
 
+    const jsonSafeVars = createJsonSafeVars(vars);
+    const safeActivityForBody = createSafeActivityForBody(
+      activity.toObject() as unknown as Record<string, unknown>
+    );
+
     const blobUploader = new BlobUploader("files");
 
     for (const field of activity.form_draft.fields) {
@@ -146,9 +154,9 @@ const handler: QueueWrapperHandler<TMessage> = async (
 
     const bodyReplacedPromise = replaceSmartValues({
       conn,
-      activity_id: activity.toObject(),
+      activity_id: safeActivityForBody as unknown as IActivity,
       replaceValues: body,
-      vars,
+      vars: jsonSafeVars,
     });
 
     const urlReplacedPromise = replaceSmartValues({
