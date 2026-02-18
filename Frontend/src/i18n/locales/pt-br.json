@@ -671,7 +671,8 @@
     },
     "extraFields": {
       "unfilledFields": "Campos não preenchidos",
-      "noExtraFields": "Nenhum campo extra"
+      "noExtraFields": "Nenhum campo extra",
+      "expandFullscreen": "Expandir em tela cheia"
     },
     "timelineStatus": {
       "waitingResponse": "Aguardando Resposta",

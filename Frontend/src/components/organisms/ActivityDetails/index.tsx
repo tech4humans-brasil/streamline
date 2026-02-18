@@ -1,5 +1,22 @@
 import React, { memo, useEffect } from "react";
-import { Box, Card, Flex, Grid, Spinner, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  Flex,
+  Grid,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Tooltip,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { FiMaximize2 } from "react-icons/fi";
 import IActivity from "@interfaces/Activitiy";
 import useActivity from "@hooks/useActivity";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +33,26 @@ import CommentsSection from "./components/CommentsSection";
 import TicketInfoCard from "./components/TicketInfoCard";
 import RelatedTicketsCard from "./components/RelatedTicketsCard";
 
+const ExpandFieldsButton = memo<{ onOpen: () => void }>(function ExpandFieldsButton({ onOpen }) {
+  const { t } = useTranslation();
+  return (
+    <Tooltip label={t("activityDetails.extraFields.expandFullscreen")}>
+      <IconButton
+        aria-label={t("activityDetails.extraFields.expandFullscreen")}
+        icon={<FiMaximize2 />}
+        size="sm"
+        variant="ghost"
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen();
+        }}
+        mr={2}
+      />
+    </Tooltip>
+  );
+});
+ExpandFieldsButton.displayName = "ExpandFieldsButton";
+
 interface ActivityDetailsProps {
   activity?: IActivity;
   isLoading?: boolean;
@@ -25,6 +62,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
   ({ activity }) => {
     const { alterActivity, removeActivity } = useActivity();
     const { t } = useTranslation();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const { data: activityData, isLoading: queryLoading } = useQuery({
       queryKey: ["activity", activity?._id || ""],
@@ -94,11 +132,19 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
             <TicketInfoCard activity={activity} />
 
             {/* Informações do formulário */}
-            <Card >
+            <Card>
               <Box p={6}>
                 <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
                   <Accordion.Item>
-                    <Accordion.Button>{t('activityDetails.formFields')}</Accordion.Button>
+                    <Accordion.Button
+                      rightElement={
+                        activity.form_draft.fields.length > 0 ? (
+                          <ExpandFieldsButton onOpen={onOpen} />
+                        ) : undefined
+                      }
+                    >
+                      {t("activityDetails.formFields")}
+                    </Accordion.Button>
                     <Accordion.Panel>
                       <ExtraFields fields={activity.form_draft.fields} />
                     </Accordion.Panel>
@@ -110,6 +156,17 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
             <RelatedTicketsCard parentId={activity.parent} />
           </VStack>
         </Grid>
+
+        <Modal isOpen={isOpen} onClose={onClose} size="6xl" isCentered>
+          <ModalOverlay />
+          <ModalContent maxH="90vh">
+            <ModalHeader>{t("activityDetails.formFields")}</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody overflowY="auto" pb={6} maxH="calc(90vh - 80px)">
+              <ExtraFields fields={activity.form_draft.fields} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Box>
     );
   }

@@ -23,7 +23,7 @@ const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
   );
 
   return (
-    <Flex flexWrap="wrap" gap={4} direction={"column"}>
+    <Flex flexWrap="wrap" gap={4} direction="column">
       {fieldsFilled.map((field) => (
         <RenderFieldValue key={field.id} field={field} />
       ))}
@@ -32,13 +32,12 @@ const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
         <Accordion.Container allowToggle allowMultiple defaultIndex={[]}>
           <Accordion.Item>
             <Accordion.Button fontSize="sm">
-              {t('activityDetails.extraFields.unfilledFields')}
+              {t("activityDetails.extraFields.unfilledFields")}
             </Accordion.Button>
             <Accordion.Panel>
-              {fieldsEmpty
-                .map((field) => (
-                  <RenderFieldValue key={field.id} field={field} />
-                ))}
+              {fieldsEmpty.map((field) => (
+                <RenderFieldValue key={field.id} field={field} />
+              ))}
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion.Container>
@@ -46,7 +45,7 @@ const ExtraFields: React.FC<ExtraFieldsProps> = ({ fields = [] }) => {
 
       {fields.length === 0 && (
         <Flex justifyContent="center" alignItems="center" h="100%">
-          {t('activityDetails.extraFields.noExtraFields')}
+          {t("activityDetails.extraFields.noExtraFields")}
         </Flex>
       )}
     </Flex>

@@ -507,7 +507,8 @@
     },
     "extraFields": {
       "unfilledFields": "Unfilled Fields",
-      "noExtraFields": "No extra fields"
+      "noExtraFields": "No extra fields",
+      "expandFullscreen": "Expand fullscreen"
     },
     "timelineStatus": {
       "waitingResponse": "Waiting for Response",
