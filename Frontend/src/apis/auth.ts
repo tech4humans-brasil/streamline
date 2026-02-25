@@ -110,3 +110,10 @@ export const oidcAuthorizeSession = async (data: {
   const response = await api.post<OIDCCallbackResponse>("/oauth/authorize-session", data);
   return response.data;
 };
+
+type GenerateApiTokenResponse = Response<{ token: string; expiresAt: string }>;
+
+export const generateApiToken = async (): Promise<GenerateApiTokenResponse> => {
+  const response = await api.post<GenerateApiTokenResponse>("/auth/api-token");
+  return response.data;
+};

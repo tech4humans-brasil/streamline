@@ -527,5 +527,22 @@
       "pendingResponse": "Pending response",
       "errorMessage": "Error executing action, contact support"
     }
+  },
+  "profile": {
+    "tabMyData": "My data",
+    "tabApiToken": "API token",
+    "menu": {
+      "seeProfile": "View profile"
+    },
+    "apiToken": {
+      "description": "The token is valid for 3 months and should be stored securely (e.g. MCP or API client configuration).",
+      "generate": "Generate token",
+      "tokenLabel": "Generated token",
+      "copy": "Copy",
+      "expiresAt": "Expires at",
+      "generated": "Token generated successfully",
+      "copied": "Token copied to clipboard",
+      "error": "Error generating token. Please try again."
+    }
   }
 }

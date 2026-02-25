@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Avatar,
@@ -14,18 +14,25 @@ import {
   ModalBody,
   useDisclosure,
   Hide,
+  Input,
+  useToast,
 } from "@chakra-ui/react";
 import useAuth from "@hooks/useAuth";
 import { useTranslation } from "react-i18next";
 import Can from "@components/atoms/Can";
+import { generateApiToken } from "@apis/auth";
 
 const AvatarMenu: React.FC = () => {
   const { t } = useTranslation();
-
+  const toast = useToast();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [auth, setAuth] = useAuth();
+  const [apiToken, setApiToken] = useState<string | null>(null);
+  const [apiTokenExpiresAt, setApiTokenExpiresAt] = useState<string | null>(null);
+  const [apiTokenLoading, setApiTokenLoading] = useState(false);
+  const [apiTokenError, setApiTokenError] = useState<string | null>(null);
 
   const userName = auth?.name;
   const roles = auth?.roles ?? [];
@@ -37,6 +44,44 @@ const AvatarMenu: React.FC = () => {
     setAuth(null);
     navigate("/");
   }, [setAuth, navigate]);
+
+  const handleGenerateApiToken = useCallback(async () => {
+    setApiTokenLoading(true);
+    setApiTokenError(null);
+    setApiToken(null);
+    setApiTokenExpiresAt(null);
+    try {
+      const res = await generateApiToken();
+      if (res?.data?.token) {
+        setApiToken(res.data.token);
+        setApiTokenExpiresAt(res.data.expiresAt ?? null);
+        toast({
+          title: t("profile.apiToken.generated"),
+          status: "success",
+          isClosable: true,
+        });
+      }
+    } catch {
+      setApiTokenError(t("profile.apiToken.error"));
+      toast({
+        title: t("profile.apiToken.error"),
+        status: "error",
+        isClosable: true,
+      });
+    } finally {
+      setApiTokenLoading(false);
+    }
+  }, [t, toast]);
+
+  const handleCopyApiToken = useCallback(() => {
+    if (!apiToken) return;
+    navigator.clipboard.writeText(apiToken);
+    toast({
+      title: t("profile.apiToken.copied"),
+      status: "success",
+      isClosable: true,
+    });
+  }, [apiToken, t, toast]);
 
   const userDetails = useCallback(() => {
     return (
@@ -67,7 +112,7 @@ const AvatarMenu: React.FC = () => {
         </Flex>
       </Flex>
     );
-  }, [userName, matriculation, roles, email]);
+  }, [userName, matriculation, roles, email, t]);
 
   return (
     <div id="profile-menu">
@@ -97,6 +142,46 @@ const AvatarMenu: React.FC = () => {
           <ModalCloseButton />
           <ModalBody pb={6}>
             {userDetails()}
+            <Divider my={2} />
+            <Text fontSize="xs" color="gray.600" _dark={{ color: "gray.400" }} mb={2}>
+              {t("profile.apiToken.description")}
+            </Text>
+            <Button
+              colorScheme="blue"
+              variant="outline"
+              size="sm"
+              mb={2}
+              onClick={handleGenerateApiToken}
+              isLoading={apiTokenLoading}
+              loadingText={t("profile.apiToken.generate")}
+            >
+              {t("profile.apiToken.generate")}
+            </Button>
+            {apiTokenError && (
+              <Text fontSize="sm" color="red.500" mb={2}>
+                {apiTokenError}
+              </Text>
+            )}
+            {apiToken && (
+              <Flex flexDir="column" gap={2} mb={4}>
+                <Input
+                  value={apiToken}
+                  readOnly
+                  size="sm"
+                  fontFamily="mono"
+                  fontSize="xs"
+                />
+                <Button size="sm" variant="outline" onClick={handleCopyApiToken}>
+                  {t("profile.apiToken.copy")}
+                </Button>
+                {apiTokenExpiresAt && (
+                  <Text fontSize="xs" color="gray.500">
+                    {t("profile.apiToken.expiresAt")}:{" "}
+                    {new Date(apiTokenExpiresAt).toLocaleString()}
+                  </Text>
+                )}
+              </Flex>
+            )}
             <Divider my={2} />
             <Button colorScheme="blue" size="sm" onClick={handleLogout}>
               {t("button.logout")}

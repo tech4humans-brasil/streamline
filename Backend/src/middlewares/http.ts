@@ -82,7 +82,14 @@ export default class Http {
   }
   private run: AzureFunctionHandler = async (request, context) => {
     try {
-      const body = hasBody.includes(request.method) ? await request.json() : {};
+      let body: Record<string, unknown> = {};
+      if (hasBody.includes(request.method)) {
+        try {
+          body = (await request.json()) as Record<string, unknown>;
+        } catch {
+          body = {};
+        }
+      }
       const query = Object.fromEntries(request.query.entries());
       const headers = Object.fromEntries(request.headers.entries());
       const params = request.params;
