@@ -1,0 +1,34 @@
+---
+description: Conventional Commits e checklist de PR
+alwaysApply: true
+---
+
+# Commits e Pull Requests
+
+Seguir [Conventional Commits](https://conventionalcommits.org/) e o checklist de PR definido no [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Tipos de commit
+
+- **feat:** — Nova funcionalidade
+- **fix:** — Correção de bug
+- **docs:** — Documentação
+- **style:** — Formatação (não afeta lógica)
+- **refactor:** — Refatoração
+- **test:** — Testes
+- **chore:** — Tarefas de manutenção
+
+Exemplos: `feat: adiciona autenticação OAuth`, `fix: corrige validação de formulários`, `docs: atualiza README com endpoints`.
+
+## Branches
+
+- Features: `feature/nome-da-feature`
+- Bugs: `fix/nome-do-bug`
+
+## Checklist antes de abrir PR
+
+- [ ] Testes a passar (Backend: `pnpm test`; Frontend: `npm test` quando existir)
+- [ ] Lint sem erros (Frontend: `npm run lint`)
+- [ ] TypeScript sem erros de tipo
+- [ ] Documentação atualizada se necessário
+- [ ] Commits seguem Conventional Commits
+- [ ] Descrição clara do PR e issues relacionadas linkadas

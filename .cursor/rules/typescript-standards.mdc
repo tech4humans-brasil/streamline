@@ -1,0 +1,58 @@
+---
+description: Padrões TypeScript para o projeto (Backend e Frontend)
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+O projeto segue convenções de TypeScript em todo o código. Alinhar com as regras de workspace: imports no topo; switch exaustivo para unions/enums.
+
+## Imports
+
+- Colocar todos os imports no topo do ficheiro. Evitar imports inline em corpos de funções ou em tipos, exceto em dependências circulares documentadas.
+
+## Switch exaustivo
+
+Em `switch` sobre unions discriminadas ou enums, usar verificação `never` no `default` para que novos valores causem erro de compilação até serem tratados:
+
+```typescript
+// ✅ GOOD
+type Status = "pending" | "done" | "failed";
+function handle(s: Status) {
+  switch (s) {
+    case "pending": return doPending();
+    case "done": return doDone();
+    case "failed": return doFailed();
+    default: {
+      const _: never = s;
+      return _;
+    }
+  }
+}
+
+// ❌ BAD — default sem never
+default: return;
+```
+
+## Tipagem explícita
+
+- APIs e repositórios: usar interfaces para request/response e parâmetros.
+- Evitar `any`; preferir `unknown` e type guards quando o tipo não for conhecido.
+
+```typescript
+// ✅ GOOD
+export interface UserCreateRequest {
+  name: string;
+  email: string;
+  role: UserRole;
+}
+async createUser(data: UserCreateRequest): Promise<User> { ... }
+
+// ❌ EVITAR
+export function createUser(name, email, role) { ... }
+```
+
+## Ficheiros de declaração
+
+Regras aplicam-se a código fonte; excluir `*.d.ts` se o glob as incluir (apenas definições de tipos).

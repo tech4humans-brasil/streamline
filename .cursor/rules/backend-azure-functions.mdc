@@ -1,0 +1,34 @@
+---
+description: Estrutura e padrões do Backend (Azure Functions, repositórios, serviços)
+globs: "Backend/**/*.ts"
+alwaysApply: false
+---
+
+# Backend — Azure Functions
+
+O Backend é Azure Functions v4 com TypeScript. Lógica organizada em repositórios, serviços e middlewares.
+
+## Estrutura em `Backend/src/`
+
+- **functions/apis/** — Handlers HTTP por recurso (Auth, User, Form, Schedule, OAuth, Admin, Dashboard, Email, Response, etc.). Cada handler exporta `handler: HttpHandler`.
+- **functions/queues/** — Processadores de filas (Service Bus).
+- **functions/crons/** — Funções timer.
+- **repositories/** — Acesso a dados (Form, Schedule, User, Activity, Workflow, Status, etc.); recebem `Connection` (Mongoose).
+- **services/** — mongo, jwt, oidc, upload, email, recaptcha, sentry, llm, permissions, etc.
+- **models/** — `client/` (User, Form, Activity, Equipment, Workflow, …), `admin/` (OIDC, etc.); schemas Mongoose.
+- **middlewares/** — `http.ts` (wrapper HTTP, validação Yup, JWT, permissões); tipos `HttpHandler`, `THttpRequest`.
+- **use-cases/** — Lógica de negócio reutilizável (PermissionViewProject, Response, InteractionHelper, …).
+- **utils/**, **roles/**, **scripts/** — Utilitários, definição de roles, scripts (ex.: register-oidc-client).
+
+## Padrão de API HTTP
+
+- Handler: `export const handler: HttpHandler = async (conn, req, context) => { ... }`.
+- Usar `res` de `utils/apiResponse` para respostas (ex.: `res.unauthorized()`, `res.notFound()`).
+- Tipar body/query com interfaces; validar com Yup no middleware quando aplicável.
+- Obter conexão por cliente (`connect(client.acronym)` ou `connectAdmin()`); usar repositórios e serviços em vez de lógica pesada no handler.
+
+## Boas práticas
+
+- Não colocar lógica de negócio complexa dentro do handler; extrair para use-cases ou serviços.
+- Usar repositórios para acesso a dados; não aceder diretamente a `model()` nos handlers quando existir repositório.
+- Manter imports no topo e tipagem explícita (ver regra typescript-standards).

@@ -1,0 +1,29 @@
+---
+description: Convenções Terraform e IaC (Azure, variáveis, recursos)
+globs: "IaC/**/*.tf"
+alwaysApply: false
+---
+
+# Terraform — IaC
+
+A infraestrutura é definida com Terraform (provider Azure) em `IaC/src/production/`.
+
+## Ficheiros
+
+- **main.tf** — Recursos (Resource Group, Service Bus, Static Web App, Cosmos DB, Log Analytics, Application Insights, Storage, Function Apps, etc.).
+- **variables.tf** — Declaração de variáveis (RESOURCE_GROUP, LOCATION, FRONTEND_URL, JWT_*, SENDGRID_API_KEY, EMAIL_ACCOUNT, DISCORD_WEBHOOK_URL, NODE_ENV, etc.).
+- **terraform.tfvars** — Valores das variáveis (não versionado; ver `.gitignore`). Usar `dev.tfvars` / `prod.tfvars` conforme README se aplicável.
+
+## Convenções
+
+- Novas variáveis: declarar em `variables.tf`; valores sensíveis apenas em `terraform.tfvars` (ou ficheiros tfvars locais).
+- Referência a variáveis: usar `var.NOME_DA_VARIAVEL`, não `vars.NOME_DA_VARIAVEL`.
+
+## Correção conhecida
+
+Em `IaC/src/production/main.tf`, onde estiver `vars.FRONTEND_URL` (ex.: recurso `azurerm_static_site_custom_domain`), o correto é **var.FRONTEND_URL** (singular). Corrigir ao editar esse ficheiro.
+
+## Recursos Azure
+
+- Manter convenção de nomes (ex.: `prod-streamline-*`) e localização alinhada ao resource group.
+- Documentar variáveis obrigatórias/opcionais no README do IaC.

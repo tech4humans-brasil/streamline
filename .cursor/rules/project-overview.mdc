@@ -1,0 +1,26 @@
+---
+description: Visão geral do projeto Streamline, stack e estrutura de pastas
+alwaysApply: true
+---
+
+# Project Overview — Streamline
+
+O **Streamline** é uma plataforma de automação de processos e workflows (redução de TOIL). Repositório monorepo com Backend, Frontend e IaC.
+
+## Stack
+
+- **Backend**: Node 20, TypeScript, Azure Functions v4, Mongoose (MongoDB). Package manager: **pnpm**. Testes: Jest.
+- **Frontend**: React 18, TypeScript, Vite, Chakra UI, React Query. Package manager: **npm**. Lint: ESLint.
+- **IaC**: Terraform (provider Azure), variáveis em `variables.tf`, valores em `terraform.tfvars` (não versionado).
+
+## Estrutura de pastas
+
+- **Backend**: `Backend/src/` — `functions/apis/` (rotas por recurso), `repositories/`, `services/`, `models/`, `middlewares/`, `use-cases/`, `utils/`, `roles/`, `scripts/`.
+- **Frontend**: `Frontend/src/` — `components/` (atoms, molecules, organisms), `pages/` (por domínio: Portal, Auth, Equipment, etc.), `routes/`, `hooks/`, `contexts/`, `services/`, `apis/`, `utils/`, `config/`, `styles/`, `i18n/`.
+- **IaC**: `IaC/src/production/` — `main.tf`, `variables.tf`; valores locais em `terraform.tfvars` (gitignored).
+
+## Convenções
+
+- Ver [CONTRIBUTING.md](CONTRIBUTING.md) para commits (Conventional Commits), padrões de código e checklist de PR.
+- Regras e skills específicas do projeto em `.cursor/rules/` e `.cursor/skills/`.
+- Contexto adicional para o agente em [AGENTS.md](AGENTS.md) quando existir.

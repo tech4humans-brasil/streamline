@@ -1,0 +1,53 @@
+---
+description: Padrões React e Frontend (componentes, Chakra, React Query)
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React & Frontend
+
+O Frontend usa React 18 com TypeScript, Chakra UI e React Query. Estrutura atomic design e páginas por domínio.
+
+## Componentes
+
+- Usar **componentes funcionais**.
+- Tipar props com interfaces; evitar `any` e componentes sem tipos.
+
+```typescript
+// ✅ GOOD
+interface ButtonProps {
+  variant: "primary" | "secondary";
+  onClick: () => void;
+  children: React.ReactNode;
+}
+export const Button: React.FC<ButtonProps> = ({ variant, onClick, children }) => (
+  <ChakraButton variant={variant} onClick={onClick}>{children}</ChakraButton>
+);
+
+// ❌ EVITAR
+export const Button = (props) => <button>{props.children}</button>;
+```
+
+## Estrutura
+
+- **Componentes**: `Frontend/src/components/` — `atoms/`, `molecules/`, `organisms/` (atomic design).
+- **Páginas**: `Frontend/src/pages/<Domínio>/` (ex.: Portal, Auth, Equipment).
+- **Rotas**: `Frontend/src/routes/` — `index.tsx`, `private.tsx`, `public.tsx`; tipo `RouteType` com `path`, `element`, `permission`, `children`.
+
+## Chakra UI e tema
+
+- Usar componentes Chakra em vez de HTML cru quando fizer sentido.
+- Tema custom em `Frontend/src/styles/theme.ts`; estilos globais em `global.css`.
+
+## Dados do servidor
+
+- TanStack React Query (v5): `useQuery`, `useMutation`, `QueryClient` para dados remotos.
+- Contextos em `contexts/` (ex.: AuthContext, DrawerContext) para estado global de UI/auth.
+
+## Aliases
+
+- Usar aliases do Vite/TS: `@/`, `@components`, `@hooks`, `@pages`, `@services`, etc., conforme `tsconfig.json` e `vite.config.ts`.
+
+## ESLint
+
+- Respeitar a configuração em `Frontend/.eslintrc.cjs` (TypeScript, react-hooks, react-refresh). Executar `npm run lint` antes de commitar.
