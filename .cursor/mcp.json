@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "streamline": {
+      "command": "npx",
+      "args": ["-y", "@tech4humans-brasil/mcp-streamline"]
+    }
+  }
+}
