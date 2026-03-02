@@ -92,25 +92,6 @@ export const twoStepValidate = async (data: {
   return response.data;
 };
 
-type OIDCCallbackResponse = Response<{ redirect_uri: string }>;
-
-export const oidcCallback = async (data: {
-  credential: string;
-  client_id: string;
-  acronym: string;
-  oidc: string;
-}): Promise<OIDCCallbackResponse> => {
-  const response = await api.post<OIDCCallbackResponse>("/oauth/callback", data);
-  return response.data;
-};
-
-export const oidcAuthorizeSession = async (data: {
-  oidc: string;
-}): Promise<OIDCCallbackResponse> => {
-  const response = await api.post<OIDCCallbackResponse>("/oauth/authorize-session", data);
-  return response.data;
-};
-
 type GenerateApiTokenResponse = Response<{ token: string; expiresAt: string }>;
 
 export const generateApiToken = async (): Promise<GenerateApiTokenResponse> => {
