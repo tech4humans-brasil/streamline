@@ -10,15 +10,15 @@ O Backend é Azure Functions v4 com TypeScript. Lógica organizada em repositór
 
 ## Estrutura em `Backend/src/`
 
-- **functions/apis/** — Handlers HTTP por recurso (Auth, User, Form, Schedule, OAuth, Admin, Dashboard, Email, Response, etc.). Cada handler exporta `handler: HttpHandler`.
+- **functions/apis/** — Handlers HTTP por recurso (Auth, User, Form, Schedule, Admin, Dashboard, Email, Response, etc.). Cada handler exporta `handler: HttpHandler`.
 - **functions/queues/** — Processadores de filas (Service Bus).
 - **functions/crons/** — Funções timer.
 - **repositories/** — Acesso a dados (Form, Schedule, User, Activity, Workflow, Status, etc.); recebem `Connection` (Mongoose).
-- **services/** — mongo, jwt, oidc, upload, email, recaptcha, sentry, llm, permissions, etc.
-- **models/** — `client/` (User, Form, Activity, Equipment, Workflow, …), `admin/` (OIDC, etc.); schemas Mongoose.
+- **services/** — mongo, jwt, upload, email, recaptcha, sentry, llm, permissions, etc.
+- **models/** — `client/` (User, Form, Activity, Equipment, Workflow, …), `admin/` (Client, etc.); schemas Mongoose.
 - **middlewares/** — `http.ts` (wrapper HTTP, validação Yup, JWT, permissões); tipos `HttpHandler`, `THttpRequest`.
 - **use-cases/** — Lógica de negócio reutilizável (PermissionViewProject, Response, InteractionHelper, …).
-- **utils/**, **roles/**, **scripts/** — Utilitários, definição de roles, scripts (ex.: register-oidc-client).
+- **utils/**, **roles/**, **scripts/** — Utilitários, definição de roles, scripts.
 
 ## Padrão de API HTTP
 
