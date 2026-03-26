@@ -1,4 +1,6 @@
-import { Connection, ObjectId } from "mongoose";
+import { Connection } from "mongoose";
+
+const MAX_WORKFLOW_STEPS = 200;
 import { sendScheduledToQueue, sendToQueue } from "./sbusOutputs";
 import { InvocationContext } from "@azure/functions";
 import {
@@ -47,15 +49,28 @@ export default async function sendNextQueue({
 
     console.log("Next step", nextStep, !!nextStep, delay);
 
+    if (nextStep && activityWorkflow.steps.length >= MAX_WORKFLOW_STEPS) {
+      console.error(
+        `Limite máximo de ${MAX_WORKFLOW_STEPS} blocos atingido para a atividade ${activity._id.toString()}. Workflow interrompido para evitar loop infinito.`
+      );
+      for (const exec of activity.workflows) {
+        if (exec._id === activityWorkflow._id) {
+          exec.finished = true;
+        }
+      }
+      activity.state = IActivityState.finished;
+      activity.finished_at = new Date();
+      await activity.save();
+      return;
+    }
+
     if (nextStep) {
       activity.workflows[activityWorkflowIndex].steps.push({
         step: nextStep._id,
         status: IActivityStepStatus.inQueue,
       });
 
-      const newNextStep = activityWorkflow.steps.find(
-        (step) => step.status === IActivityStepStatus.inQueue
-      );
+      const newNextStep = activityWorkflow.steps.at(-1);
 
       const scheduledEnqueueTimeUtc =
         delay > 0 ? new Date(Date.now() + delay) : undefined;

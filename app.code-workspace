@@ -12,6 +12,9 @@
     {
       "name": "Actions",
       "path": ".github/workflows"
+    },
+    {
+      "path": "../mcp-streamline"
     }
   ]
 }

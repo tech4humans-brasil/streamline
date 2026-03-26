@@ -92,8 +92,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
     path,
   });
 
-  await activity.save();
-
 };
 
 export default new QueueWrapper<TMessage>(handler).configure({

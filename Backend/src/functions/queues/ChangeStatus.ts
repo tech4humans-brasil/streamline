@@ -80,8 +80,6 @@ const handler: QueueWrapperHandler<TMessage> = async (
     context,
   });
 
-  await activity.save();
-
   const content = `
     <p>Olá, ${activity.users.at(0).name}!</p>
     <p>A atividade "${activity.name}" mudou de status para "${status.name}".</p>
