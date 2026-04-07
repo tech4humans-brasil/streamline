@@ -8,6 +8,7 @@ import FilterQueryBuilder from "../../../utils/filterQueryBuilder";
 interface Query {
   page?: number;
   limit?: number;
+  assignedToMe?: string;
 }
 
 const filterQueryBuilder = new FilterQueryBuilder({
@@ -28,7 +29,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
 );
 
 export const handler: HttpHandler = async (conn, req) => {
-  const { page = 1, limit = 10, ...filters } = req.query as Query;
+  const { page = 1, limit = 10, assignedToMe, ...filters } = req.query as Query;
 
   const activityRepository = new ActivityRepository(conn);
 
@@ -39,6 +40,10 @@ export const handler: HttpHandler = async (conn, req) => {
     user: user._id.toString(),
   });
 
+  if (assignedToMe === "true") {
+    where["assignee._id"] = user._id;
+  }
+
   const activities = await activityRepository.find({
     where,
     select: {
@@ -47,6 +52,7 @@ export const handler: HttpHandler = async (conn, req) => {
       protocol: 1,
       state: 1,
       status: 1,
+      assignee: 1,
       createdAt: 1,
       finished_at: 1,
     },
@@ -98,6 +104,7 @@ export default new Http(handler)
         finished: schema.string().oneOf(["all", "true", "false"]).default("all"),
         form: schema.array(schema.string()).default([]),
         search: schema.string().optional(),
+        assignedToMe: schema.string().oneOf(["true", "false"]).optional(),
       })
       .optional(),
   }))

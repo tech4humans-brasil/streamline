@@ -94,6 +94,7 @@ export type IActivity = {
   protocol: string;
   state: IActivityState;
   users: IUserChild[];
+  assignee?: IUserChild | null;
   form: IForm;
   form_draft: IFormDraft;
   parent: string;

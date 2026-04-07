@@ -76,6 +76,7 @@
       "closedAt": "Fechado em",
       "finishedAt": "Finalizado em",
       "status": "Status",
+      "assignee": "Responsável",
       "actions": "Ações",
       "undefined": "Indefinido",
       "users": "Usuários",
@@ -220,6 +221,11 @@
       "pending-interactions": "Aqui você verá os tickets que estão pendentes de resposta.",
       "switch-theme": "Clique aqui para alternar entre os temas claro e escuro.",
       "profile-menu": "Clique aqui para acessar seu perfil e fazer logout."
+    },
+    "myActivitiesAssignFilter": {
+      "label": "Atribuição",
+      "all": "Todos os tickets",
+      "assignedToMe": "Atribuídos a mim"
     },
     "description": {
       "evaluationPending": "Tickets que estão pendentes de avaliação",
@@ -671,6 +677,21 @@
     "completionDate": "Data de Finalização",
     "dueDate": "Prazo",
     "requester": "Solicitante",
+    "assignee": {
+      "title": "Responsável pelo atendimento",
+      "notAssigned": "Não atribuído",
+      "assume": "Assumir"
+    },
+    "actions": {
+      "menu": "Ações",
+      "assumeTicket": "Assumir ticket",
+      "changeStatus": "Alterar status",
+      "noStatuses": "Nenhum status disponível.",
+      "assignSuccess": "Ticket atribuído com sucesso.",
+      "assignError": "Não foi possível atribuir o ticket.",
+      "statusSuccess": "Status atualizado com sucesso.",
+      "statusError": "Não foi possível alterar o status."
+    },
     "information": "Informações",
     "ticketId": "ID do Ticket",
     "ticketProtocol": "Protocolo do Ticket",
@@ -679,7 +700,8 @@
     "lastUpdate": "Última atualização",
     "comments": {
       "title": "Comentários e Interações",
-      "subtitle": "Histórico de comunicação sobre esta atividade"
+      "subtitle": "Histórico de comunicação sobre esta atividade",
+      "systemBadge": "Registo do sistema"
     },
     "relatedTickets": {
       "title": "Tickets Relacionados",

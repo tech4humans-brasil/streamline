@@ -21,6 +21,7 @@ type Activity = Pick<
     name: string;
     matriculation: string;
   }[];
+  assignee?: IActivity["assignee"];
   form: {
     name: string;
     slug: string;
