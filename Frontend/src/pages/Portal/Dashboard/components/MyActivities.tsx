@@ -1,10 +1,12 @@
 import { getMyActivities } from "@apis/dashboard";
 import {
+  Avatar,
   Box,
   Button,
   Flex,
   IconButton,
   Heading,
+  Tag,
   Text,
 } from "@chakra-ui/react";
 import Table from "@components/organisms/Table";
@@ -38,6 +40,10 @@ const columns = [
   {
     key: "status",
     label: "common.fields.status",
+  },
+  {
+    key: "assignee",
+    label: "common.fields.assignee",
   },
   {
     key: "createdAt",
@@ -94,6 +100,22 @@ const MyActivities: React.FC = () => {
       createdAt: convertDateTime(activity.createdAt),
       finished_at: activity.finished_at ? convertDateTime(activity.finished_at) : "-",
       status: <StatusTag status={activity.status} />,
+      assignee: activity.assignee ? (
+        <Flex align="center" gap={2}>
+          <Avatar
+            size="xs"
+            name={activity.assignee.name}
+            src={activity.assignee.photo_url?.url}
+          />
+          <Text fontSize="sm" noOfLines={1} maxW="140px">
+            {activity.assignee.name}
+          </Text>
+        </Flex>
+      ) : (
+        <Tag colorScheme="orange" size="sm">
+          {t("activityDetails.assignee.notAssigned")}
+        </Tag>
+      ),
       actions: (
         <Flex>
           <Button mr={2} onClick={() => handleView(activity)} size="sm">
@@ -107,7 +129,7 @@ const MyActivities: React.FC = () => {
         </Flex>
       ),
     }));
-  }, [data, handleView, handleEdit]);
+  }, [data, handleView, handleEdit, t]);
 
   return (
     <Box mb={4} bg="bg.card" borderRadius="md" id="my-activities">
@@ -129,6 +151,22 @@ const MyActivities: React.FC = () => {
             options: [
               { label: t("dashboard.status.inProgress"), value: "false" },
               { label: t("dashboard.status.finished"), value: "true" },
+            ],
+          }}
+        />
+        <Select
+          input={{
+            id: "assignedToMe",
+            label: t("dashboard.myActivitiesAssignFilter.label"),
+            options: [
+              {
+                label: t("dashboard.myActivitiesAssignFilter.all"),
+                value: "",
+              },
+              {
+                label: t("dashboard.myActivitiesAssignFilter.assignedToMe"),
+                value: "true",
+              },
             ],
           }}
         />

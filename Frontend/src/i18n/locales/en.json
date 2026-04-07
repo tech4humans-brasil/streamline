@@ -44,6 +44,7 @@
       "closedAt": "Closed At",
       "finishedAt": "Finished At",
       "status": "Status",
+      "assignee": "Assignee",
       "actions": "Actions",
       "undefined": "Undefined",
       "users": "Users",
@@ -181,6 +182,11 @@
       "pending-interactions": "Here you'll see tickets awaiting response.",
       "switch-theme": "Click here to switch between light and dark themes.",
       "profile-menu": "Click here to access your profile and log out."
+    },
+    "myActivitiesAssignFilter": {
+      "label": "Assignment",
+      "all": "All tickets",
+      "assignedToMe": "Assigned to me"
     },
     "description": {
       "evaluationPending": "Tickets pending evaluation",
@@ -490,6 +496,21 @@
     "completionDate": "Completion Date",
     "dueDate": "Due Date",
     "requester": "Requester",
+    "assignee": {
+      "title": "Support assignee",
+      "notAssigned": "Unassigned",
+      "assume": "Take ticket"
+    },
+    "actions": {
+      "menu": "Actions",
+      "assumeTicket": "Take ticket",
+      "changeStatus": "Change status",
+      "noStatuses": "No statuses available.",
+      "assignSuccess": "Ticket assigned successfully.",
+      "assignError": "Could not assign the ticket.",
+      "statusSuccess": "Status updated successfully.",
+      "statusError": "Could not update status."
+    },
     "information": "Information",
     "ticketId": "Ticket ID",
     "ticketProtocol": "Ticket Protocol",
@@ -498,7 +519,8 @@
     "lastUpdate": "Last Update",
     "comments": {
       "title": "Comments and Interactions",
-      "subtitle": "Communication history for this activity"
+      "subtitle": "Communication history for this activity",
+      "systemBadge": "System log"
     },
     "relatedTickets": {
       "title": "Related Tickets",

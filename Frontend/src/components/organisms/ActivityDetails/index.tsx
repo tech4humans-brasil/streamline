@@ -96,17 +96,19 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
 
     if (!activity) return null;
 
+    const displayActivity = activityData ?? activity;
+
     return (
       <Box w="90%" mx="auto" py={6} maxW="7xl">
-        <ActivityHeader protocol={activity.protocol} />
+        <ActivityHeader protocol={displayActivity.protocol} />
 
         <Grid templateColumns={{ sm: "1fr", md: "2fr 1fr" }} gap={6} display={{ base: "block", md: "grid" }}>
           {/* Coluna principal */}
           <VStack spacing={6} align="stretch">
-            <TicketHeaderCard activity={activity} />
+            <TicketHeaderCard activity={displayActivity} />
 
             {/* Linha do tempo */}
-            {activity.workflows.length > 0 && (
+            {displayActivity.workflows.length > 0 && (
               <Card>
                 <Box p={6}>
                   <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
@@ -122,14 +124,14 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
             )}
 
             <CommentsSection
-              comments={activityData?.comments || []}
-              activityId={activity._id}
+              comments={displayActivity.comments || activityData?.comments || []}
+              activityId={displayActivity._id}
             />
           </VStack>
 
           {/* Coluna lateral */}
           <VStack spacing={6} align="stretch" mt={{ base: 6, md: 0 }}>
-            <TicketInfoCard activity={activity} />
+            <TicketInfoCard activity={displayActivity} />
 
             {/* Informações do formulário */}
             <Card>
@@ -138,7 +140,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
                   <Accordion.Item>
                     <Accordion.Button
                       rightElement={
-                        activity.form_draft.fields.length > 0 ? (
+                        displayActivity.form_draft.fields.length > 0 ? (
                           <ExpandFieldsButton onOpen={onOpen} />
                         ) : undefined
                       }
@@ -146,14 +148,14 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
                       {t("activityDetails.formFields")}
                     </Accordion.Button>
                     <Accordion.Panel>
-                      <ExtraFields fields={activity.form_draft.fields} />
+                      <ExtraFields fields={displayActivity.form_draft.fields} />
                     </Accordion.Panel>
                   </Accordion.Item>
                 </Accordion.Container>
               </Box>
             </Card>
 
-            <RelatedTicketsCard parentId={activity.parent} />
+            <RelatedTicketsCard parentId={displayActivity.parent} />
           </VStack>
         </Grid>
 
@@ -163,7 +165,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
             <ModalHeader>{t("activityDetails.formFields")}</ModalHeader>
             <ModalCloseButton />
             <ModalBody overflowY="auto" pb={6} maxH="calc(90vh - 80px)">
-              <ExtraFields fields={activity.form_draft.fields} />
+              <ExtraFields fields={displayActivity.form_draft.fields} />
             </ModalBody>
           </ModalContent>
         </Modal>

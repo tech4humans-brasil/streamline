@@ -63,7 +63,7 @@ export default new Http(handler)
           .transform((v) => Number(v)),
         name: schema.string().optional(),
         type: schema.mixed().oneOf(["active", "inactive"]).optional(),
-        project: schema.string().required(),
+        project: schema.string().optional(),
       }),
   }))
   .configure({

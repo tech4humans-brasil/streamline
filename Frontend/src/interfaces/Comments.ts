@@ -7,6 +7,7 @@ export type IComment = {
   content: string;
   viewed: string[];
   isEdited: boolean;
+  isSystem?: boolean;
   createdAt: string;
   updatedAt: string;
 };

@@ -38,6 +38,13 @@ const handler: HttpHandler = async (conn, req) => {
     }
   })();
 
+  const assigneePhotoPromise = (async () => {
+    const assignee = activity?.assignee as { photo_url?: unknown } | undefined;
+    if (assignee?.photo_url) {
+      assignee.photo_url = await getSasToken(assignee.photo_url);
+    }
+  })();
+
   const formFieldsPromise = Promise.all(activity.form_draft.fields.map(async (field) => {
     if (field.type === FieldTypes.File && field.value) {
       field.value = await getSasToken(field.value);
@@ -107,6 +114,7 @@ const handler: HttpHandler = async (conn, req) => {
 
   await Promise.all([
     mainUserPhotoPromise,
+    assigneePhotoPromise,
     formFieldsPromise,
     interactionsPromise,
     commentsPromise,
