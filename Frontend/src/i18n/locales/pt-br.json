@@ -502,6 +502,32 @@
       "external": "Externo"
     }
   },
+  "activitiesBoard": {
+    "title": "Quadro de tickets",
+    "back": "Voltar",
+    "formTypeFilter": "Tipo de formulário",
+    "formTypeAll": "Todos os tipos",
+    "columnEmpty": "Nenhum ticket aberto",
+    "error": "Não foi possível carregar o quadro",
+    "noProject": "Selecione um projeto para ver o quadro.",
+    "openBoard": "Quadro",
+    "customizeCard": "Personalizar cartão",
+    "customizeHint": "Escolha quais campos aparecem em cada cartão. As opções ficam guardadas neste navegador para este projeto.",
+    "builtInFields": "Campos do ticket",
+    "formFields": "Campos do formulário",
+    "noFormFieldsHint": "Os campos do formulário surgem aqui depois de carregar tickets com dados no quadro.",
+    "resetCardFields": "Repor predefinições",
+    "fieldAttachment": "Anexo",
+    "done": "Concluir",
+    "builtIn": {
+      "protocol": "Protocolo",
+      "assignee": "Responsável",
+      "users": "Participantes",
+      "description": "Descrição",
+      "due_date": "Data limite",
+      "createdAt": "Criado em"
+    }
+  },
   "form": {
     "title": "Formulários",
     "create": "Criar formulário",

@@ -21,6 +21,7 @@ import Activity from "@pages/Portal/Activity";
 import ActivityProcess from "@pages/Portal/ActivityCommit";
 import EditResponse from "@pages/Edit";
 import Activities from "@pages/Portal/Activities";
+import ActivitiesBoard from "@pages/Portal/ActivitiesBoard";
 import FirstPage from "@pages/Welcome/Firstpage";
 import SecondPage from "@pages/Welcome/SecondPage";
 import Welcome from "@pages/Welcome";
@@ -158,6 +159,11 @@ const routes: RouteType = [
       {
         path: "/portal/activities",
         element: <Activities />,
+        permission: "activity.view",
+      },
+      {
+        path: "/portal/project/:project/activities-board",
+        element: <ActivitiesBoard />,
         permission: "activity.view",
       },
       {

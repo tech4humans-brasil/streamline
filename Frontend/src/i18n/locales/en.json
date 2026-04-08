@@ -406,7 +406,34 @@
     "type": {
       "created": "Creation",
       "interaction": "Interaction",
-      "time-trigger": "Time"
+      "time-trigger": "Time",
+      "external": "External"
+    }
+  },
+  "activitiesBoard": {
+    "title": "Ticket board",
+    "back": "Back",
+    "formTypeFilter": "Form type",
+    "formTypeAll": "All types",
+    "columnEmpty": "No open tickets",
+    "error": "Could not load the board",
+    "noProject": "Select a project to view the board.",
+    "openBoard": "Board",
+    "customizeCard": "Customize card",
+    "customizeHint": "Choose which fields appear on each ticket card. Your choices are saved in this browser for this project.",
+    "builtInFields": "Ticket fields",
+    "formFields": "Form fields",
+    "noFormFieldsHint": "Form fields will appear here after tickets with submitted data are loaded on the board.",
+    "resetCardFields": "Reset to defaults",
+    "fieldAttachment": "Attachment",
+    "done": "Done",
+    "builtIn": {
+      "protocol": "Protocol",
+      "assignee": "Assignee",
+      "users": "Participants",
+      "description": "Description",
+      "due_date": "Due date",
+      "createdAt": "Created at"
     }
   },
   "form": {
@@ -424,7 +451,8 @@
     "type": {
       "created": "Creation",
       "interaction": "Interaction",
-      "time-trigger": "Time"
+      "time-trigger": "Time",
+      "external": "External"
     }
   },
   "formDraft": {

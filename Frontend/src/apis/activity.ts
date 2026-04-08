@@ -1,17 +1,29 @@
 import Response from "@interfaces/Response";
 import IActivity from "@interfaces/Activitiy";
+import IFormDraft from "@interfaces/FormDraft";
 import api from "@services/api";
 import IUser from "@interfaces/User";
 import IPagination from "@interfaces/Pagination";
 
 type ReqActivity = Response<IActivity>;
 
+export type ActivityListItem = Pick<
+  IActivity,
+  | "_id"
+  | "name"
+  | "status"
+  | "users"
+  | "protocol"
+  | "finished_at"
+  | "assignee"
+> &
+  Partial<Pick<IActivity, "description" | "due_date" | "createdAt">> & {
+    form_draft?: Pick<IFormDraft, "fields"> | null;
+  };
+
 type ReqActivities = Response<
   {
-    activities: Pick<
-      IActivity,
-      "_id" | "name" | "status" | "users" | "protocol" | "finished_at"
-    >[];
+    activities: ActivityListItem[];
   } & IPagination
 >;
 
