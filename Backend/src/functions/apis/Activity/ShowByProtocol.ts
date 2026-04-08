@@ -12,6 +12,18 @@ const handler: HttpHandler = async (conn, req) => {
 
   const activity = await activityRepository.findOne({
     where: { protocol: protocol.trim() },
+    populate: [
+      {
+        path: "form",
+        select: {
+          _id: 1,
+          name: 1,
+          slug: 1,
+          project: 1,
+          type: 1,
+        },
+      },
+    ],
   });
 
   if (!activity) {
