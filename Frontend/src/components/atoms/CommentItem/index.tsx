@@ -1,4 +1,4 @@
-import { Card, Flex, Text, Avatar, Box } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import { memo } from "react";
 import IComment from "@interfaces/Comments";
 import IUser from "@interfaces/User";
@@ -11,16 +11,31 @@ interface CommentItemProps {
 }
 
 const CommentItem: React.FC<CommentItemProps> = memo(({ comment }) => {
+  const rowBg = useColorModeValue("white", "gray.800");
+  const rowHoverBg = useColorModeValue("gray.50", "gray.700");
+  const avatarRing = useColorModeValue("gray.200", "gray.600");
+
   return (
-    <Card
-      mb={3}
-      p={4}
-      bg="bg.navbar"
-      borderRadius="lg"
-      boxShadow="sm"
-      _hover={{ boxShadow: "md" }}
+    <Flex
+      align="flex-start"
+      gap={3}
+      py={3}
+      px={4}
+      bg={rowBg}
+      transition="background 0.15s ease"
+      _hover={{ bg: rowHoverBg }}
     >
-      <Flex gap={3}>
+      <Flex
+        align="center"
+        justify="center"
+        flexShrink={0}
+        w={9}
+        h={9}
+        borderRadius="full"
+        borderWidth="1px"
+        borderColor={avatarRing}
+        overflow="hidden"
+      >
         <Avatar
           size="sm"
           name={comment.user.name}
@@ -28,20 +43,26 @@ const CommentItem: React.FC<CommentItemProps> = memo(({ comment }) => {
           bg="blue.500"
           color="white"
         />
-        <Box flex="1">
-          <Text fontWeight="bold" fontSize="sm" mb={2}>
-            {comment.user.name}
-          </Text>
-          <Text fontSize="sm" whiteSpace="pre-wrap" mb={2}>
-            {comment.content}
-          </Text>
-          <Text as="small" fontSize="xs" color="gray.500">
-            {convertDateTime(comment.createdAt)}
-          </Text>
-        </Box>
       </Flex>
-    </Card>
+      <Box flex="1" minW={0}>
+        <Text fontSize="xs" fontWeight="semibold" color="gray.500" mb={1}>
+          {comment.user.name}
+        </Text>
+        <Text
+          fontSize="sm"
+          whiteSpace="pre-wrap"
+          color="gray.700"
+          _dark={{ color: "gray.100" }}
+          mb={1}
+        >
+          {comment.content}
+        </Text>
+        <Text as="span" fontSize="xs" color="gray.500">
+          {convertDateTime(comment.createdAt)}
+        </Text>
+      </Box>
+    </Flex>
   );
 });
 
-export default CommentItem; 
+export default CommentItem;

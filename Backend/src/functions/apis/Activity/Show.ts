@@ -26,7 +26,21 @@ const handler: HttpHandler = async (conn, req) => {
     return sasCache.get(fileObj.url);
   };
 
-  const activity = await activityRepository.findById({ id });
+  const activity = await activityRepository.findById({
+    id,
+    populate: [
+      {
+        path: "form",
+        select: {
+          _id: 1,
+          name: 1,
+          slug: 1,
+          project: 1,
+          type: 1,
+        },
+      },
+    ],
+  });
 
   if (!activity) {
     return res.notFound("Activity not found");

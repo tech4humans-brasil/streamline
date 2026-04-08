@@ -686,7 +686,11 @@
       "menu": "Ações",
       "assumeTicket": "Assumir ticket",
       "changeStatus": "Alterar status",
-      "noStatuses": "Nenhum status disponível.",
+      "noStatuses": "Nenhum status disponível para este projeto.",
+      "statusSearchPlaceholder": "Pesquisar status…",
+      "statusNoProject": "Este formulário não está associado a um projeto. Não é possível listar status para alteração.",
+      "statusNoMatch": "Nenhum status corresponde à pesquisa.",
+      "statusCurrent": "Status atual do ticket",
       "assignSuccess": "Ticket atribuído com sucesso.",
       "assignError": "Não foi possível atribuir o ticket.",
       "statusSuccess": "Status atualizado com sucesso.",
@@ -701,7 +705,11 @@
     "comments": {
       "title": "Comentários e Interações",
       "subtitle": "Histórico de comunicação sobre esta atividade",
-      "systemBadge": "Registo do sistema"
+      "systemBadge": "Registo do sistema",
+      "composerTitle": "Novo comentário",
+      "composerPlaceholder": "Escreva uma mensagem para o solicitante ou a equipa…",
+      "send": "Enviar",
+      "emptyTimeline": "Ainda não há comentários nem registos de atendimento."
     },
     "relatedTickets": {
       "title": "Tickets Relacionados",

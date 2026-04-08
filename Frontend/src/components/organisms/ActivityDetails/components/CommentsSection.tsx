@@ -26,28 +26,27 @@ const SystemCommentRow: React.FC<{
   };
 }> = ({ comment }) => {
   const { t } = useTranslation();
-  const bg = useColorModeValue("gray.100", "gray.700");
-  const border = useColorModeValue("gray.200", "gray.600");
+  const bg = useColorModeValue("gray.50", "gray.900");
+  const hoverBg = useColorModeValue("gray.100", "gray.800");
   const iconBg = useColorModeValue("gray.200", "gray.600");
 
   return (
     <Flex
-      align="center"
+      align="flex-start"
       gap={3}
       py={3}
       px={4}
-      borderRadius="md"
       bg={bg}
-      borderWidth="1px"
-      borderColor={border}
+      transition="background 0.15s ease"
+      _hover={{ bg: hoverBg }}
       role="group"
     >
       <Flex
         align="center"
         justify="center"
         flexShrink={0}
-        w={8}
-        h={8}
+        w={9}
+        h={9}
         borderRadius="full"
         bg={iconBg}
       >
@@ -73,6 +72,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
   activityId,
 }) => {
   const { t } = useTranslation();
+  const listBorder = useColorModeValue("gray.200", "gray.600");
+  const listBg = useColorModeValue("white", "gray.800");
+  const composerBg = useColorModeValue("gray.50", "gray.900");
+  const composerBorder = useColorModeValue("gray.200", "gray.600");
 
   return (
     <Card>
@@ -83,54 +86,73 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
         <Text fontSize="sm" color="gray.500" mb={4}>
           {t("activityDetails.comments.subtitle")}
         </Text>
-        <Flex
-          direction="column"
-          gap={2}
-          maxH="500px"
+
+        <Box
+          borderWidth="1px"
+          borderColor={listBorder}
+          borderRadius="lg"
+          overflow="hidden"
+          bg={listBg}
+          maxH="420px"
           overflowY="auto"
-          px={2}
           sx={{
-            "&::-webkit-scrollbar": {
-              width: "4px",
-            },
-            "&::-webkit-scrollbar-track": {
-              width: "6px",
-            },
+            "&::-webkit-scrollbar": { width: "6px" },
             "&::-webkit-scrollbar-thumb": {
-              background: "gray.200",
-              borderRadius: "24px",
+              background: "var(--chakra-colors-gray-300)",
+              borderRadius: "full",
             },
           }}
         >
-          {comments?.map((comment) =>
-            comment.isSystem ? (
-              <SystemCommentRow
+          {comments?.length ? (
+            comments.map((comment) => (
+              <Box
                 key={comment._id}
-                comment={
-                  comment as IComment & {
-                    user: Pick<
-                      IUser,
-                      "_id" | "name" | "email" | "photo_url"
-                    >;
-                  }
-                }
-              />
-            ) : (
-              <CommentItem
-                key={comment._id}
-                comment={
-                  comment as Omit<IComment, "user"> & {
-                    user: Pick<
-                      IUser,
-                      "_id" | "name" | "email" | "photo_url"
-                    >;
-                  }
-                }
-              />
-            )
+                borderBottomWidth="1px"
+                borderBottomColor={listBorder}
+                _last={{ borderBottomWidth: 0 }}
+              >
+                {comment.isSystem ? (
+                  <SystemCommentRow
+                    comment={
+                      comment as IComment & {
+                        user: Pick<
+                          IUser,
+                          "_id" | "name" | "email" | "photo_url"
+                        >;
+                      }
+                    }
+                  />
+                ) : (
+                  <CommentItem
+                    comment={
+                      comment as Omit<IComment, "user"> & {
+                        user: Pick<
+                          IUser,
+                          "_id" | "name" | "email" | "photo_url"
+                        >;
+                      }
+                    }
+                  />
+                )}
+              </Box>
+            ))
+          ) : (
+            <Box py={8} px={4} textAlign="center">
+              <Text fontSize="sm" color="gray.500">
+                {t("activityDetails.comments.emptyTimeline")}
+              </Text>
+            </Box>
           )}
-        </Flex>
-        <Box mt={6} pt={4} borderTop="1px solid" borderColor="gray.100">
+        </Box>
+
+        <Box
+          mt={4}
+          borderWidth="1px"
+          borderColor={composerBorder}
+          borderRadius="lg"
+          bg={composerBg}
+          overflow="hidden"
+        >
           <CommentForm id={activityId} />
         </Box>
       </Box>
