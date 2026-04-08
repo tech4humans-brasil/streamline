@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import VariableForm from "../Variables";
 import DeactivateProject from "../DeactivateProject";
 import { FaPen } from "react-icons/fa";
+import { TbLayoutKanban } from "react-icons/tb";
 
 const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -112,6 +113,22 @@ const Navbar: React.FC = () => {
               </Box>
             </search>
           </FormProvider>
+
+          <Can permission="activity.view">
+            <Button
+              colorScheme="teal"
+              onClick={() =>
+                project &&
+                navigate(`/portal/project/${project}/activities-board`)
+              }
+              variant="outline"
+              size="sm"
+              isDisabled={!project}
+              leftIcon={<TbLayoutKanban />}
+            >
+              {t("activitiesBoard.openBoard")}
+            </Button>
+          </Can>
 
           <Button
             colorScheme="blue"

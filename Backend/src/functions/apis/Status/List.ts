@@ -6,6 +6,8 @@ import FilterQueryBuilder, {
   WhereEnum,
 } from "../../../utils/filterQueryBuilder";
 
+const statusTypeValues = Object.values(StatusType);
+
 interface Query {
   page?: number;
   limit?: number;
@@ -20,7 +22,7 @@ const filterQueryBuilder = new FilterQueryBuilder({
   project: { type: WhereEnum.EQUAL, alias: "project" },
 });
 
-const handler: HttpHandler = async (conn, req, context) => {
+const handler: HttpHandler = async (conn, req) => {
   const { page = 1, limit = 20, ...filter } = req.query as Query;
 
   const statusRepository = new StatusRepository(conn);
@@ -62,13 +64,13 @@ export default new Http(handler)
           .optional()
           .transform((v) => Number(v)),
         name: schema.string().optional(),
-        type: schema.mixed().oneOf(["active", "inactive"]).optional(),
-        project: schema.string().required(),
+        type: schema.mixed().oneOf(statusTypeValues).optional(),
+        project: schema.string().optional(),
       }),
   }))
   .configure({
     name: "StatusList",
-    permission: "status.create",
+    permission: "status.read",
     options: {
       methods: ["GET"],
       route: "statuses",
