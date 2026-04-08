@@ -1,13 +1,21 @@
 import { getMyActivities } from "@apis/dashboard";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Avatar,
+  Badge,
   Box,
   Button,
   Flex,
-  IconButton,
   Heading,
+  IconButton,
   Tag,
   Text,
+  Tooltip,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import Table from "@components/organisms/Table";
 import { IActivityState } from "@interfaces/Activitiy";
@@ -23,48 +31,40 @@ import StatusTag from "@components/atoms/StatusTag";
 import InputText from "@components/atoms/Inputs/Text";
 import Select from "@components/atoms/Inputs/Select";
 
+const columnsFull = [
+  { key: "protocol", label: "common.fields.protocol" },
+  { key: "name", label: "common.fields.form" },
+  { key: "description", label: "common.fields.description" },
+  { key: "status", label: "common.fields.status" },
+  { key: "assignee", label: "common.fields.assignee" },
+  { key: "createdAt", label: "common.fields.createdAt" },
+  { key: "finished_at", label: "common.fields.finishedAt" },
+  { key: "actions", label: "common.fields.actions" },
+];
 
-const columns = [
-  {
-    key: "protocol",
-    label: "common.fields.protocol",
-  },
-  {
-    key: "name",
-    label: "common.fields.form",
-  },
-  {
-    key: "description",
-    label: "common.fields.description",
-  },
-  {
-    key: "status",
-    label: "common.fields.status",
-  },
-  {
-    key: "assignee",
-    label: "common.fields.assignee",
-  },
-  {
-    key: "createdAt",
-    label: "common.fields.createdAt",
-  },
-  {
-    key: "finished_at",
-    label: "common.fields.finishedAt",
-  },
-  {
-    key: "actions",
-    label: "common.fields.actions",
-  },
+const columnsCompact = [
+  { key: "protocol", label: "common.fields.protocol" },
+  { key: "name", label: "common.fields.form" },
+  { key: "status", label: "common.fields.status" },
+  { key: "actions", label: "common.fields.actions" },
 ];
 
 type IItem = Awaited<ReturnType<typeof getMyActivities>>["activities"][0];
 
-const MyActivities: React.FC = () => {
+type Props = {
+  isNewSinceLastSeen: (updatedAt: string | Date | undefined | null) => boolean;
+};
+
+const MyActivities: React.FC<Props> = ({ isNewSinceLastSeen }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const isCompact = useBreakpointValue({ base: true, md: false });
+
+  const columns = useMemo(
+    () => (isCompact ? columnsCompact : columnsFull),
+    [isCompact]
+  );
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["my-activities", searchParams.toString()],
@@ -88,117 +88,175 @@ const MyActivities: React.FC = () => {
   const rows = useMemo(() => {
     if (!data?.activities) return [];
 
-    return data.activities.map((activity) => ({
-      ...activity,
-      description: (
-        <div title={activity.description}>
-          {activity.description.length > 15
-            ? `${activity.description.slice(0, 15)}...`
-            : activity.description}
-        </div>
-      ),
-      createdAt: convertDateTime(activity.createdAt),
-      finished_at: activity.finished_at ? convertDateTime(activity.finished_at) : "-",
-      status: <StatusTag status={activity.status} />,
-      assignee: activity.assignee ? (
-        <Flex align="center" gap={2}>
-          <Avatar
-            size="xs"
-            name={activity.assignee.name}
-            src={activity.assignee.photo_url?.url}
-          />
-          <Text fontSize="sm" noOfLines={1} maxW="140px">
-            {activity.assignee.name}
-          </Text>
-        </Flex>
-      ) : (
-        <Tag colorScheme="orange" size="sm">
-          {t("activityDetails.assignee.notAssigned")}
-        </Tag>
-      ),
-      actions: (
-        <Flex>
-          <Button mr={2} onClick={() => handleView(activity)} size="sm">
-            <FaEye />
-          </Button>
-          {activity.state === IActivityState.created && !activity.finished_at && (
-            <Button size="sm" onClick={() => handleEdit(activity)}>
-              <FaPen />
+    return data.activities.map((activity) => {
+      const formLabel = activity.form?.name ?? activity.name;
+      const showNew = isNewSinceLastSeen(activity.updatedAt);
+
+      return {
+        ...activity,
+        name: formLabel,
+        protocol: (
+          <Flex align="center" gap={2} flexWrap="wrap">
+            <Text as="span">{activity.protocol}</Text>
+            {showNew && (
+              <Badge colorScheme="green">{t("dashboard.badge.new")}</Badge>
+            )}
+          </Flex>
+        ),
+        description: (
+          <Tooltip label={activity.description} hasArrow openDelay={400}>
+            <Text noOfLines={2} maxW="240px" cursor="default">
+              {activity.description}
+            </Text>
+          </Tooltip>
+        ),
+        createdAt: convertDateTime(activity.createdAt),
+        finished_at: activity.finished_at
+          ? convertDateTime(activity.finished_at)
+          : "-",
+        status: <StatusTag status={activity.status} />,
+        assignee: activity.assignee ? (
+          <Flex align="center" gap={2}>
+            <Avatar
+              size="xs"
+              name={activity.assignee.name}
+              src={activity.assignee.photo_url?.url}
+            />
+            <Text fontSize="sm" noOfLines={1} maxW="140px">
+              {activity.assignee.name}
+            </Text>
+          </Flex>
+        ) : (
+          <Tag colorScheme="orange" size="sm">
+            {t("activityDetails.assignee.notAssigned")}
+          </Tag>
+        ),
+        actions: (
+          <Flex>
+            <Button
+              mr={2}
+              onClick={() => handleView(activity)}
+              size="sm"
+              aria-label={t("dashboard.pendingActions.viewTicket")}
+            >
+              <FaEye />
             </Button>
-          )}
-        </Flex>
-      ),
-    }));
-  }, [data, handleView, handleEdit, t]);
+            {activity.state === IActivityState.created &&
+              !activity.finished_at && (
+                <Button
+                  size="sm"
+                  onClick={() => handleEdit(activity)}
+                  aria-label={t("common.edit")}
+                >
+                  <FaPen />
+                </Button>
+              )}
+          </Flex>
+        ),
+      };
+    });
+  }, [data, handleView, handleEdit, t, isNewSinceLastSeen]);
 
   return (
     <Box mb={4} bg="bg.card" borderRadius="md" id="my-activities">
-
-      <Flex justifyContent="space-between" alignItems="start" p="4" direction="column">
-        <Heading size="md">
-          {t("dashboard.title.myActivities")}
-        </Heading>
+      <Flex
+        justifyContent="space-between"
+        alignItems="start"
+        p="4"
+        direction="column"
+      >
+        <Heading size="md">{t("dashboard.title.myActivities")}</Heading>
         <Text fontSize="sm" color="gray.500">
           {t("dashboard.description.myActivities")}
         </Text>
       </Flex>
 
-      <Filter.Container>
-        <Select
-          input={{
-            id: "finished",
-            label: t("common.fields.status"),
-            options: [
-              { label: t("dashboard.status.inProgress"), value: "false" },
-              { label: t("dashboard.status.finished"), value: "true" },
-            ],
-          }}
-        />
-        <Select
-          input={{
-            id: "assignedToMe",
-            label: t("dashboard.myActivitiesAssignFilter.label"),
-            options: [
-              {
-                label: t("dashboard.myActivitiesAssignFilter.all"),
-                value: "",
-              },
-              {
-                label: t("dashboard.myActivitiesAssignFilter.assignedToMe"),
-                value: "true",
-              },
-            ],
-          }}
-        />
-        <Flex alignItems="end" gap={2} w="100%">
-          <InputText
-            input={{
-              id: "search",
-              type: "text",
-              placeholder: t("common.fields.search"),
-              label: t("common.fields.description"),
-            }}
-          />
-          <Select
-            input={{
-              id: "automatic",
-              label: t("common.fields.automatic"),
-              options: [
-                { label: t("common.fields.yes"), value: "true" },
-                { label: t("common.fields.no"), value: "false" },
-              ],
-            }}
-          />
-
-          <IconButton
-            ml="auto"
-            aria-label={t("common.refresh")}
-            icon={<FaSync />}
-            onClick={() => refetch()}
-            isLoading={isLoading}
-          />
-        </Flex>
-      </Filter.Container>
+      <Box px={4} pb={2}>
+        <Accordion allowToggle reduceMotion defaultIndex={[]}>
+          <AccordionItem border="none">
+            <Flex align="center" gap={2}>
+              <AccordionButton
+                borderRadius="md"
+                flex={1}
+                px={3}
+                py={2}
+                _hover={{ bg: "blackAlpha.50" }}
+              >
+                <Box flex="1" textAlign="left" fontWeight="medium">
+                  {t("dashboard.filtersToggle")}
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <IconButton
+                aria-label={t("common.refresh")}
+                icon={<FaSync />}
+                onClick={() => refetch()}
+                isLoading={isLoading}
+                size="md"
+                variant="ghost"
+              />
+            </Flex>
+            <AccordionPanel px={0} pt={2} pb={0}>
+              <Filter.Container>
+                <Select
+                  input={{
+                    id: "finished",
+                    label: t("common.fields.status"),
+                    options: [
+                      {
+                        label: t("dashboard.status.inProgress"),
+                        value: "false",
+                      },
+                      {
+                        label: t("dashboard.status.finished"),
+                        value: "true",
+                      },
+                    ],
+                  }}
+                />
+                <Select
+                  input={{
+                    id: "assignedToMe",
+                    label: t("dashboard.myActivitiesAssignFilter.label"),
+                    options: [
+                      {
+                        label: t("dashboard.myActivitiesAssignFilter.all"),
+                        value: "",
+                      },
+                      {
+                        label: t(
+                          "dashboard.myActivitiesAssignFilter.assignedToMe"
+                        ),
+                        value: "true",
+                      },
+                    ],
+                  }}
+                />
+                <Flex alignItems="end" gap={2} w="100%">
+                  <InputText
+                    input={{
+                      id: "search",
+                      type: "text",
+                      placeholder: t("common.fields.search"),
+                      label: t("common.fields.description"),
+                    }}
+                  />
+                  <Select
+                    input={{
+                      id: "automatic",
+                      label: t("common.fields.automatic"),
+                      options: [
+                        { label: t("common.fields.yes"), value: "true" },
+                        { label: t("common.fields.no"), value: "false" },
+                      ],
+                    }}
+                  />
+                </Flex>
+              </Filter.Container>
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
+      </Box>
 
       <Flex
         justifyContent="center"

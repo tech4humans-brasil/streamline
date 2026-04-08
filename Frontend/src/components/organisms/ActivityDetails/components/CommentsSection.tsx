@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 import { convertDateTime } from "@utils/date";
 import IUser from "@interfaces/User";
+import { useActivityDetailCardProps } from "../useActivityDetailCardProps";
 
 interface CommentsSectionProps {
   comments: IComment[];
@@ -76,9 +77,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
   const listBg = useColorModeValue("white", "gray.800");
   const composerBg = useColorModeValue("gray.50", "gray.900");
   const composerBorder = useColorModeValue("gray.200", "gray.600");
+  const detailCardProps = useActivityDetailCardProps();
 
   return (
-    <Card>
+    <Card {...detailCardProps}>
       <Box p={6}>
         <Text fontSize="lg" fontWeight="bold" mb={2}>
           {t("activityDetails.comments.title")}

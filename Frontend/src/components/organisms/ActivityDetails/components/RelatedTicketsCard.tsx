@@ -1,8 +1,9 @@
-import React from 'react';
-import { Box, Card, IconButton, Text, VStack } from '@chakra-ui/react';
-import { RiParentFill } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Box, Button, Card, Icon, Text, VStack } from "@chakra-ui/react";
+import { RiParentFill } from "react-icons/ri";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useActivityDetailCardProps } from "../useActivityDetailCardProps";
 
 interface RelatedTicketsCardProps {
   parentId?: string;
@@ -10,31 +11,33 @@ interface RelatedTicketsCardProps {
 
 const RelatedTicketsCard: React.FC<RelatedTicketsCardProps> = ({ parentId }) => {
   const { t } = useTranslation();
+  const detailCardProps = useActivityDetailCardProps();
 
   return (
-    <Card>
+    <Card {...detailCardProps}>
       <Box p={6}>
         <Text fontSize="lg" fontWeight="bold" mb={4}>
-          {t('activityDetails.relatedTickets.title')}
+          {t("activityDetails.relatedTickets.title")}
         </Text>
         <VStack spacing={2} align="stretch">
           {parentId ? (
-            <Link
+            <Button
+              as={Link}
               to={`/portal/activity/${parentId}`}
-              title={t('activityDetails.relatedTickets.parentTicket')}
-              style={{ textDecoration: "none" }}
+              variant="ghost"
+              justifyContent="flex-start"
+              leftIcon={<Icon as={RiParentFill} boxSize={5} />}
+              size="sm"
+              h="auto"
+              py={2}
+              px={3}
+              fontWeight="medium"
             >
-              <IconButton
-                aria-label="Parent"
-                icon={<RiParentFill />}
-                title={t('activityDetails.relatedTickets.parentTicket')}
-                size="sm"
-                colorScheme="blue"
-              />
-            </Link>
+              {t("activityDetails.relatedTickets.parentTicket")}
+            </Button>
           ) : (
             <Text fontSize="sm" color="gray.500" mb={2}>
-              {t('activityDetails.relatedTickets.noRelated')}
+              {t("activityDetails.relatedTickets.noRelated")}
             </Text>
           )}
         </VStack>
@@ -43,4 +46,4 @@ const RelatedTicketsCard: React.FC<RelatedTicketsCardProps> = ({ parentId }) => 
   );
 };
 
-export default RelatedTicketsCard; 
+export default RelatedTicketsCard;

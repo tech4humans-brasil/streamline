@@ -1,5 +1,23 @@
 import type { IField } from "@interfaces/FormDraft";
 
+export function formatUtcDateOnly(
+  value: string | Date | null | undefined
+): string {
+  if (value === null || value === undefined || value === "") return "—";
+  try {
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString(undefined, {
+      timeZone: "UTC",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return "—";
+  }
+}
+
 function isFileValue(v: unknown): v is { url?: string; name?: string } {
   return (
     typeof v === "object" &&
@@ -60,7 +78,11 @@ export function formatBoardFieldValue(
     return JSON.stringify(value);
   }
 
-  if (type === "date" || type === "time") {
+  if (type === "date") {
+    return formatUtcDateOnly(String(value));
+  }
+
+  if (type === "time") {
     try {
       const d = new Date(String(value));
       if (!Number.isNaN(d.getTime())) {

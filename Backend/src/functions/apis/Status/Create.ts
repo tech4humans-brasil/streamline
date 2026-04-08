@@ -4,7 +4,9 @@ import { IStatus } from "../../../models/client/Status";
 import StatusRepository from "../../../repositories/Status";
 
 const handler: HttpHandler = async (conn, req) => {
-  const { name, type, project } = req.body as IStatus;
+  const { name, type, project, order } = req.body as IStatus & {
+    order?: number;
+  };
 
   const statusRepository = new StatusRepository(conn);
 
@@ -12,6 +14,7 @@ const handler: HttpHandler = async (conn, req) => {
     name,
     type,
     project,
+    ...(order !== undefined && order !== null ? { order: Number(order) } : {}),
   });
 
   status.save();
@@ -24,6 +27,7 @@ export default new Http(handler)
     body: schema.object().shape({
       name: schema.string().required().min(3).max(255),
       type: schema.string().required().oneOf(["progress", "done", "canceled"]),
+      order: schema.number().optional(),
     }),
   }))
   .configure({

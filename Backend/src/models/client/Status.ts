@@ -11,6 +11,7 @@ export interface IStatus extends mongoose.Document {
   name: string;
   type: StatusType;
   project: ObjectId | string | null;
+  order: number;
 }
 
 export const schema: Schema = new Schema(
@@ -27,6 +28,7 @@ export const schema: Schema = new Schema(
       default: null,
       index: true,
     },
+    order: { type: Number, default: 0 },
   },
   {
     timestamps: true,

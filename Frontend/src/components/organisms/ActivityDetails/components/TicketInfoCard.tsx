@@ -1,103 +1,110 @@
-import React, { useCallback } from "react";
+import React from "react";
 import {
   Box,
   Button,
   Card,
+  Divider,
   Flex,
   Tag,
   Text,
   VStack,
-  useToast,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { convertDateTime } from "@utils/date";
-import StatusTag from "@components/atoms/StatusTag";
 import IActivity from "@interfaces/Activitiy";
 import { useTranslation } from "react-i18next";
 import UserDetails from "../sections/UserDetails";
 import Can from "@components/atoms/Can";
-import { assignActivity } from "@apis/activity";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuth from "@hooks/useAuth";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
-import { AxiosError } from "axios";
+import { useActivityDetailCardProps } from "../useActivityDetailCardProps";
 
 interface TicketInfoCardProps {
   activity: IActivity;
+  onAssignClick: () => void;
 }
 
-const TicketInfoCard: React.FC<TicketInfoCardProps> = ({ activity }) => {
+const TicketInfoCard: React.FC<TicketInfoCardProps> = ({
+  activity,
+  onAssignClick,
+}) => {
   const { t } = useTranslation();
-  const toast = useToast();
-  const queryClient = useQueryClient();
   const [auth] = useAuth();
-
-  const assignMutation = useMutation({
-    mutationFn: assignActivity,
-    onSuccess: (data) => {
-      queryClient.setQueryData(["activity", activity._id], data);
-      toast({
-        title: t("activityDetails.actions.assignSuccess"),
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        icon: <FaCheckCircle />,
-      });
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast({
-        title: t("activityDetails.actions.assignError"),
-        description: error.message,
-        status: "error",
-        duration: 8000,
-        isClosable: true,
-        icon: <FaExclamationCircle />,
-      });
-    },
-  });
-
-  const handleAssume = useCallback(() => {
-    if (!auth?.id) return;
-    assignMutation.mutate({ id: activity._id, userId: auth.id });
-  }, [assignMutation, activity._id, auth?.id]);
+  const detailCardProps = useActivityDetailCardProps();
+  const dividerColor = useColorModeValue("gray.200", "whiteAlpha.200");
+  const idWellBg = useColorModeValue("gray.50", "whiteAlpha.50");
+  const idWellBorder = useColorModeValue("gray.200", "whiteAlpha.200");
 
   const assignee = activity.assignee ?? null;
 
   return (
-    <Card>
+    <Card {...detailCardProps}>
       <Box p={6}>
-        <Text fontSize="lg" fontWeight="bold" mb={4}>
-          {t("activityDetails.information")}
+        <Text fontSize="lg" fontWeight="bold" mb={2}>
+          {t("activityDetails.identification")}
         </Text>
-        <VStack spacing={4} align="stretch">
+        <Text fontSize="sm" color="gray.500" mb={4}>
+          {t("activityDetails.identificationSubtitle")}
+        </Text>
+
+        <VStack spacing={0} align="stretch">
           <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
+            <Text
+              fontSize="xs"
+              fontWeight="semibold"
+              color="gray.500"
+              textTransform="uppercase"
+              letterSpacing="0.06em"
+              mb={2}
+            >
               {t("activityDetails.ticketId")}
             </Text>
-            <Text fontSize="sm" fontFamily="mono">
-              {activity._id}
-            </Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-              {t("activityDetails.ticketProtocol")}
-            </Text>
-            <Text fontSize="sm" fontFamily="mono">
-              {activity.protocol}
-            </Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-              {t("activityDetails.status")}
-            </Text>
-            <StatusTag status={activity.status} />
+            <Box
+              borderRadius="md"
+              borderWidth="1px"
+              borderColor={idWellBorder}
+              bg={idWellBg}
+              px={3}
+              py={2}
+            >
+              <Text
+                fontSize="sm"
+                fontFamily="mono"
+                wordBreak="break-all"
+                fontWeight="medium"
+              >
+                {activity._id}
+              </Text>
+            </Box>
           </Box>
 
+          <Divider borderColor={dividerColor} my={4} />
+
           <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
+            <Text
+              fontSize="xs"
+              fontWeight="semibold"
+              color="gray.500"
+              textTransform="uppercase"
+              letterSpacing="0.06em"
+              mb={2}
+            >
               {t("activityDetails.assignee.title")}
             </Text>
             {assignee ? (
-              <UserDetails user={assignee} />
+              <Flex align="center" gap={3} flexWrap="wrap">
+                <UserDetails user={assignee} />
+                <Can permission="activity.update">
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    colorScheme="blue"
+                    onClick={onAssignClick}
+                    isDisabled={!auth?.id}
+                  >
+                    {t("activityDetails.actions.changeAssignee")}
+                  </Button>
+                </Can>
+              </Flex>
             ) : (
               <Flex align="center" gap={3} flexWrap="wrap">
                 <Tag colorScheme="orange" size="md">
@@ -107,29 +114,32 @@ const TicketInfoCard: React.FC<TicketInfoCardProps> = ({ activity }) => {
                   <Button
                     size="xs"
                     colorScheme="blue"
-                    onClick={handleAssume}
-                    isLoading={assignMutation.isPending}
+                    onClick={onAssignClick}
                     isDisabled={!auth?.id}
                   >
-                    {t("activityDetails.assignee.assume")}
+                    {t("activityDetails.actions.assignTicketMenu")}
                   </Button>
                 </Can>
               </Flex>
             )}
           </Box>
 
-          <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-              {t("activityDetails.createdAt")}
-            </Text>
-            <Text fontSize="sm">{convertDateTime(activity.createdAt)}</Text>
-          </Box>
+          <Divider borderColor={dividerColor} my={4} />
 
           <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
+            <Text
+              fontSize="xs"
+              fontWeight="semibold"
+              color="gray.500"
+              textTransform="uppercase"
+              letterSpacing="0.06em"
+              mb={2}
+            >
               {t("activityDetails.lastUpdate")}
             </Text>
-            <Text fontSize="sm">{convertDateTime(activity.updatedAt)}</Text>
+            <Text fontSize="sm" fontWeight="medium">
+              {convertDateTime(activity.updatedAt)}
+            </Text>
           </Box>
         </VStack>
       </Box>

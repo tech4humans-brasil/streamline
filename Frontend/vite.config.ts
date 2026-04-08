@@ -13,8 +13,10 @@ export default ({ mode }) => {
     plugins: [
       react(),
     ],
-  
+
     resolve: {
+      // Evita duas instâncias de React (ex.: @dnd-kit/core com hooks a null em dev)
+      dedupe: ["react", "react-dom"],
       alias: {
         "@": "/src",
         "@components": "/src/components",
@@ -32,9 +34,13 @@ export default ({ mode }) => {
         "@docs": "/src/docs",
       },
     },
-  
+
     build: {
       sourcemap: true,
+    },
+
+    optimizeDeps: {
+      include: ["@dnd-kit/core", "@dnd-kit/utilities"],
     },
   });
 }

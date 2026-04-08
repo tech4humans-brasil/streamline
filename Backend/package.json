@@ -12,7 +12,8 @@
     "dev": "npm-run-all --parallel start watch",
     "pretest": "npm run build",
     "test": "jest",
-    "test:wacth": "jest --watch"
+    "test:wacth": "jest --watch",
+    "create-activity-dashboard-indexes": "node scripts/create-activity-dashboard-indexes.js"
   },
   "dependencies": {
     "@azure/functions": "^4.5.0",

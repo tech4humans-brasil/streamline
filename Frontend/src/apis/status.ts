@@ -3,7 +3,7 @@ import Response from "@interfaces/Response";
 import IStatus from "@interfaces/Status";
 import api from "@services/api";
 
-type Status = Pick<IStatus, "_id" | "name" | "type">;
+type Status = Pick<IStatus, "_id" | "name" | "type" | "order">;
 type ReqStatuses = Response<{ statuses: Status[] } & IPagination>;
 type ReqStatus = Response<Status>;
 

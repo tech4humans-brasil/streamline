@@ -302,7 +302,17 @@ export const schema: Schema = new Schema<IActivity>(
     this.protocol = `${year}${timestamp}`;
     next();
   })
-  .index({ createdAt: -1 }, { unique: false });
+  .index({ createdAt: -1 }, { unique: false })
+  // Cosmos DB (Mongo API): GET dashboard/my-activities filtra por users._id e ordena por updatedAt/createdAt
+  .index(
+    { "users._id": 1, "updatedAt": -1, "createdAt": -1 },
+    { unique: false }
+  )
+  // Mesmo fluxo com filtro assignee (assignedToMe=true)
+  .index(
+    { "users._id": 1, "assignee._id": 1, "updatedAt": -1, "createdAt": -1 },
+    { unique: false }
+  );
 
 export default class Activity {
   conn: mongoose.Connection;

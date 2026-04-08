@@ -44,7 +44,9 @@ export const handler: HttpHandler = async (conn, req) => {
     where["assignee._id"] = user._id;
   }
 
-  const activities = await activityRepository.find({
+  // Cosmos DB (Mongo API): sort + filtro em users._id exige índice composto que nem sempre existe.
+  // Ordenação em memória (mesmo padrão que Status/List).
+  const allMatching = await activityRepository.find({
     where,
     select: {
       name: 1,
@@ -54,6 +56,7 @@ export const handler: HttpHandler = async (conn, req) => {
       status: 1,
       assignee: 1,
       createdAt: 1,
+      updatedAt: 1,
       finished_at: 1,
     },
     populate: [
@@ -65,15 +68,22 @@ export const handler: HttpHandler = async (conn, req) => {
         },
       },
     ],
-    limit: limit,
-    skip: (page - 1) * limit,
-    sort: {
-      createdAt: -1,
-    },
   });
 
-  const total = await activityRepository.count({ where });
-  const totalPages = Math.ceil(total / limit);
+  const sorted = [...allMatching].sort((a, b) => {
+    const ua = new Date(a.updatedAt ?? 0).getTime();
+    const ub = new Date(b.updatedAt ?? 0).getTime();
+    if (ua !== ub) return ub - ua;
+    const ca = new Date(a.createdAt ?? 0).getTime();
+    const cb = new Date(b.createdAt ?? 0).getTime();
+    return cb - ca;
+  });
+
+  const start = (page - 1) * limit;
+  const activities = sorted.slice(start, start + limit);
+
+  const total = sorted.length;
+  const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
 
   return res.success({
     activities,

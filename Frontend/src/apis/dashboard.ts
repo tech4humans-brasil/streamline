@@ -1,8 +1,9 @@
 import IPagination from "@interfaces/Pagination";
 import Response from "@interfaces/Response";
-import IActivity from "@interfaces/Activitiy";
+import IActivity, { IActivityStepStatus } from "@interfaces/Activitiy";
 import api from "@services/api";
 import IForm from "@interfaces/Form";
+import IStatus from "@interfaces/Status";
 
 type Activity = Pick<
   IActivity,
@@ -10,6 +11,7 @@ type Activity = Pick<
   | "name"
   | "description"
   | "createdAt"
+  | "updatedAt"
   | "protocol"
   | "state"
   | "form_draft"
@@ -104,12 +106,26 @@ export const getMyActivitiesPendingAcceptance = async ({
   return res.data.data;
 };
 
-type ReqMyActivitiesPendingInteractions = Response<
-  (Pick<IActivity, "_id" | "name" | "description" | "protocol" | "users" | "due_date" | "status"> & {
-    form: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
-    status: "idle" | "pending" | "approved" | "rejected";
-  })[]
->;
+type DashboardPendingInteractionItem = Pick<
+  IActivity,
+  "_id" | "name" | "description" | "protocol" | "users" | "due_date" | "updatedAt"
+> & {
+  form?: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
+  answerStatus: IActivityStepStatus;
+  ticketStatus: IStatus;
+};
+
+type ReqMyActivitiesPendingInteractions = Response<DashboardPendingInteractionItem[]>;
+
+type DashboardPendingEvaluationItem = Pick<
+  IActivity,
+  "_id" | "name" | "description" | "protocol" | "users" | "due_date" | "status" | "updatedAt"
+> & {
+  form: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
+  status: "idle" | "pending" | "approved" | "rejected";
+};
+
+type ReqMyActivitiesPendingEvaluations = Response<DashboardPendingEvaluationItem[]>;
 
 export const getMyActivitiesPendingInteractions = async ({
   queryKey: [, page = "1", limit = "10"],
@@ -131,7 +147,7 @@ export const getMyActivitiesPendingEvaluations = async ({
 }: {
   queryKey: string[];
 }) => {
-  const res = await api.get<ReqMyActivitiesPendingInteractions>(
+  const res = await api.get<ReqMyActivitiesPendingEvaluations>(
     "/dashboard/my-pending-evaluations",
     {
       params: { page, limit },

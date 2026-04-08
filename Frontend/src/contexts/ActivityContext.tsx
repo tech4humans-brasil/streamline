@@ -7,26 +7,38 @@ import {
   useMemo,
 } from "react";
 
+export interface TicketPageActions {
+  onRefresh: () => void;
+  isRefreshing: boolean;
+  onExport: () => void;
+  isExporting: boolean;
+  onDelete: () => void;
+  isDeleting: boolean;
+}
+
 interface ActivityType {
   activity: IActivity | null;
   alterActivity: (activity: IActivity | null) => void;
   removeActivity: () => void;
   handleRefetch: () => void;
+  ticketPageActions: TicketPageActions | undefined;
 }
 
 export const ActivityContext = createContext<ActivityType | undefined>(
   undefined
 );
 
-interface AuthProviderProps {
+interface ActivityProviderProps {
   children: ReactNode;
   refetch?: () => void;
+  ticketPageActions?: TicketPageActions;
 }
 
 export function ActivityProvider({
   children,
   refetch,
-}: Readonly<AuthProviderProps>) {
+  ticketPageActions,
+}: Readonly<ActivityProviderProps>) {
   const [activity, setActivity] = useState<IActivity | null>(null);
 
   const alterActivity = useCallback((activity: IActivity | null) => {
@@ -38,14 +50,24 @@ export function ActivityProvider({
   }, []);
 
   const handleRefetch = useCallback(() => {
-    if (refetch) {
-      refetch();
-    }
-  }, []);
+    refetch?.();
+  }, [refetch]);
 
   const providerValue = useMemo(
-    () => ({ activity, alterActivity, removeActivity, handleRefetch }),
-    [activity, alterActivity, removeActivity, handleRefetch]
+    () => ({
+      activity,
+      alterActivity,
+      removeActivity,
+      handleRefetch,
+      ticketPageActions,
+    }),
+    [
+      activity,
+      alterActivity,
+      removeActivity,
+      handleRefetch,
+      ticketPageActions,
+    ]
   );
 
   return (

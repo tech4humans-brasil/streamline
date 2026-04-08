@@ -1,24 +1,23 @@
 import { deleteActivity, exportActivity, getActivity } from "@apis/activity";
-import { Box, Center, IconButton, useToast } from "@chakra-ui/react";
-import Can from "@components/atoms/Can";
+import { Center, useToast } from "@chakra-ui/react";
 import ActivityDetails from "@components/organisms/ActivityDetails";
 import ActivityProvider from "@contexts/ActivityContext";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import React, { memo, useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   FaCheckCircle,
-  FaDownload,
   FaExclamationCircle,
-  FaSync,
-  FaTrash,
 } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Activity: React.FC = () => {
   const params = useParams<{ id: string }>();
   const id = params.id ?? "";
   const toast = useToast();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     data: activity,
@@ -31,89 +30,41 @@ const Activity: React.FC = () => {
     refetchInterval: 5000,
   });
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationKey: ["activity", id, "export"],
-    mutationFn: exportActivity,
-    onSuccess: (data) => {
-      toast({
-        title: "Dados exportados com sucesso",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        icon: <FaCheckCircle />,
-      });
-      window.open(data.url);
-    },
-    onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
-      toast({
-        title: "Erro ao exportar dados",
-        description: error.message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        icon: <FaExclamationCircle />,
-      });
-    },
-  });
+  const { mutateAsync: exportMutate, isPending: isExportPending } =
+    useMutation({
+      mutationKey: ["activity", id, "export"],
+      mutationFn: exportActivity,
+      onSuccess: (data) => {
+        toast({
+          title: t("activityDetails.actions.exportSuccess"),
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          icon: <FaCheckCircle />,
+        });
+        window.open(data.url);
+      },
+      onError: (
+        error: AxiosError<{ message: string; statusCode: number }>
+      ) => {
+        toast({
+          title: t("activityDetails.actions.exportError"),
+          description: error.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          icon: <FaExclamationCircle />,
+        });
+      },
+    });
 
-  const handleExport = useCallback(() => {
-    mutateAsync(id);
-  }, [mutateAsync, id]);
-
-  const handleRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
-
-  return (
-    <Center p={0} flexDirection={"column"}>
-      <ActivityProvider refetch={refetch}>
-        <ActivityDetails {...{ activity, isLoading }} />
-      </ActivityProvider>
-      <Box
-        position="fixed"
-        top={4}
-        right={4}
-        display="flex"
-        flexDirection="column"
-        gap={2}
-      >
-        <IconButton
-          aria-label="Refresh"
-          onClick={handleRefresh}
-          isLoading={isRefetching}
-        >
-          <FaSync />
-        </IconButton>
-
-        <IconButton
-          aria-label="export"
-          onClick={handleExport}
-          isLoading={isPending}
-        >
-          <FaDownload />
-        </IconButton>
-
-        <Can permission="activity.delete">
-          <DeleteButton id={id} />
-        </Can>
-      </Box>
-    </Center>
-  );
-};
-
-export default Activity;
-
-const DeleteButton = memo(({ id }: { id: string }) => {
-  const toast = useToast();
-  const navigate = useNavigate();
-
-  const { mutateAsync: mutateDelete, isPending: isPendingDelete } = useMutation(
+  const { mutateAsync: deleteMutate, isPending: isDeletePending } = useMutation(
     {
-      mutationKey: ["activity", id],
+      mutationKey: ["activity", id, "delete"],
       mutationFn: deleteActivity,
       onSuccess: () => {
         toast({
-          title: "Ticket excluído com sucesso",
+          title: t("activityDetails.actions.deleteSuccess"),
           status: "success",
           duration: 9000,
           isClosable: true,
@@ -121,9 +72,11 @@ const DeleteButton = memo(({ id }: { id: string }) => {
         });
         navigate(-1);
       },
-      onError: (error: AxiosError<{ message: string; statusCode: number }>) => {
+      onError: (
+        error: AxiosError<{ message: string; statusCode: number }>
+      ) => {
         toast({
-          title: "Erro ao excluir ticket",
+          title: t("activityDetails.actions.deleteError"),
           description: error.message,
           status: "error",
           duration: 9000,
@@ -134,18 +87,47 @@ const DeleteButton = memo(({ id }: { id: string }) => {
     }
   );
 
+  const handleExport = useCallback(() => {
+    exportMutate(id);
+  }, [exportMutate, id]);
+
   const handleDelete = useCallback(() => {
-    mutateDelete(id);
-  }, [mutateDelete, id]);
+    deleteMutate(id);
+  }, [deleteMutate, id]);
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const ticketPageActions = useMemo(
+    () => ({
+      onRefresh: handleRefresh,
+      isRefreshing: isRefetching,
+      onExport: handleExport,
+      isExporting: isExportPending,
+      onDelete: handleDelete,
+      isDeleting: isDeletePending,
+    }),
+    [
+      handleRefresh,
+      isRefetching,
+      handleExport,
+      isExportPending,
+      handleDelete,
+      isDeletePending,
+    ]
+  );
 
   return (
-    <IconButton
-      aria-label="delete"
-      colorScheme="red"
-      onClick={handleDelete}
-      isLoading={isPendingDelete}
-    >
-      <FaTrash />
-    </IconButton>
+    <Center p={0} flexDirection={"column"}>
+      <ActivityProvider
+        refetch={refetch}
+        ticketPageActions={ticketPageActions}
+      >
+        <ActivityDetails {...{ activity, isLoading }} />
+      </ActivityProvider>
+    </Center>
   );
-});
+};
+
+export default Activity;

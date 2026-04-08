@@ -16,6 +16,7 @@ interface Query {
   status?: string;
   finished_at?: boolean;
   user?: string;
+  assignee?: string;
   form?: string;
   project?: string;
   formType?: IFormType;
@@ -33,6 +34,10 @@ const filterQueryBuilder = new FilterQueryBuilder(
     user: {
       type: WhereEnum.EQUAL,
       alias: "users._id",
+    },
+    assignee: {
+      type: WhereEnum.EQUAL,
+      alias: "assignee._id",
     },
     form: WhereEnum.ARRAY,
   },
@@ -184,6 +189,7 @@ export default new Http(handler)
         protocol: schema.string().min(3).max(255).optional().default(undefined),
         finished: schema.boolean().optional().default(false),
         project: schema.string().optional().default(undefined),
+        assignee: schema.string().optional().default(undefined),
         formType: schema.mixed().oneOf(formTypeValues).optional(),
       })
       .optional(),

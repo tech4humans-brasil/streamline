@@ -1,8 +1,11 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, useColorModeValue } from "@chakra-ui/react";
 import { memo, useMemo } from "react";
 import { TFunction } from "i18next";
 import { ActivityListItem } from "@apis/activity";
-import { formatBoardFieldValue } from "./formatBoardFieldValue";
+import {
+  formatBoardFieldValue,
+  formatUtcDateOnly,
+} from "./formatBoardFieldValue";
 
 type KanbanBoardCardProps = {
   activity: ActivityListItem;
@@ -31,6 +34,7 @@ const KanbanBoardCard = memo(function KanbanBoardCard({
   t,
 }: KanbanBoardCardProps) {
   const attachmentLabel = t("activitiesBoard.fieldAttachment");
+  const accentBorder = useColorModeValue("blue.400", "blue.300");
 
   const formLines = useMemo(() => {
     const fields = activity.form_draft?.fields ?? [];
@@ -46,6 +50,8 @@ const KanbanBoardCard = memo(function KanbanBoardCard({
       bg="bg.page"
       borderWidth="1px"
       borderColor="gray.200"
+      borderLeftWidth="3px"
+      borderLeftColor={accentBorder}
       cursor="pointer"
       _hover={{ borderColor: "blue.400", boxShadow: "sm" }}
       onClick={() => onOpen(activity._id)}
@@ -63,7 +69,13 @@ const KanbanBoardCard = memo(function KanbanBoardCard({
       </Text>
 
       {builtInKeys.includes("protocol") && (
-        <Text fontSize="xs" color="gray.500" mt="1">
+        <Text
+          fontSize="xs"
+          color="gray.600"
+          mt="1"
+          fontFamily="mono"
+          letterSpacing="tight"
+        >
           {activity.protocol}
         </Text>
       )}
@@ -90,7 +102,7 @@ const KanbanBoardCard = memo(function KanbanBoardCard({
         activity.due_date != null &&
         String(activity.due_date).length > 0 && (
           <Text fontSize="xs" mt="1" color="gray.600">
-            {formatDate(activity.due_date)}
+            {formatUtcDateOnly(activity.due_date)}
           </Text>
         )}
 

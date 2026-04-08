@@ -3,14 +3,7 @@ import res from "../../../utils/apiResponse";
 import { IActivityStepStatus } from "../../../models/client/Activity";
 import ActivityRepository from "../../../repositories/Activity";
 
-interface Query {
-  page?: number;
-  limit?: number;
-}
-
-export const handler: HttpHandler = async (conn, req, context) => {
-  const { page = 1, limit = 10 } = req.query as Query;
-
+export const handler: HttpHandler = async (conn, req) => {
   const activityRepository = new ActivityRepository(conn);
 
   const pendingActivitiesPromisse = activityRepository.find({
@@ -28,14 +21,14 @@ export const handler: HttpHandler = async (conn, req, context) => {
       description: 1,
       protocol: 1,
       due_date: 1,
+      updatedAt: 1,
       status: 1,
       users: 1,
       "interactions.form": 1,
       "interactions.answers": 1,
     },
-    sort: {
-      due_date: 1,
-    },
+    // Sem sort no Cosmos: $elemMatch em interactions + order by falha (índice composto / path excluído).
+    // A ordenação final é feita em memória em `combined.sort` abaixo.
   });
 
   const pendingSelectedParticipantsPromisse = activityRepository.find({
@@ -58,10 +51,13 @@ export const handler: HttpHandler = async (conn, req, context) => {
       description: 1,
       protocol: 1,
       due_date: 1,
+      updatedAt: 1,
+      status: 1,
       users: 1,
-    },
-    sort: {
-      due_date: 1,
+      "interactions.form": 1,
+      "interactions.canAddParticipants": 1,
+      "interactions.permissionAddParticipants": 1,
+      "interactions.answers": 1,
     },
   });
 
@@ -88,15 +84,39 @@ export const handler: HttpHandler = async (conn, req, context) => {
           answer.status === IActivityStepStatus.idle
       );
 
+      const { status: ticketStatus, ...rest } = activity.toObject();
       return {
-        ...activity.toObject(),
+        ...rest,
         form: interaction.form,
-        status: myAnswer.status,
+        answerStatus: myAnswer.status,
+        ticketStatus,
       };
     })
     .filter((activity) => activity !== null);
 
-  return res.success([...myPendingActivities, ...pendingSelectedParticipants]);
+  const participantsPlain = pendingSelectedParticipants.map((activity) => {
+    const interaction = activity.interactions.find(
+      (i) =>
+        i.canAddParticipants &&
+        i.permissionAddParticipants?.some((id) => id.toString() === req.user.id) &&
+        i.answers.length === 0
+    );
+    const { status: ticketStatus, ...rest } = activity.toObject();
+    return {
+      ...rest,
+      form: interaction?.form,
+      answerStatus: IActivityStepStatus.idle,
+      ticketStatus,
+    };
+  });
+
+  const combined = [...myPendingActivities, ...participantsPlain].sort((a, b) => {
+    const ta = new Date(a.updatedAt ?? 0).getTime();
+    const tb = new Date(b.updatedAt ?? 0).getTime();
+    return tb - ta;
+  });
+
+  return res.success(combined);
 };
 
 export default new Http(handler)

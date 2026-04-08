@@ -4,9 +4,16 @@ import { convertDateTime } from "@utils/date";
 
 interface DueDateIndicatorProps {
   dueDate?: string | Date | null; // A data de vencimento pode ser string ou Date
+  fontSize?: string;
+  /** Quando true, não renderiza nada se não houver data */
+  hideWhenEmpty?: boolean;
 }
 
-const DueDateIndicator: React.FC<DueDateIndicatorProps> = ({ dueDate }) => {
+const DueDateIndicator: React.FC<DueDateIndicatorProps> = ({
+  dueDate,
+  fontSize = "sm",
+  hideWhenEmpty = false,
+}) => {
   const differenceInTime = useMemo(() => {
     if (!dueDate) return 0;
     const due = new Date(dueDate);
@@ -28,11 +35,23 @@ const DueDateIndicator: React.FC<DueDateIndicatorProps> = ({ dueDate }) => {
     return color;
   }, [differenceInTime]);
 
-  if (!dueDate) return "-";
+  if (!dueDate) {
+    if (hideWhenEmpty) return null;
+    return (
+      <Text as="span" fontSize={fontSize} color="gray.500">
+        -
+      </Text>
+    );
+  }
 
   return (
-    <Text fontSize="sm" color={color}>
-      {convertDateTime(dueDate)}
+    <Text as="span" fontSize={fontSize} color={color} whiteSpace="nowrap">
+      {convertDateTime(dueDate, {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
     </Text>
   );
 };

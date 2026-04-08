@@ -32,6 +32,8 @@ import TicketHeaderCard from "./components/TicketHeaderCard";
 import CommentsSection from "./components/CommentsSection";
 import TicketInfoCard from "./components/TicketInfoCard";
 import RelatedTicketsCard from "./components/RelatedTicketsCard";
+import AssignTicketModal from "./components/AssignTicketModal";
+import { useActivityDetailCardProps } from "./useActivityDetailCardProps";
 
 const ExpandFieldsButton = memo<{ onOpen: () => void }>(function ExpandFieldsButton({ onOpen }) {
   const { t } = useTranslation();
@@ -62,7 +64,17 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
   ({ activity }) => {
     const { alterActivity, removeActivity } = useActivity();
     const { t } = useTranslation();
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const {
+      isOpen: isFieldsModalOpen,
+      onOpen: onFieldsModalOpen,
+      onClose: onFieldsModalClose,
+    } = useDisclosure();
+    const {
+      isOpen: isAssignModalOpen,
+      onOpen: onAssignModalOpen,
+      onClose: onAssignModalClose,
+    } = useDisclosure();
+    const detailCardProps = useActivityDetailCardProps();
 
     const { data: activityData, isLoading: queryLoading } = useQuery({
       queryKey: ["activity", activity?._id || ""],
@@ -80,12 +92,10 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
     if (queryLoading) {
       return (
         <Card
+          {...detailCardProps}
           p={[0, 6]}
-          borderRadius="2xl"
           minWidth={"60%"}
-          boxShadow={"lg"}
           h="100%"
-          bg="bg.card"
         >
           <Flex justify="center" align="center" h="100%">
             <Spinner />
@@ -99,17 +109,31 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
     const displayActivity = activityData ?? activity;
 
     return (
-      <Box w="90%" mx="auto" py={6} maxW="7xl">
-        <ActivityHeader protocol={displayActivity.protocol} />
+      <Box w="100%" maxW="8xl" mx="auto" px={{ base: 4, md: 6 }} py={6}>
+        <ActivityHeader
+          title={displayActivity.name}
+          protocol={displayActivity.protocol}
+        />
 
-        <Grid templateColumns={{ sm: "1fr", md: "2fr 1fr" }} gap={6} display={{ base: "block", md: "grid" }}>
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            lg: "1fr minmax(320px, 420px)",
+            xl: "1fr minmax(360px, 480px)",
+          }}
+          gap={8}
+          alignItems="start"
+        >
           {/* Coluna principal */}
-          <VStack spacing={6} align="stretch">
-            <TicketHeaderCard activity={displayActivity} />
+          <VStack spacing={8} align="stretch">
+            <TicketHeaderCard
+              activity={displayActivity}
+              onAssignClick={onAssignModalOpen}
+            />
 
             {/* Linha do tempo */}
             {displayActivity.workflows.length > 0 && (
-              <Card>
+              <Card {...detailCardProps}>
                 <Box p={6}>
                   <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
                     <Accordion.Item>
@@ -130,18 +154,21 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
           </VStack>
 
           {/* Coluna lateral */}
-          <VStack spacing={6} align="stretch" mt={{ base: 6, md: 0 }}>
-            <TicketInfoCard activity={displayActivity} />
+          <VStack spacing={8} align="stretch">
+            <TicketInfoCard
+              activity={displayActivity}
+              onAssignClick={onAssignModalOpen}
+            />
 
             {/* Informações do formulário */}
-            <Card>
+            <Card {...detailCardProps}>
               <Box p={6}>
                 <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
                   <Accordion.Item>
                     <Accordion.Button
                       rightElement={
                         displayActivity.form_draft.fields.length > 0 ? (
-                          <ExpandFieldsButton onOpen={onOpen} />
+                          <ExpandFieldsButton onOpen={onFieldsModalOpen} />
                         ) : undefined
                       }
                     >
@@ -159,7 +186,18 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
           </VStack>
         </Grid>
 
-        <Modal isOpen={isOpen} onClose={onClose} size="6xl" isCentered>
+        <AssignTicketModal
+          activity={displayActivity}
+          isOpen={isAssignModalOpen}
+          onClose={onAssignModalClose}
+        />
+
+        <Modal
+          isOpen={isFieldsModalOpen}
+          onClose={onFieldsModalClose}
+          size="6xl"
+          isCentered
+        >
           <ModalOverlay />
           <ModalContent maxH="90vh">
             <ModalHeader>{t("activityDetails.formFields")}</ModalHeader>

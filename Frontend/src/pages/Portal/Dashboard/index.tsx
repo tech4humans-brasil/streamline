@@ -3,8 +3,10 @@ import MyActivities from "./components/MyActivities";
 import { Flex } from "@chakra-ui/react";
 import OpenForms from "./components/OpenForms";
 import PendingInteractions from "./components/MyPendingInteractions";
+import DashboardSummary from "./components/DashboardSummary";
 import Can from "@components/atoms/Can";
 import Tutorial, { JoyrideSteps } from "@components/molecules/Tutorial";
+import { useDashboardLastSeen } from "@hooks/useDashboardLastSeen";
 
 const steps: JoyrideSteps = [
   {
@@ -30,14 +32,20 @@ const steps: JoyrideSteps = [
 ];
 
 const Dashboard: React.FC = () => {
+  const { markAllSeen, isNewSinceLastSeen } = useDashboardLastSeen();
+
   return (
     <Flex p={[4, 8]} width="100%" direction="column" gap={8}>
       <Tutorial steps={steps} name="dashboard" />
       <Can permission="activity.create">
         <OpenForms />
       </Can>
-      <PendingInteractions />
-      <MyActivities />
+      <DashboardSummary
+        isNewSinceLastSeen={isNewSinceLastSeen}
+        markAllSeen={markAllSeen}
+      />
+      <PendingInteractions isNewSinceLastSeen={isNewSinceLastSeen} />
+      <MyActivities isNewSinceLastSeen={isNewSinceLastSeen} />
     </Flex>
   );
 };

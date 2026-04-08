@@ -2,6 +2,9 @@ import Http, { HttpHandler } from "../../../middlewares/http";
 import res from "../../../utils/apiResponse";
 import ActivityRepository from "../../../repositories/Activity";
 import StatusRepository from "../../../repositories/Status";
+import { StatusType } from "../../../models/client/Status";
+import { IActivityState } from "../../../models/client/Activity";
+import { IUserRoles } from "../../../models/client/User";
 
 const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params as { id: string };
@@ -18,6 +21,25 @@ const handler: HttpHandler = async (conn, req) => {
   const statusDoc = await statusRepository.findById({ id: statusId });
   if (!statusDoc) {
     return res.notFound("Status not found");
+  }
+
+  const isClosingWithDone = statusDoc.type === StatusType.DONE;
+
+  if (isClosingWithDone) {
+    if (activity.finished_at) {
+      return res.conflict("Activity already closed");
+    }
+    const isAdmin = req.user.roles.includes(IUserRoles.admin);
+    const requester = activity.users?.[0] as { _id?: unknown } | undefined;
+    const isRequester =
+      requester != null &&
+      requester._id != null &&
+      String(requester._id) === String(req.user.id);
+    if (!isAdmin && !isRequester) {
+      return res.forbidden(
+        "Only admins or the ticket requester can set a done status"
+      );
+    }
   }
 
   const newStatus = statusDoc.toObject();
@@ -37,14 +59,24 @@ const handler: HttpHandler = async (conn, req) => {
       institutes: req.user.institutes,
       photo_url: req.user.photo_url,
     },
-    content: `O status foi alterado para ${statusDoc.name}${
-      previousName && statusChanged ? ` (antes: ${previousName})` : ""
-    }`,
+    content: isClosingWithDone
+      ? `O ticket foi encerrado com o status "${statusDoc.name}"${
+          previousName && statusChanged ? ` (antes: ${previousName})` : ""
+        }`
+      : `O status foi alterado para ${statusDoc.name}${
+          previousName && statusChanged ? ` (antes: ${previousName})` : ""
+        }`,
     isSystem: true,
   };
 
+  const $set: Record<string, unknown> = { status: newStatus };
+  if (isClosingWithDone) {
+    $set.finished_at = new Date();
+    $set.state = IActivityState.finished;
+  }
+
   const updatePayload: Record<string, unknown> = {
-    $set: { status: newStatus },
+    $set,
   };
 
   if (statusChanged) {

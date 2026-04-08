@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Card,
-  Divider,
   Flex,
   Icon,
   Input,
@@ -12,6 +11,7 @@ import {
   InputLeftElement,
   Menu,
   MenuButton,
+  MenuDivider,
   MenuItem,
   MenuList,
   Modal,
@@ -19,7 +19,9 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   ModalOverlay,
+  SimpleGrid,
   Spinner,
   Text,
   VStack,
@@ -33,16 +35,21 @@ import IActivity from "@interfaces/Activitiy";
 import StatusTag from "@components/atoms/StatusTag";
 import { useTranslation } from "react-i18next";
 import Can from "@components/atoms/Can";
-import { assignActivity, updateActivityStatus } from "@apis/activity";
+import { updateActivityStatus } from "@apis/activity";
 import { getStatuses } from "@apis/status";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuth from "@hooks/useAuth";
+import useActivity from "@hooks/useActivity";
+import usePermission from "@hooks/usePermission";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { AxiosError } from "axios";
+import { IUserRoles } from "@interfaces/User";
+import { useActivityDetailCardProps } from "../useActivityDetailCardProps";
 
 interface TicketHeaderCardProps {
   activity: IActivity;
+  onAssignClick: () => void;
 }
 
 function getFormProjectId(activity: IActivity): string | null {
@@ -65,20 +72,39 @@ function statusTypeColorScheme(type: string): string {
   }
 }
 
-const TicketHeaderCard: React.FC<TicketHeaderCardProps> = ({ activity }) => {
+const TicketHeaderCard: React.FC<TicketHeaderCardProps> = ({
+  activity,
+  onAssignClick,
+}) => {
   const { t } = useTranslation();
   const toast = useToast();
   const queryClient = useQueryClient();
   const [auth] = useAuth();
+  const { ticketPageActions } = useActivity();
+  const { userCan } = usePermission();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isCloseOpen,
+    onOpen: onCloseOpen,
+    onClose: onCloseClose,
+  } = useDisclosure();
   const [statusSearch, setStatusSearch] = useState("");
 
   const projectId = useMemo(() => getFormProjectId(activity), [activity.form]);
 
   const statusListQueryKey = useMemo(() => {
-    const params = new URLSearchParams({ limit: "500" });
+    const params = new URLSearchParams({ limit: "500", type: "progress" });
     if (projectId) params.set("project", projectId);
     return ["activity-statuses", params.toString()];
+  }, [projectId]);
+
+  const closeStatusListQueryKey = useMemo(() => {
+    const params = new URLSearchParams({
+      limit: "500",
+      type: "done,canceled",
+    });
+    if (projectId) params.set("project", projectId);
+    return ["activity-statuses-close", params.toString()];
   }, [projectId]);
 
   const { data: statusesData, isLoading: statusesLoading } = useQuery({
@@ -87,50 +113,46 @@ const TicketHeaderCard: React.FC<TicketHeaderCardProps> = ({ activity }) => {
     enabled: isOpen && !!projectId,
   });
 
+  const { data: closeStatusesData, isLoading: closeStatusesLoading } =
+    useQuery({
+      queryKey: closeStatusListQueryKey,
+      queryFn: getStatuses,
+      enabled: isCloseOpen && !!projectId,
+    });
+
   const listItemBg = useColorModeValue("white", "gray.800");
   const listItemHoverBg = useColorModeValue("gray.50", "gray.700");
   const listItemBorder = useColorModeValue("gray.200", "gray.600");
+  const detailCardProps = useActivityDetailCardProps({ hero: true });
+  const toolbarBg = useColorModeValue("gray.50", "whiteAlpha.50");
+  const descBg = useColorModeValue("gray.50", "whiteAlpha.50");
+  const descBorder = useColorModeValue("gray.200", "whiteAlpha.200");
 
   useEffect(() => {
     if (!isOpen) setStatusSearch("");
   }, [isOpen]);
 
+  const isAdmin = Boolean(auth?.roles?.includes(IUserRoles.admin));
+  const isRequester = Boolean(
+    auth?.id &&
+    activity.users?.[0]?._id &&
+    String(activity.users[0]._id) === String(auth.id)
+  );
+  const canCloseTicket = isAdmin || isRequester;
+
   const filteredStatuses = useMemo(() => {
     const list = statusesData?.statuses ?? [];
     const q = statusSearch.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter((s) => s.name.toLowerCase().includes(q));
+    return !q ? list : list.filter((s) => s.name.toLowerCase().includes(q));
   }, [statusesData?.statuses, statusSearch]);
-
-  const assignMutation = useMutation({
-    mutationFn: assignActivity,
-    onSuccess: (data) => {
-      queryClient.setQueryData(["activity", activity._id], data);
-      toast({
-        title: t("activityDetails.actions.assignSuccess"),
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        icon: <FaCheckCircle />,
-      });
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast({
-        title: t("activityDetails.actions.assignError"),
-        description: error.message,
-        status: "error",
-        duration: 8000,
-        isClosable: true,
-        icon: <FaExclamationCircle />,
-      });
-    },
-  });
 
   const statusMutation = useMutation({
     mutationFn: updateActivityStatus,
     onSuccess: (data) => {
       queryClient.setQueryData(["activity", activity._id], data);
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
       onClose();
+      onCloseClose();
       toast({
         title: t("activityDetails.actions.statusSuccess"),
         status: "success",
@@ -151,16 +173,6 @@ const TicketHeaderCard: React.FC<TicketHeaderCardProps> = ({ activity }) => {
     },
   });
 
-  const isCurrentAssignee =
-    auth &&
-    activity.assignee &&
-    String(activity.assignee._id) === String(auth.id);
-
-  const handleAssume = useCallback(() => {
-    if (!auth?.id) return;
-    assignMutation.mutate({ id: activity._id, userId: auth.id });
-  }, [assignMutation, activity._id, auth?.id]);
-
   const handlePickStatus = useCallback(
     (statusId: string) => {
       statusMutation.mutate({ id: activity._id, statusId });
@@ -168,86 +180,137 @@ const TicketHeaderCard: React.FC<TicketHeaderCardProps> = ({ activity }) => {
     [statusMutation, activity._id]
   );
 
+  const canUpdate = userCan("activity.update");
+  const showAssignItem = canUpdate && Boolean(auth?.id);
+  const showChangeStatusItem = canUpdate;
+  const showCloseItem =
+    canUpdate &&
+    canCloseTicket &&
+    !activity.finished_at &&
+    Boolean(projectId);
+
+  const hasWorkflowItems =
+    showAssignItem || showChangeStatusItem || showCloseItem;
+  const hasPageItems = Boolean(ticketPageActions);
+  const showActionsMenu = hasPageItems || hasWorkflowItems;
+
+  const metaLabelSx = {
+    fontSize: "xs",
+    fontWeight: "semibold",
+    color: "gray.500",
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+    mb: 2,
+  } as const;
+
   return (
-    <Card>
-      <Box p={6}>
-        <Flex justify="space-between" align="start" gap={4} flexWrap="wrap">
-          <Box flex="1" minW="0">
-            <Text fontSize="xl" fontWeight="bold">
-              {activity.name}
-            </Text>
-          </Box>
-          <Flex align="center" gap={2} flexShrink={0}>
-            <StatusTag status={activity.status} size="lg" />
-            <Can permission="activity.update">
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  variant="outline"
-                  size="sm"
-                  rightIcon={<FaChevronDown />}
-                >
-                  {t("activityDetails.actions.menu")}
-                </MenuButton>
-                <MenuList zIndex={20}>
-                  {!isCurrentAssignee && auth?.id ? (
+    <Card {...detailCardProps}>
+      <Box bg={toolbarBg} px={6} py={4}>
+        <Flex justify="flex-start" align="center" gap={2} flexWrap="wrap" w="100%">
+          <StatusTag status={activity.status} size="lg" />
+          {showActionsMenu ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                variant="outline"
+                size="sm"
+                rightIcon={<FaChevronDown />}
+              >
+                {t("activityDetails.actions.menu")}
+              </MenuButton>
+              <MenuList zIndex={20}>
+                {ticketPageActions ? (
+                  <>
                     <MenuItem
-                      onClick={handleAssume}
-                      isDisabled={assignMutation.isPending}
+                      onClick={ticketPageActions.onRefresh}
+                      isDisabled={ticketPageActions.isRefreshing}
                     >
-                      {t("activityDetails.actions.assumeTicket")}
+                      {t("activityDetails.actions.refresh")}
                     </MenuItem>
-                  ) : null}
+                    <MenuItem
+                      onClick={ticketPageActions.onExport}
+                      isDisabled={ticketPageActions.isExporting}
+                    >
+                      {t("activityDetails.actions.export")}
+                    </MenuItem>
+                    <Can permission="activity.delete">
+                      <MenuItem
+                        onClick={ticketPageActions.onDelete}
+                        isDisabled={ticketPageActions.isDeleting}
+                        color="red.500"
+                      >
+                        {t("activityDetails.actions.deleteTicket")}
+                      </MenuItem>
+                    </Can>
+                    {hasWorkflowItems ? <MenuDivider /> : null}
+                  </>
+                ) : null}
+                {showAssignItem ? (
+                  <MenuItem onClick={onAssignClick}>
+                    {t("activityDetails.actions.assignTicketMenu")}
+                  </MenuItem>
+                ) : null}
+                {showChangeStatusItem ? (
                   <MenuItem onClick={onOpen}>
                     {t("activityDetails.actions.changeStatus")}
                   </MenuItem>
-                </MenuList>
-              </Menu>
-            </Can>
-          </Flex>
+                ) : null}
+                {showCloseItem ? (
+                  <MenuItem onClick={onCloseOpen}>
+                    {t("activityDetails.actions.closeTicket")}
+                  </MenuItem>
+                ) : null}
+              </MenuList>
+            </Menu>
+          ) : null}
         </Flex>
       </Box>
-      <Divider />
       <Box p={6}>
-        <VStack spacing={4} align="stretch">
-          <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-              {t("activityDetails.description")}
-            </Text>
-            <Text fontSize="sm">
+        <VStack spacing={6} align="stretch">
+          <Box
+            borderRadius="md"
+            bg={descBg}
+            borderWidth="1px"
+            borderColor={descBorder}
+            p={4}
+          >
+            <Text {...metaLabelSx}>{t("activityDetails.description")}</Text>
+            <Text fontSize="sm" fontWeight="medium" lineHeight="tall">
               {activity.description || t("activityDetails.noDescription")}
             </Text>
           </Box>
 
-          <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-              {t("activityDetails.creationDate")}
-            </Text>
-            <Text fontSize="sm">{convertDateTime(activity.createdAt)}</Text>
-          </Box>
-
-          {activity.finished_at && (
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacingX={8} spacingY={4}>
             <Box>
-              <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-                {t("activityDetails.completionDate")}
+              <Text {...metaLabelSx}>{t("activityDetails.creationDate")}</Text>
+              <Text fontSize="sm" fontWeight="medium">
+                {convertDateTime(activity.createdAt)}
               </Text>
-              <Text fontSize="sm">{convertDateTime(activity.finished_at)}</Text>
             </Box>
-          )}
 
-          {activity.due_date && (
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-                {t("activityDetails.dueDate")}
-              </Text>
-              <Text fontSize="sm">{convertDateTime(activity.due_date)}</Text>
-            </Box>
-          )}
+            {activity.finished_at ? (
+              <Box>
+                <Text {...metaLabelSx}>
+                  {t("activityDetails.completionDate")}
+                </Text>
+                <Text fontSize="sm" fontWeight="medium">
+                  {convertDateTime(activity.finished_at)}
+                </Text>
+              </Box>
+            ) : null}
+
+            {activity.due_date ? (
+              <Box>
+                <Text {...metaLabelSx}>{t("activityDetails.dueDate")}</Text>
+                <Text fontSize="sm" fontWeight="medium">
+                  {convertDateTime(activity.due_date)}
+                </Text>
+              </Box>
+            ) : null}
+          </SimpleGrid>
 
           <Box>
-            <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
-              {t("activityDetails.requester")}
-            </Text>
+            <Text {...metaLabelSx}>{t("activityDetails.requester")}</Text>
             <Flex flexWrap="wrap" gap={4}>
               {activity.users.map((user) => (
                 <UserDetails key={user._id} user={user} />
@@ -365,6 +428,92 @@ const TicketHeaderCard: React.FC<TicketHeaderCardProps> = ({ activity }) => {
               </VStack>
             )}
           </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isCloseOpen} onClose={onCloseClose} size="lg">
+        <ModalOverlay />
+        <ModalContent borderRadius="xl">
+          <ModalHeader pb={2}>
+            {t("activityDetails.actions.closeTicketTitle")}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={2}>
+            <Text fontSize="sm" color="gray.600" mb={4}>
+              {t("activityDetails.actions.closeTicketHint")}
+            </Text>
+            {!projectId ? (
+              <Text fontSize="sm" color="gray.500">
+                {t("activityDetails.actions.statusNoProject")}
+              </Text>
+            ) : closeStatusesLoading ? (
+              <Flex justify="center" py={10}>
+                <Spinner />
+              </Flex>
+            ) : (
+              <Box
+                borderWidth="1px"
+                borderColor={listItemBorder}
+                borderRadius="lg"
+                overflow="hidden"
+                maxH="360px"
+                overflowY="auto"
+              >
+                {(closeStatusesData?.statuses ?? []).map((s) => {
+                  const disabled = statusMutation.isPending;
+                  return (
+                    <Box
+                      key={s._id}
+                      as="button"
+                      type="button"
+                      w="100%"
+                      textAlign="left"
+                      px={4}
+                      py={3}
+                      borderBottomWidth="1px"
+                      borderColor={listItemBorder}
+                      bg={listItemBg}
+                      transition="background 0.15s ease"
+                      _hover={disabled ? undefined : { bg: listItemHoverBg }}
+                      _last={{ borderBottomWidth: 0 }}
+                      disabled={disabled}
+                      cursor={disabled ? "not-allowed" : "pointer"}
+                      onClick={() => {
+                        if (!disabled) handlePickStatus(s._id);
+                      }}
+                    >
+                      <Flex align="center" justify="space-between" gap={3} wrap="wrap">
+                        <Text fontWeight="semibold" fontSize="sm" noOfLines={2}>
+                          {s.name}
+                        </Text>
+                        <Badge
+                          colorScheme={statusTypeColorScheme(s.type)}
+                          fontSize="0.65rem"
+                          textTransform="uppercase"
+                          letterSpacing="wider"
+                          flexShrink={0}
+                        >
+                          {s.type}
+                        </Badge>
+                      </Flex>
+                    </Box>
+                  );
+                })}
+              </Box>
+            )}
+            {!closeStatusesLoading &&
+              projectId &&
+              !(closeStatusesData?.statuses ?? []).length ? (
+              <Text fontSize="sm" color="gray.500">
+                {t("activityDetails.actions.closeTicketNoDoneStatuses")}
+              </Text>
+            ) : null}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onCloseClose}>
+              {t("activityDetails.actions.closeTicketCancel")}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Card>
