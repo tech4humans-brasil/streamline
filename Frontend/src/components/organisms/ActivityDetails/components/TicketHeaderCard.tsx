@@ -78,7 +78,7 @@ const TicketHeaderCard: React.FC<TicketHeaderCardProps> = ({ activity }) => {
   const statusListQueryKey = useMemo(() => {
     const params = new URLSearchParams({ limit: "500" });
     if (projectId) params.set("project", projectId);
-    return ["activity-statuses", projectId ?? "", params.toString()];
+    return ["activity-statuses", params.toString()];
   }, [projectId]);
 
   const { data: statusesData, isLoading: statusesLoading } = useQuery({
