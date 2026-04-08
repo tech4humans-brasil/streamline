@@ -26,7 +26,21 @@ const handler: HttpHandler = async (conn, req) => {
     return sasCache.get(fileObj.url);
   };
 
-  const activity = await activityRepository.findById({ id });
+  const activity = await activityRepository.findById({
+    id,
+    populate: [
+      {
+        path: "form",
+        select: {
+          _id: 1,
+          name: 1,
+          slug: 1,
+          project: 1,
+          type: 1,
+        },
+      },
+    ],
+  });
 
   if (!activity) {
     return res.notFound("Activity not found");
@@ -35,6 +49,13 @@ const handler: HttpHandler = async (conn, req) => {
   const mainUserPhotoPromise = (async () => {
     if (activity?.users[0]?.photo_url) {
       activity.users[0].photo_url = await getSasToken(activity.users[0].photo_url);
+    }
+  })();
+
+  const assigneePhotoPromise = (async () => {
+    const assignee = activity?.assignee as { photo_url?: unknown } | undefined;
+    if (assignee?.photo_url) {
+      assignee.photo_url = await getSasToken(assignee.photo_url);
     }
   })();
 
@@ -107,6 +128,7 @@ const handler: HttpHandler = async (conn, req) => {
 
   await Promise.all([
     mainUserPhotoPromise,
+    assigneePhotoPromise,
     formFieldsPromise,
     interactionsPromise,
     commentsPromise,

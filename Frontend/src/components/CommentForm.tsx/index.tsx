@@ -1,14 +1,25 @@
-import { Button, Flex } from "@chakra-ui/react";
-import { FormProvider, useForm } from "react-hook-form";
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  Icon,
+  Text,
+  Textarea,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createOrUpdateComment } from "@apis/comment";
 import { getActivity } from "@apis/activity";
-import TextArea from "@components/atoms/Inputs/TextArea";
+import { useTranslation } from "react-i18next";
+import { FaRegCommentDots } from "react-icons/fa";
 
 const formSchema = z.object({
-  content: z.string(),
+  content: z.string().trim().min(1),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -18,13 +29,21 @@ interface CommentFormProps {
 }
 
 const CommentForm: React.FC<CommentFormProps> = ({ id }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const iconBg = useColorModeValue("gray.200", "gray.600");
+  const inputBg = useColorModeValue("white", "gray.800");
+  const inputBorder = useColorModeValue("gray.200", "gray.600");
 
-  const methods = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    defaultValues: { content: "" },
   });
-
-  const { handleSubmit, reset } = methods;
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["comment", id],
@@ -34,6 +53,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ id }) => {
       queryClient.setQueryData(
         ["activity", id],
         (oldData: Awaited<ReturnType<typeof getActivity>>) => {
+          if (!oldData) return oldData;
           return {
             ...oldData,
             comments: [...oldData.comments, data],
@@ -48,26 +68,61 @@ const CommentForm: React.FC<CommentFormProps> = ({ id }) => {
   });
 
   return (
-    <FormProvider {...methods}>
-      <Flex as="form" onSubmit={onSubmit} w="full" gap={2} alignItems="end">
-        <TextArea
-          input={{
-            id: "content",
-            placeholder: "Escreva seu comentário",
-          }}
-        />
-        <Button
-          type="submit"
-          mb="2"
-          size="md"
-          colorScheme="blue"
-          isLoading={isPending}
+    <Flex
+      as="form"
+      onSubmit={onSubmit}
+      w="full"
+      direction="column"
+      p={4}
+      gap={0}
+    >
+      <Flex align="flex-start" gap={3}>
+        <Flex
+          align="center"
+          justify="center"
+          flexShrink={0}
+          w={9}
+          h={9}
+          borderRadius="full"
+          bg={iconBg}
         >
-          Enviar
-        </Button>
+          <Icon as={FaRegCommentDots} color="blue.400" boxSize={4} />
+        </Flex>
+        <Box flex="1" minW={0}>
+          <Text fontSize="xs" fontWeight="semibold" color="gray.500" mb={2}>
+            {t("activityDetails.comments.composerTitle")}
+          </Text>
+          <FormControl isInvalid={!!errors.content}>
+            <Textarea
+              {...register("content")}
+              placeholder={t("activityDetails.comments.composerPlaceholder")}
+              borderRadius="lg"
+              minH="100px"
+              resize="vertical"
+              bg={inputBg}
+              borderColor={inputBorder}
+              _focusVisible={{
+                borderColor: "blue.400",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-400)",
+              }}
+            />
+            <FormErrorMessage>{errors.content?.message}</FormErrorMessage>
+          </FormControl>
+          <Flex justify="flex-end" mt={3}>
+            <Button
+              type="submit"
+              size="sm"
+              colorScheme="blue"
+              borderRadius="md"
+              isLoading={isPending}
+            >
+              {t("activityDetails.comments.send")}
+            </Button>
+          </Flex>
+        </Box>
       </Flex>
-    </FormProvider>
+    </Flex>
   );
 };
 
-export default CommentForm; 
+export default CommentForm;

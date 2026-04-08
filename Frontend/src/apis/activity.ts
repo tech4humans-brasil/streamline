@@ -125,3 +125,31 @@ export const addUsersInInteraction = async (data: {
 
   return res.data.data;
 };
+
+export const updateActivityStatus = async ({
+  id,
+  statusId,
+}: {
+  id: string;
+  statusId: string;
+}) => {
+  const res = await api.patch<ReqActivity>(`/activity/${id}/status`, {
+    statusId,
+  });
+
+  return res.data.data;
+};
+
+export const assignActivity = async ({
+  id,
+  userId,
+}: {
+  id: string;
+  userId: string | null;
+}) => {
+  const res = await api.patch<ReqActivity>(`/activity/${id}/assign`, {
+    userId,
+  });
+
+  return res.data.data;
+};

@@ -30,6 +30,7 @@ export type IComment = {
   content: string;
   viewed: mongoose.Types.ObjectId[];
   isEdited: boolean;
+  isSystem?: boolean;
   createdAt: string;
   updatedAt: string;
 } & mongoose.Document;
@@ -115,6 +116,7 @@ export type IActivity = {
   finished_at: Date | null;
   due_date: Date | null;
   automatic: boolean;
+  assignee?: IUserChild | null;
   status: IStatus;
   comments: IComment[];
   workflows: mongoose.Types.DocumentArray<ActivityWorkflow>;
@@ -213,6 +215,7 @@ const commentSchema = new Schema<IComment>(
     content: { type: String, required: true },
     viewed: [{ type: Schema.Types.ObjectId }],
     isEdited: { type: Boolean, default: false },
+    isSystem: { type: Boolean, default: false },
   },
   {
     timestamps: true,
@@ -273,6 +276,7 @@ export const schema: Schema = new Schema<IActivity>(
     },
     due_date: { type: Date, required: false, default: null, index: true },
     users: [{ type: userSchema, required: true }],
+    assignee: { type: userSchema, required: false, default: null },
     finished_at: { type: Date, required: false, default: null },
     status: { type: statusSchema, required: true },
     interactions: [{ type: interactionSchema, required: false, default: [] }],
