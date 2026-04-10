@@ -115,6 +115,7 @@ export default new Http(handler)
         form: schema.array(schema.string()).default([]),
         search: schema.string().optional(),
         assignedToMe: schema.string().oneOf(["true", "false"]).optional(),
+        automatic: schema.string().oneOf(["true", "false"]).optional(),
       })
       .optional(),
   }))

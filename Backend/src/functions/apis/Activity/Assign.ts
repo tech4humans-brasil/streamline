@@ -3,6 +3,10 @@ import res from "../../../utils/apiResponse";
 import ActivityRepository from "../../../repositories/Activity";
 import UserRepository from "../../../repositories/User";
 import { IUserChild } from "../../../models/client/Activity";
+import {
+  emailsForAssignmentNotification,
+  sendActivityAssignmentEmail,
+} from "../../../utils/activityNotificationEmails";
 
 const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params as { id: string };
@@ -42,8 +46,9 @@ const handler: HttpHandler = async (conn, req) => {
     content = `O ticket foi atribuído a ${assignee.name}`;
   }
 
-  const previousAssigneeId = activity.assignee
-    ? String((activity.assignee as IUserChild)._id)
+  const previousAssignee = activity.assignee as IUserChild | null | undefined;
+  const previousAssigneeId = previousAssignee
+    ? String(previousAssignee._id)
     : null;
   const nextAssigneeId = assignee ? String(assignee._id) : null;
   const assigneeChanged = previousAssigneeId !== nextAssigneeId;
@@ -76,6 +81,21 @@ const handler: HttpHandler = async (conn, req) => {
 
   if (!updated) {
     return res.notFound("Activity not found");
+  }
+
+  if (assigneeChanged) {
+    await sendActivityAssignmentEmail({
+      slug: conn.name,
+      activityId: id,
+      protocol: updated.protocol,
+      activityName: updated.name,
+      summaryLine: content,
+      recipients: emailsForAssignmentNotification(
+        activity.users,
+        assignee,
+        previousAssignee
+      ),
+    });
   }
 
   return res.success(updated);

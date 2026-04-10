@@ -239,10 +239,20 @@
       "subtitle": "Visão geral das suas pendências e tickets.",
       "markAllSeen": "Marcar como visto",
       "pendingInteractions": "Pendências de interação",
+      "pendingInteractionsScroll": "Ir para a secção de interações pendentes",
+      "overdueCount": "{{count}} com prazo vencido",
       "myTicketsTotal": "Meus tickets (total)",
       "myTicketsHint": "Conforme filtros e pesquisa atuais",
       "newSinceVisit": "Novidades",
       "newSinceVisitHint": "Itens atualizados desde a última visita à dashboard"
+    },
+    "myActivitiesTabs": {
+      "all": "Todos",
+      "automatic": "Automatizados",
+      "manual": "Manuais"
+    },
+    "pendingGroup": {
+      "noForm": "Sem formulário"
     },
     "badge": {
       "new": "Novo"
@@ -731,6 +741,28 @@
   "activityDetails": {
     "timeline": "Linha do Tempo",
     "timelineDescription": "Progresso do ticket através do fluxo de automação",
+    "unifiedTimeline": {
+      "title": "Linha do tempo da atividade",
+      "subtitle": "Passos do fluxo e comentários numa única lista cronológica.",
+      "filterLabel": "O que quero ver",
+      "filterAll": "Tudo",
+      "filterWorkflow": "Fluxo",
+      "filterComments": "Comentários",
+      "commentsHeading": "Comentários",
+      "noWorkflow": "Este ticket não tem fluxo de automação associado.",
+      "badgeFlow": "Fluxo",
+      "badgeComment": "Comentário",
+      "badgeSystem": "Sistema",
+      "emptyUnified": "Ainda não há eventos para mostrar.",
+      "stepTimeHint": "As horas dos passos do fluxo são aproximadas quando a execução exata não é registada.",
+      "showMoreOlder": "Mostrar mais ({{count}} anteriores)",
+      "pendingHiddenTitle": "Pendência do fluxo fora da vista",
+      "pendingHiddenDescription": "Há um passo do fluxo à espera que executas ou respondas. Está acima dos últimos {{count}} eventos mostrados — expande a linha do tempo para o ver.",
+      "expandToSeePending": "Expandir linha do tempo",
+      "pendingCommentsFilterTitle": "Pendência no fluxo",
+      "pendingCommentsFilterDescription": "Há um passo do fluxo à tua espera. Usa o filtro Tudo ou Fluxo para o veres e responderes.",
+      "showAllOrFlowFilter": "Mostrar tudo"
+    },
     "showMore": "Mostrar mais",
     "showLess": "Mostrar menos",
     "formFields": "Campos do Formulário",

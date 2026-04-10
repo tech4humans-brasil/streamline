@@ -23,13 +23,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getActivity } from "@apis/activity";
 import Accordion from "@components/atoms/Accordion";
 import ExtraFields from "./sections/ExtraFields";
-import Timeline from "./sections/Timeline";
 import { useTranslation } from "react-i18next";
 
 // Import new components
 import ActivityHeader from "./components/ActivityHeader";
 import TicketHeaderCard from "./components/TicketHeaderCard";
-import CommentsSection from "./components/CommentsSection";
+import ActivityTimelinePanel from "./ActivityTimelinePanel";
 import TicketInfoCard from "./components/TicketInfoCard";
 import RelatedTicketsCard from "./components/RelatedTicketsCard";
 import AssignTicketModal from "./components/AssignTicketModal";
@@ -131,24 +130,11 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = memo(
               onAssignClick={onAssignModalOpen}
             />
 
-            {/* Linha do tempo */}
-            {displayActivity.workflows.length > 0 && (
-              <Card {...detailCardProps}>
-                <Box p={6}>
-                  <Accordion.Container defaultIndex={[0]} allowToggle allowMultiple>
-                    <Accordion.Item>
-                      <Accordion.Button>{t('activityDetails.timeline')}</Accordion.Button>
-                      <Accordion.Panel>
-                        <Timeline />
-                      </Accordion.Panel>
-                    </Accordion.Item>
-                  </Accordion.Container>
-                </Box>
-              </Card>
-            )}
-
-            <CommentsSection
-              comments={displayActivity.comments || activityData?.comments || []}
+            <ActivityTimelinePanel
+              hasWorkflow={displayActivity.workflows.length > 0}
+              comments={
+                displayActivity.comments || activityData?.comments || []
+              }
               activityId={displayActivity._id}
             />
           </VStack>

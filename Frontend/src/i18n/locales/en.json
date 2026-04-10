@@ -200,10 +200,20 @@
       "subtitle": "Overview of pending items and your tickets.",
       "markAllSeen": "Mark all as seen",
       "pendingInteractions": "Pending interactions",
+      "pendingInteractionsScroll": "Go to pending interactions section",
+      "overdueCount": "{{count}} overdue",
       "myTicketsTotal": "My tickets (total)",
       "myTicketsHint": "Based on current filters and search",
       "newSinceVisit": "What’s new",
       "newSinceVisitHint": "Items updated since your last dashboard visit"
+    },
+    "myActivitiesTabs": {
+      "all": "All",
+      "automatic": "Automatic",
+      "manual": "Manual"
+    },
+    "pendingGroup": {
+      "noForm": "No form"
     },
     "badge": {
       "new": "New"
@@ -553,6 +563,28 @@
   "activityDetails": {
     "timeline": "Timeline",
     "timelineDescription": "Ticket progress through the automation flow",
+    "unifiedTimeline": {
+      "title": "Activity timeline",
+      "subtitle": "Flow steps and comments in one chronological list.",
+      "filterLabel": "What to show",
+      "filterAll": "All",
+      "filterWorkflow": "Flow",
+      "filterComments": "Comments",
+      "commentsHeading": "Comments",
+      "noWorkflow": "This ticket has no automation flow.",
+      "badgeFlow": "Flow",
+      "badgeComment": "Comment",
+      "badgeSystem": "System",
+      "emptyUnified": "No events to show yet.",
+      "stepTimeHint": "Flow step times are approximate when exact execution time is not recorded.",
+      "showMoreOlder": "Show more ({{count}} older)",
+      "pendingHiddenTitle": "Pending flow action out of view",
+      "pendingHiddenDescription": "A workflow step is waiting for you to run or respond. It is above the last {{count}} events shown — expand the timeline to see it.",
+      "expandToSeePending": "Expand timeline",
+      "pendingCommentsFilterTitle": "Pending workflow action",
+      "pendingCommentsFilterDescription": "A flow step is waiting for you. Use the All or Flow filter to see it and respond.",
+      "showAllOrFlowFilter": "Show All"
+    },
     "showMore": "Show more",
     "showLess": "Show less",
     "formFields": "Form Fields",

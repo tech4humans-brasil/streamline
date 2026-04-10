@@ -8,61 +8,69 @@ interface CommentItemProps {
   comment: Omit<IComment, "user"> & {
     user: Pick<IUser, "name" | "_id" | "email" | "photo_url">;
   };
+  /** Hide the footer timestamp (e.g. when the parent timeline shows the date). */
+  hideTimestamp?: boolean;
 }
 
-const CommentItem: React.FC<CommentItemProps> = memo(({ comment }) => {
-  const rowBg = useColorModeValue("white", "gray.800");
-  const rowHoverBg = useColorModeValue("gray.50", "gray.700");
-  const avatarRing = useColorModeValue("gray.200", "gray.600");
+const CommentItem: React.FC<CommentItemProps> = memo(
+  ({ comment, hideTimestamp }) => {
+    const rowBg = useColorModeValue("white", "gray.800");
+    const rowHoverBg = useColorModeValue("gray.50", "gray.700");
+    const avatarRing = useColorModeValue("gray.200", "gray.600");
 
-  return (
-    <Flex
-      align="flex-start"
-      gap={3}
-      py={3}
-      px={4}
-      bg={rowBg}
-      transition="background 0.15s ease"
-      _hover={{ bg: rowHoverBg }}
-    >
+    return (
       <Flex
-        align="center"
-        justify="center"
-        flexShrink={0}
-        w={9}
-        h={9}
-        borderRadius="full"
-        borderWidth="1px"
-        borderColor={avatarRing}
-        overflow="hidden"
+        align="flex-start"
+        gap={3}
+        py={3}
+        px={4}
+        bg={rowBg}
+        transition="background 0.15s ease"
+        _hover={{ bg: rowHoverBg }}
       >
-        <Avatar
-          size="sm"
-          name={comment.user.name}
-          src={comment.user.photo_url?.url}
-          bg="blue.500"
-          color="white"
-        />
-      </Flex>
-      <Box flex="1" minW={0}>
-        <Text fontSize="xs" fontWeight="semibold" color="gray.500" mb={1}>
-          {comment.user.name}
-        </Text>
-        <Text
-          fontSize="sm"
-          whiteSpace="pre-wrap"
-          color="gray.700"
-          _dark={{ color: "gray.100" }}
-          mb={1}
+        <Flex
+          align="center"
+          justify="center"
+          flexShrink={0}
+          w={9}
+          h={9}
+          borderRadius="full"
+          borderWidth="1px"
+          borderColor={avatarRing}
+          overflow="hidden"
         >
-          {comment.content}
-        </Text>
-        <Text as="span" fontSize="xs" color="gray.500">
-          {convertDateTime(comment.createdAt)}
-        </Text>
-      </Box>
-    </Flex>
-  );
-});
+          <Avatar
+            size="sm"
+            name={comment.user.name}
+            src={comment.user.photo_url?.url}
+            bg="blue.500"
+            color="white"
+          />
+        </Flex>
+        <Box flex="1" minW={0}>
+          <Text fontSize="xs" fontWeight="semibold" color="gray.500" mb={1}>
+            {comment.user.name}
+          </Text>
+          <Text
+            fontSize="sm"
+            whiteSpace="pre-wrap"
+            color="gray.700"
+            _dark={{ color: "gray.100" }}
+            mb={1}
+          >
+            {comment.content}
+          </Text>
+          {!hideTimestamp ? (
+            <Text as="span" fontSize="xs" color="gray.500">
+              {convertDateTime(comment.createdAt)}
+            </Text>
+          ) : null}
+        </Box>
+      </Flex>
+    );
+  }
+);
+
+CommentItem.displayName = "CommentItem";
 
 export default CommentItem;

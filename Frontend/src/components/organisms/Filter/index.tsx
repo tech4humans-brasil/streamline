@@ -16,18 +16,16 @@ const Container: React.FC<React.HTMLAttributes<HTMLDivElement>> = memo(
     });
 
     const onSubmit = methods.handleSubmit((data: FormData) => {
-      const search: Record<string, string> = {};
+      const next = new URLSearchParams(searchParams);
 
       Object.keys(data).forEach((key) => {
         const value = data[key];
-        if (Array.isArray(value)) {
-          search[key] = value.join(",");
-        } else if (value) {
-          search[key] = value;
-        }
+        const str = Array.isArray(value) ? value.join(",") : String(value ?? "");
+        if (str) next.set(key, str);
+        else next.delete(key);
       });
 
-      setSearchParams(search);
+      setSearchParams(next);
     });
 
     return (

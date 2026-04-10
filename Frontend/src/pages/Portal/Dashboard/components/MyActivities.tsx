@@ -12,6 +12,11 @@ import {
   Flex,
   Heading,
   IconButton,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Tag,
   Text,
   Tooltip,
@@ -21,7 +26,7 @@ import Table from "@components/organisms/Table";
 import { IActivityState } from "@interfaces/Activitiy";
 import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaPen, FaSync } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -55,7 +60,7 @@ type Props = {
   isNewSinceLastSeen: (updatedAt: string | Date | undefined | null) => boolean;
 };
 
-const MyActivities: React.FC<Props> = ({ isNewSinceLastSeen }) => {
+const ActivitiesTableBlock: React.FC<Props> = ({ isNewSinceLastSeen }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -158,19 +163,7 @@ const MyActivities: React.FC<Props> = ({ isNewSinceLastSeen }) => {
   }, [data, handleView, handleEdit, t, isNewSinceLastSeen]);
 
   return (
-    <Box mb={4} bg="bg.card" borderRadius="md" id="my-activities">
-      <Flex
-        justifyContent="space-between"
-        alignItems="start"
-        p="4"
-        direction="column"
-      >
-        <Heading size="md">{t("dashboard.title.myActivities")}</Heading>
-        <Text fontSize="sm" color="gray.500">
-          {t("dashboard.description.myActivities")}
-        </Text>
-      </Flex>
-
+    <>
       <Box px={4} pb={2}>
         <Accordion allowToggle reduceMotion defaultIndex={[]}>
           <AccordionItem border="none">
@@ -241,16 +234,6 @@ const MyActivities: React.FC<Props> = ({ isNewSinceLastSeen }) => {
                       label: t("common.fields.description"),
                     }}
                   />
-                  <Select
-                    input={{
-                      id: "automatic",
-                      label: t("common.fields.automatic"),
-                      options: [
-                        { label: t("common.fields.yes"), value: "true" },
-                        { label: t("common.fields.no"), value: "false" },
-                      ],
-                    }}
-                  />
                 </Flex>
               </Filter.Container>
             </AccordionPanel>
@@ -261,15 +244,96 @@ const MyActivities: React.FC<Props> = ({ isNewSinceLastSeen }) => {
       <Flex
         justifyContent="center"
         alignItems="center"
-        mt="4"
-        p="4"
+        mt={4}
+        p={4}
         borderRadius="md"
         direction="column"
-        bg={"bg.card"}
+        bg="bg.card"
       >
         <Table columns={columns} data={rows} isLoading={isLoading} />
         <Pagination pagination={data?.pagination} isLoading={isLoading} />
       </Flex>
+    </>
+  );
+};
+
+const MyActivities: React.FC<Props> = ({ isNewSinceLastSeen }) => {
+  const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  /** Evita repor `automatic=false` depois do utilizador escolher explicitamente "Todos". */
+  const userChoseAllTabsRef = useRef(false);
+
+  useEffect(() => {
+    if (userChoseAllTabsRef.current) return;
+    if (searchParams.has("automatic")) return;
+    setSearchParams(
+      (prev) => {
+        const n = new URLSearchParams(prev);
+        n.set("automatic", "false");
+        return n;
+      },
+      { replace: true }
+    );
+  }, [searchParams, setSearchParams]);
+
+  const automatic = searchParams.get("automatic");
+  const tabIndex =
+    automatic === "true" ? 1 : automatic === "false" ? 2 : 0;
+
+  const handleTabChange = useCallback(
+    (index: number) => {
+      userChoseAllTabsRef.current = index === 0;
+      setSearchParams((prev) => {
+        const p = new URLSearchParams(prev);
+        p.set("page", "1");
+        if (index === 0) p.delete("automatic");
+        else if (index === 1) p.set("automatic", "true");
+        else p.set("automatic", "false");
+        return p;
+      });
+    },
+    [setSearchParams]
+  );
+
+  return (
+    <Box bg="bg.card" borderRadius="md" id="my-activities">
+      <Flex
+        justifyContent="space-between"
+        alignItems="start"
+        p={4}
+        direction="column"
+        gap={1}
+      >
+        <Heading size="md">{t("dashboard.title.myActivities")}</Heading>
+        <Text fontSize="sm" color="gray.500">
+          {t("dashboard.description.myActivities")}
+        </Text>
+      </Flex>
+
+      <Tabs
+        isLazy
+        variant="enclosed"
+        colorScheme="blue"
+        index={tabIndex}
+        onChange={handleTabChange}
+      >
+        <TabList px={4} flexWrap="wrap" borderBottomWidth={0}>
+          <Tab>{t("dashboard.myActivitiesTabs.all")}</Tab>
+          <Tab>{t("dashboard.myActivitiesTabs.automatic")}</Tab>
+          <Tab>{t("dashboard.myActivitiesTabs.manual")}</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel p={0}>
+            <ActivitiesTableBlock isNewSinceLastSeen={isNewSinceLastSeen} />
+          </TabPanel>
+          <TabPanel p={0}>
+            <ActivitiesTableBlock isNewSinceLastSeen={isNewSinceLastSeen} />
+          </TabPanel>
+          <TabPanel p={0}>
+            <ActivitiesTableBlock isNewSinceLastSeen={isNewSinceLastSeen} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };

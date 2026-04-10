@@ -5,6 +5,10 @@ import StatusRepository from "../../../repositories/Status";
 import { StatusType } from "../../../models/client/Status";
 import { IActivityState } from "../../../models/client/Activity";
 import { IUserRoles } from "../../../models/client/User";
+import {
+  emailsForStatusChangeNotification,
+  sendActivityStatusChangeEmail,
+} from "../../../utils/activityNotificationEmails";
 
 const handler: HttpHandler = async (conn, req) => {
   const { id } = req.params as { id: string };
@@ -60,12 +64,10 @@ const handler: HttpHandler = async (conn, req) => {
       photo_url: req.user.photo_url,
     },
     content: isClosingWithDone
-      ? `O ticket foi encerrado com o status "${statusDoc.name}"${
-          previousName && statusChanged ? ` (antes: ${previousName})` : ""
-        }`
-      : `O status foi alterado para ${statusDoc.name}${
-          previousName && statusChanged ? ` (antes: ${previousName})` : ""
-        }`,
+      ? `O ticket foi encerrado com o status "${statusDoc.name}"${previousName && statusChanged ? ` (antes: ${previousName})` : ""
+      }`
+      : `O status foi alterado para ${statusDoc.name}${previousName && statusChanged ? ` (antes: ${previousName})` : ""
+      }`,
     isSystem: true,
   };
 
@@ -90,6 +92,22 @@ const handler: HttpHandler = async (conn, req) => {
 
   if (!updated) {
     return res.notFound("Activity not found");
+  }
+
+  if (statusChanged) {
+    await sendActivityStatusChangeEmail({
+      slug: conn.name,
+      activityId: id,
+      protocol: updated.protocol,
+      activityName: updated.name,
+      previousStatusName: previousName,
+      newStatusName: statusDoc.name,
+      primaryUserName: activity.users?.[0]?.name,
+      recipients: emailsForStatusChangeNotification(
+        activity.users,
+        activity.assignee
+      ),
+    });
   }
 
   return res.success(updated);

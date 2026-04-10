@@ -6,6 +6,8 @@ import {
   Box,
   Button,
   Flex,
+  HStack,
+  Icon,
   SimpleGrid,
   Stat,
   StatHelpText,
@@ -14,14 +16,20 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { FaExclamationTriangle } from "react-icons/fa";
 import { useSearchParams } from "react-router-dom";
 
 type Props = {
   isNewSinceLastSeen: (updatedAt: string | Date | undefined | null) => boolean;
   markAllSeen: () => void;
 };
+
+function isDueOverdue(due: string | Date | null | undefined): boolean {
+  if (!due) return false;
+  return new Date(due).getTime() < Date.now();
+}
 
 const DashboardSummary: React.FC<Props> = ({
   isNewSinceLastSeen,
@@ -44,6 +52,11 @@ const DashboardSummary: React.FC<Props> = ({
   const pendingCount = pending?.length ?? 0;
   const ticketsTotal = activitiesData?.pagination?.total ?? 0;
 
+  const overdueCount = useMemo(() => {
+    if (!pending?.length) return 0;
+    return pending.filter((item) => isDueOverdue(item.due_date)).length;
+  }, [pending]);
+
   const newCount = useMemo(() => {
     let n = 0;
     pending?.forEach((item) => {
@@ -54,6 +67,22 @@ const DashboardSummary: React.FC<Props> = ({
     });
     return n;
   }, [pending, activitiesData, isNewSinceLastSeen]);
+
+  const scrollToPending = useCallback(() => {
+    document
+      .getElementById("pending-interactions")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  const onPendingKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        scrollToPending();
+      }
+    },
+    [scrollToPending]
+  );
 
   return (
     <Box
@@ -84,9 +113,44 @@ const DashboardSummary: React.FC<Props> = ({
       </Flex>
 
       <SimpleGrid columns={{ base: 1, sm: 3 }} spacing={4}>
-        <Stat>
+        <Stat
+          as="button"
+          type="button"
+          textAlign="left"
+          p={2}
+          mx={-2}
+          borderRadius="md"
+          cursor="pointer"
+          transition="background 0.15s ease"
+          _hover={{ bg: "blackAlpha.50", _dark: { bg: "whiteAlpha.50" } }}
+          _focusVisible={{
+            outline: "none",
+            boxShadow: "outline",
+          }}
+          onClick={scrollToPending}
+          onKeyDown={onPendingKeyDown}
+          aria-label={t("dashboard.summary.pendingInteractionsScroll")}
+        >
           <StatLabel>{t("dashboard.summary.pendingInteractions")}</StatLabel>
-          <StatNumber>{pendingCount}</StatNumber>
+          <HStack spacing={2} align="baseline">
+            <StatNumber>{pendingCount}</StatNumber>
+            {overdueCount > 0 ? (
+              <Icon
+                as={FaExclamationTriangle}
+                color="red.500"
+                boxSize={4}
+                aria-hidden
+                title={t("dashboard.summary.overdueCount", {
+                  count: overdueCount,
+                })}
+              />
+            ) : null}
+          </HStack>
+          {overdueCount > 0 ? (
+            <StatHelpText color="red.500" mb={0}>
+              {t("dashboard.summary.overdueCount", { count: overdueCount })}
+            </StatHelpText>
+          ) : null}
         </Stat>
         <Stat>
           <StatLabel>{t("dashboard.summary.myTicketsTotal")}</StatLabel>
