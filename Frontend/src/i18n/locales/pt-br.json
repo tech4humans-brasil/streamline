@@ -283,6 +283,13 @@
       "search": "Pesquisar",
       "clear": "Limpar filtros",
       "noResults": "Nenhum resultado com os filtros atuais."
+    },
+    "pendingBoard": {
+      "openBoard": "Abrir em board",
+      "title": "Interações pendentes — Board",
+      "description": "Tickets com interação pendente da sua parte, agrupados por projeto e status. Arraste os cartões para alterar o estado quando tiver permissão.",
+      "back": "Voltar ao dashboard",
+      "noProject": "Sem projeto"
     }
   },
   "title": {

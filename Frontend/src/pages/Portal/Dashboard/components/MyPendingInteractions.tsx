@@ -18,18 +18,17 @@ import {
   Spinner,
   Stack,
   Text,
-  Tooltip,
-  VStack,
   Wrap,
 } from "@chakra-ui/react";
-import DueDateIndicator from "@components/atoms/DueDateIndicatior";
-import StatusTag from "@components/atoms/StatusTag";
 import { useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { FaEye, FaPen, FaSync } from "react-icons/fa";
+import { FaSync } from "react-icons/fa";
+import { TbLayoutKanban } from "react-icons/tb";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { convertDateTime } from "@utils/date";
+import usePermission from "@hooks/usePermission";
+import { pendingInteractionMatchesFilters } from "@utils/pendingInteractionFilters";
+import PendingInteractionCard from "./PendingInteractionCard";
 
 type IItem = Awaited<ReturnType<typeof getMyActivitiesPendingInteractions>>[0];
 
@@ -144,29 +143,6 @@ function defaultOpenIndexesForOverdue(groups: FormGroup[]): number[] {
     .filter((i) => i >= 0);
 }
 
-function itemMatchesFilters(
-  item: IItem,
-  piStatus: string | null,
-  piAssignee: string | null,
-  piSearch: string | null
-): boolean {
-  if (piStatus && item.ticketStatus?._id !== piStatus) return false;
-  if (piAssignee === "unassigned") {
-    if (item.assignee?._id) return false;
-  } else if (piAssignee && item.assignee?._id !== piAssignee) {
-    return false;
-  }
-  if (piSearch?.trim()) {
-    const q = piSearch.trim().toLowerCase();
-    const hay = [item.protocol, item.name, item.description]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    if (!hay.includes(q)) return false;
-  }
-  return true;
-}
-
 function resolveAccordionIndex(
   groups: FormGroup[],
   searchParams: URLSearchParams,
@@ -189,6 +165,7 @@ function resolveAccordionIndex(
 
 const PendingInteractions: React.FC<Props> = ({ isNewSinceLastSeen }) => {
   const [t] = useTranslation();
+  const { userCan } = usePermission();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["my-pending-interactions"],
@@ -205,7 +182,7 @@ const PendingInteractions: React.FC<Props> = ({ isNewSinceLastSeen }) => {
   const filteredItems = useMemo(() => {
     if (!data?.length) return [];
     return data.filter((item) =>
-      itemMatchesFilters(item, piStatus, piAssignee, piSearch)
+      pendingInteractionMatchesFilters(item, piStatus, piAssignee, piSearch)
     );
   }, [data, piStatus, piAssignee, piSearch]);
 
@@ -331,144 +308,17 @@ const PendingInteractions: React.FC<Props> = ({ isNewSinceLastSeen }) => {
     [navigate]
   );
 
-  const renderCard = (activity: IItem) => {
-    const showNew = isNewSinceLastSeen(activity.updatedAt);
-    const requester = activity?.users[0]?.name;
-    const ticketStatus = activity.ticketStatus;
-    const assigneeName = activity.assignee?.name;
-
-    return (
-      <Flex
-        key={activity._id}
-        align="flex-start"
-        gap={2}
-        py={2}
-        px={2}
-        borderWidth="1px"
-        borderRadius="md"
-        borderColor="chakra-border-color"
-        _hover={{ bg: "blackAlpha.50", _dark: { bg: "whiteAlpha.50" } }}
-      >
-        <VStack align="stretch" spacing={0.5} flex="1" minW={0}>
-          <HStack spacing={1.5} flexWrap="wrap" align="center">
-            <Text fontSize="xs" fontFamily="mono" fontWeight="semibold">
-              {activity.protocol}
-            </Text>
-            {showNew && (
-              <Badge colorScheme="green" fontSize="0.6rem">
-                {t("dashboard.badge.new")}
-              </Badge>
-            )}
-            {ticketStatus?.name ? (
-              <StatusTag status={ticketStatus} size="sm" />
-            ) : null}
-          </HStack>
-
-          <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
-            {activity.name}
-          </Text>
-
-          <Text fontSize="xs" color="text.secondary" noOfLines={2}>
-            {activity.description}
-          </Text>
-
-          <Flex
-            gap={2}
-            flexWrap="wrap"
-            align="center"
-            rowGap={1}
-            columnGap={2}
-            pt={0.5}
-            fontSize="xs"
-            color="text.secondary"
-          >
-            {requester ? (
-              <Text noOfLines={1}>
-                <Text as="span" fontWeight="medium" color="text.primary">
-                  {t("dashboard.pendingCard.requester")}
-                </Text>{" "}
-                {requester}
-              </Text>
-            ) : null}
-            {assigneeName ? (
-              <>
-                {requester ? (
-                  <Text color="gray.400" aria-hidden>
-                    ·
-                  </Text>
-                ) : null}
-                <Text noOfLines={1}>
-                  <Text as="span" fontWeight="medium" color="text.primary">
-                    {t("dashboard.pendingCard.assignee")}
-                  </Text>{" "}
-                  {assigneeName}
-                </Text>
-              </>
-            ) : null}
-            {activity.due_date ? (
-              <>
-                {requester || assigneeName ? (
-                  <Text color="gray.400" aria-hidden>
-                    ·
-                  </Text>
-                ) : null}
-                <HStack spacing={1}>
-                  <Text as="span" fontWeight="medium" color="text.primary">
-                    {t("dashboard.pendingCard.due")}
-                  </Text>
-                  <DueDateIndicator
-                    dueDate={activity.due_date}
-                    fontSize="xs"
-                    hideWhenEmpty
-                  />
-                </HStack>
-              </>
-            ) : null}
-            <Text color="gray.400" aria-hidden>
-              ·
-            </Text>
-            <Text whiteSpace="nowrap">
-              <Text as="span" fontWeight="medium" color="text.primary">
-                {t("dashboard.pendingCard.updated")}
-              </Text>{" "}
-              {activity.updatedAt
-                ? convertDateTime(activity.updatedAt, {
-                    day: "2-digit",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : "—"}
-            </Text>
-          </Flex>
-        </VStack>
-
-        <HStack spacing={0} flexShrink={0} align="flex-start">
-          <Tooltip label={t("dashboard.pendingActions.viewTicket")}>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              aria-label={t("dashboard.pendingActions.viewTicket")}
-              icon={<FaEye />}
-              onClick={() => handleView(activity)}
-            />
-          </Tooltip>
-          {activity.form?.slug ? (
-            <Tooltip label={t("dashboard.pendingActions.respond")}>
-              <IconButton
-                size="sm"
-                variant="ghost"
-                colorScheme="blue"
-                aria-label={t("dashboard.pendingActions.respond")}
-                icon={<FaPen />}
-                onClick={() => handleResponse(activity)}
-              />
-            </Tooltip>
-          ) : null}
-        </HStack>
-      </Flex>
-    );
-  };
+  const navigateToKanbanBoard = useCallback(() => {
+    const next = new URLSearchParams();
+    if (piStatus) next.set("piStatus", piStatus);
+    if (piAssignee) next.set("piAssignee", piAssignee);
+    if (piSearch) next.set("piSearch", piSearch);
+    const search = next.toString();
+    navigate({
+      pathname: "/portal/pending-interactions-board",
+      search: search ? `?${search}` : "",
+    });
+  }, [navigate, piAssignee, piSearch, piStatus]);
 
   const showFilteredEmpty =
     !isLoading &&
@@ -485,14 +335,26 @@ const PendingInteractions: React.FC<Props> = ({ isNewSinceLastSeen }) => {
             {t("dashboard.description.interactionPending")}
           </Text>
         </Box>
-        <IconButton
-          ml={{ base: 0, md: "auto" }}
-          size="sm"
-          aria-label={t("common.refresh")}
-          icon={<FaSync />}
-          onClick={() => refetch()}
-          isLoading={isLoading}
-        />
+        <HStack ml={{ base: 0, md: "auto" }} spacing={1}>
+          {userCan("activity.update") ? (
+            <Button
+              size="sm"
+              variant="outline"
+              leftIcon={<TbLayoutKanban />}
+              onClick={navigateToKanbanBoard}
+              isDisabled={isLoading}
+            >
+              {t("dashboard.pendingBoard.openBoard")}
+            </Button>
+          ) : null}
+          <IconButton
+            size="sm"
+            aria-label={t("common.refresh")}
+            icon={<FaSync />}
+            onClick={() => refetch()}
+            isLoading={isLoading}
+          />
+        </HStack>
       </Flex>
 
       <Wrap spacing={3} mt={3} align="flex-end">
@@ -601,7 +463,19 @@ const PendingInteractions: React.FC<Props> = ({ isNewSinceLastSeen }) => {
                 <AccordionIcon />
               </AccordionButton>
               <AccordionPanel px={0} pt={2} pb={0}>
-                <Stack spacing={2}>{group.items.map(renderCard)}</Stack>
+                <Stack spacing={2}>
+                  {group.items.map((activity) => (
+                    <PendingInteractionCard
+                      key={activity._id}
+                      activity={activity}
+                      t={t}
+                      showNewBadge={isNewSinceLastSeen(activity.updatedAt)}
+                      showStatusTag
+                      onView={handleView}
+                      onRespond={handleResponse}
+                    />
+                  ))}
+                </Stack>
               </AccordionPanel>
             </AccordionItem>
           ))}

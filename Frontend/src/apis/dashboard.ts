@@ -111,7 +111,7 @@ type DashboardPendingInteractionItem = Pick<
   "_id" | "name" | "description" | "protocol" | "users" | "due_date" | "updatedAt"
 > & {
   assignee?: IActivity["assignee"];
-  form?: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
+  form?: Pick<IForm, "_id" | "name" | "description" | "slug" | "period" | "project">;
   answerStatus: IActivityStepStatus;
   ticketStatus: IStatus;
 };

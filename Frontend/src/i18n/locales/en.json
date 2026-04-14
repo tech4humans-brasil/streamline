@@ -244,6 +244,13 @@
       "search": "Search",
       "clear": "Clear filters",
       "noResults": "No items match the current filters."
+    },
+    "pendingBoard": {
+      "openBoard": "Open as board",
+      "title": "Pending interactions — Board",
+      "description": "Tickets with an interaction pending on your side, grouped by project and status. Drag cards to change status when you have permission.",
+      "back": "Back to dashboard",
+      "noProject": "No project"
     }
   },
   "title": {

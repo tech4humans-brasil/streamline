@@ -22,6 +22,7 @@ import ActivityProcess from "@pages/Portal/ActivityCommit";
 import EditResponse from "@pages/Edit";
 import Activities from "@pages/Portal/Activities";
 import ActivitiesBoard from "@pages/Portal/ActivitiesBoard";
+import PendingInteractionsBoard from "@pages/Portal/PendingInteractionsBoard";
 import FirstPage from "@pages/Welcome/Firstpage";
 import SecondPage from "@pages/Welcome/SecondPage";
 import Welcome from "@pages/Welcome";
@@ -165,6 +166,11 @@ const routes: RouteType = [
         path: "/portal/project/:project/activities-board",
         element: <ActivitiesBoard />,
         permission: "activity.view",
+      },
+      {
+        path: "/portal/pending-interactions-board",
+        element: <PendingInteractionsBoard />,
+        permission: "activity.update",
       },
       {
         path: "/portal/activity/:id",
