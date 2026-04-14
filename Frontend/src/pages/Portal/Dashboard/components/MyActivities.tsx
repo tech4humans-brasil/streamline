@@ -64,7 +64,7 @@ const ActivitiesTableBlock: React.FC<Props> = ({ isNewSinceLastSeen }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const isCompact = useBreakpointValue({ base: true, md: false });
+  const isCompact = useBreakpointValue({ base: true, lg: false });
 
   const columns = useMemo(
     () => (isCompact ? columnsCompact : columnsFull),
@@ -249,6 +249,9 @@ const ActivitiesTableBlock: React.FC<Props> = ({ isNewSinceLastSeen }) => {
         borderRadius="md"
         direction="column"
         bg="bg.card"
+        w="100%"
+        maxW="100%"
+        overflowX="auto"
       >
         <Table columns={columns} data={rows} isLoading={isLoading} />
         <Pagination pagination={data?.pagination} isLoading={isLoading} />

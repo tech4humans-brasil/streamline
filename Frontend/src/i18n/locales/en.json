@@ -178,6 +178,7 @@
     },
     "joyride": {
       "open-forms": "Welcome to EduFlow! Here you can view available forms for filling.",
+      "quick-actions": "Shortcuts to pending interactions, your tickets, and creating a new ticket.",
       "my-activities": "Here you'll see tickets you've created.",
       "pending-interactions": "Here you'll see tickets awaiting response.",
       "switch-theme": "Click here to switch between light and dark themes.",
@@ -187,6 +188,11 @@
       "label": "Assignment",
       "all": "All tickets",
       "assignedToMe": "Assigned to me"
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "goPending": "Go to pending interactions",
+      "goTickets": "Go to my tickets"
     },
     "description": {
       "evaluationPending": "Tickets pending evaluation",
@@ -226,8 +232,18 @@
     "pendingCard": {
       "form": "Form",
       "requester": "Requester",
+      "assignee": "Assignee",
       "due": "Due",
       "updated": "Updated"
+    },
+    "pendingFilters": {
+      "status": "Ticket status",
+      "assignee": "Assignee",
+      "assigneeAll": "All",
+      "assigneeUnassigned": "Unassigned",
+      "search": "Search",
+      "clear": "Clear filters",
+      "noResults": "No items match the current filters."
     }
   },
   "title": {

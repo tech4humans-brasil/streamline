@@ -110,6 +110,7 @@ type DashboardPendingInteractionItem = Pick<
   IActivity,
   "_id" | "name" | "description" | "protocol" | "users" | "due_date" | "updatedAt"
 > & {
+  assignee?: IActivity["assignee"];
   form?: Pick<IForm, "_id" | "name" | "description" | "slug" | "period">;
   answerStatus: IActivityStepStatus;
   ticketStatus: IStatus;

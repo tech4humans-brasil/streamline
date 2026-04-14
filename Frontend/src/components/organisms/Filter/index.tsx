@@ -19,6 +19,7 @@ const Container: React.FC<React.HTMLAttributes<HTMLDivElement>> = memo(
       const next = new URLSearchParams(searchParams);
 
       Object.keys(data).forEach((key) => {
+        if (key.startsWith("pi")) return;
         const value = data[key];
         const str = Array.isArray(value) ? value.join(",") : String(value ?? "");
         if (str) next.set(key, str);

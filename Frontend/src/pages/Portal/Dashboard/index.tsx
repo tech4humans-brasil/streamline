@@ -2,6 +2,7 @@ import React from "react";
 import MyActivities from "./components/MyActivities";
 import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import OpenForms from "./components/OpenForms";
+import DashboardQuickActions from "./components/DashboardQuickActions";
 import PendingInteractions from "./components/MyPendingInteractions";
 import DashboardSummary from "./components/DashboardSummary";
 import Can from "@components/atoms/Can";
@@ -15,6 +16,10 @@ const steps: JoyrideSteps = [
   {
     target: "#open-forms",
     content: "dashboard.joyride.open-forms",
+  },
+  {
+    target: "#quick-actions",
+    content: "dashboard.joyride.quick-actions",
   },
   {
     target: "#my-activities",
@@ -68,17 +73,19 @@ const Dashboard: React.FC = () => {
         markAllSeen={markAllSeen}
       />
 
+      <DashboardQuickActions />
+
       <Grid
-        templateColumns={{ base: "1fr", lg: "minmax(300px, 0.38fr) 1fr" }}
-        gap={{ base: 6, lg: 8 }}
+        templateColumns={{ base: "1fr", xl: "minmax(300px, 0.38fr) 1fr" }}
+        gap={{ base: 6, xl: 8 }}
         alignItems="start"
         w="100%"
       >
         <Box
           minW={0}
           w="100%"
-          position={{ base: "static", lg: "sticky" }}
-          top={{ lg: 4 }}
+          position={{ base: "static", xl: "sticky" }}
+          top={{ xl: 4 }}
           alignSelf="start"
         >
           <PendingInteractions isNewSinceLastSeen={isNewSinceLastSeen} />

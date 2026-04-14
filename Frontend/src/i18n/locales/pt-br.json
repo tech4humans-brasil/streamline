@@ -217,6 +217,7 @@
     },
     "joyride": {
       "open-forms": "Seja bem-vindo ao EduFlow! Aqui você pode visualizar os formulários disponíveis para preenchimento.",
+      "quick-actions": "Atalhos para interações pendentes, seus tickets e criar um novo ticket.",
       "my-activities": "Aqui você verá os tickets que você já criou.",
       "pending-interactions": "Aqui você verá os tickets que estão pendentes de resposta.",
       "switch-theme": "Clique aqui para alternar entre os temas claro e escuro.",
@@ -233,6 +234,11 @@
       "activitiesAccept": "Tickets que estão pendentes de aceite",
       "activityProcess": "Tickets que estão em andamento",
       "myActivities": "Aqui estão os tickets criados por você ou de forma automática"
+    },
+    "quickActions": {
+      "title": "Ações rápidas",
+      "goPending": "Ir para interações pendentes",
+      "goTickets": "Ir para meus tickets"
     },
     "summary": {
       "title": "Resumo",
@@ -265,8 +271,18 @@
     "pendingCard": {
       "form": "Formulário",
       "requester": "Solicitante",
+      "assignee": "Responsável",
       "due": "Prazo",
       "updated": "Atualizado"
+    },
+    "pendingFilters": {
+      "status": "Status do ticket",
+      "assignee": "Responsável",
+      "assigneeAll": "Todos",
+      "assigneeUnassigned": "Sem responsável",
+      "search": "Pesquisar",
+      "clear": "Limpar filtros",
+      "noResults": "Nenhum resultado com os filtros atuais."
     }
   },
   "title": {
