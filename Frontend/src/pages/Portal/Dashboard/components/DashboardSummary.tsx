@@ -20,6 +20,7 @@ import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { useSearchParams } from "react-router-dom";
+import { serializeDashboardMyActivitiesParams } from "@utils/dashboardMyActivitiesParams";
 
 type Props = {
   isNewSinceLastSeen: (updatedAt: string | Date | undefined | null) => boolean;
@@ -38,6 +39,11 @@ const DashboardSummary: React.FC<Props> = ({
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
+  const myActivitiesParamsKey = useMemo(
+    () => serializeDashboardMyActivitiesParams(searchParams),
+    [searchParams]
+  );
+
   const { data: pending } = useQuery({
     queryKey: ["my-pending-interactions"],
     queryFn: getMyActivitiesPendingInteractions,
@@ -45,7 +51,7 @@ const DashboardSummary: React.FC<Props> = ({
   });
 
   const { data: activitiesData } = useQuery({
-    queryKey: ["my-activities", searchParams.toString()],
+    queryKey: ["my-activities", myActivitiesParamsKey],
     queryFn: getMyActivities,
   });
 

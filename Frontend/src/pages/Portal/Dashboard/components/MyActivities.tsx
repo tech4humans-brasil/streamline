@@ -26,6 +26,7 @@ import Table from "@components/organisms/Table";
 import { IActivityState } from "@interfaces/Activitiy";
 import { useQuery } from "@tanstack/react-query";
 import { convertDateTime } from "@utils/date";
+import { serializeDashboardMyActivitiesParams } from "@utils/dashboardMyActivitiesParams";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaPen, FaSync } from "react-icons/fa";
@@ -66,13 +67,18 @@ const ActivitiesTableBlock: React.FC<Props> = ({ isNewSinceLastSeen }) => {
   const [searchParams] = useSearchParams();
   const isCompact = useBreakpointValue({ base: true, lg: false });
 
+  const myActivitiesParamsKey = useMemo(
+    () => serializeDashboardMyActivitiesParams(searchParams),
+    [searchParams]
+  );
+
   const columns = useMemo(
     () => (isCompact ? columnsCompact : columnsFull),
     [isCompact]
   );
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["my-activities", searchParams.toString()],
+    queryKey: ["my-activities", myActivitiesParamsKey],
     queryFn: getMyActivities,
   });
 
