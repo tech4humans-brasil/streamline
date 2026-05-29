@@ -5,12 +5,12 @@ import React, { memo, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BiRefresh, BiEdit } from "react-icons/bi";
 import Pagination from "@components/organisms/Pagination";
-import Filter from "@components/organisms/Filter";
-import Text from "@components/atoms/Inputs/Text";
 import { getActivities } from "@apis/activity";
 import IActivity from "@interfaces/Activitiy";
 import { useTranslation } from "react-i18next";
-import Select from "@components/atoms/Inputs/Select";
+import { formatUtcDateOnly } from "@pages/Portal/ActivitiesBoard/formatBoardFieldValue";
+import { getDeployDateFromActivity } from "@utils/getActivityFormFieldValue";
+import ActivitiesListFilters from "./components/ActivitiesListFilters";
 
 const columns = [
   {
@@ -20,6 +20,10 @@ const columns = [
   {
     key: "protocol",
     label: "common.fields.protocol",
+  },
+  {
+    key: "diadeploy",
+    label: "activitiesList.deployDate",
   },
   {
     key: "status",
@@ -72,15 +76,19 @@ const Activities: React.FC = () => {
   const data = useMemo(() => {
     if (!activities) return [];
 
-    return activities.map((activity) => ({
-      ...activity,
-      status: activity.status.name,
-      users: activity.users.map((user) => user.name).join(", "),
-      actions: <Action {...activity} />,
-      finished_at: activity.finished_at
-        ? new Date(activity.finished_at).toLocaleString()
-        : "-",
-    }));
+    return activities.map((activity) => {
+      const deployRaw = getDeployDateFromActivity(activity);
+      return {
+        ...activity,
+        diadeploy: deployRaw ? formatUtcDateOnly(deployRaw) : "—",
+        status: activity.status.name,
+        users: activity.users.map((user) => user.name).join(", "),
+        actions: <Action {...activity} />,
+        finished_at: activity.finished_at
+          ? new Date(activity.finished_at).toLocaleString()
+          : "-",
+      };
+    });
   }, [activities]);
 
   return (
@@ -97,24 +105,7 @@ const Activities: React.FC = () => {
         </Button>
       </Flex>
 
-      <Filter.Container>
-        <Text input={{ label: t("common.fields.name"), id: "name" }} />
-
-        <Text input={{ label: t("common.fields.protocol"), id: "protocol" }} />
-
-        <Text input={{ label: t("common.fields.status"), id: "status" }} />
-
-        <Select
-          input={{
-            label: t("common.fields.finished"),
-            id: "finished",
-            options: [
-              { label: t("common.fields.yes"), value: "true" },
-              { label: t("common.fields.no"), value: "false" },
-            ],
-          }}
-        />
-      </Filter.Container>
+      <ActivitiesListFilters />
 
       <Flex
         justifyContent="center"

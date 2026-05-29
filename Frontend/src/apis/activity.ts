@@ -37,6 +37,14 @@ export const getActivities = async ({
   return res.data.data;
 };
 
+type ReqActivityNames = Response<{ names: string[] }>;
+
+export const getActivityNames = async () => {
+  const res = await api.get<ReqActivityNames>("/activities/names");
+
+  return res.data.data;
+};
+
 export const getActivity = async ({
   queryKey: [, id],
 }: {

@@ -267,6 +267,19 @@
     "projects": "Projects",
     "schedules": "Schedules"
   },
+  "activitiesList": {
+    "deployDate": "Deploy date",
+    "sortBy": "Sort by",
+    "sortDir": "Order",
+    "sortCreatedAt": "Created at",
+    "sortDeployDate": "Deploy date",
+    "sortAscending": "Ascending",
+    "sortDescending": "Descending",
+    "createdBy": "Created by",
+    "moreFilters": "More filters",
+    "finishedAll": "All",
+    "selectTicketNames": "Select ticket names"
+  },
   "table": {
     "noData": "No data found",
     "error": "Error loading data"
