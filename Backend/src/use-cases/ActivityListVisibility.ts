@@ -34,7 +34,7 @@ export async function applyActivityListVisibility(
       select: { _id: 1 },
       where: {
         visibilities: {
-          $in: req.user.institutes.map((institute) => institute._id),
+          $in: req.user.institutes || [].map((institute) => institute._id),
         },
       },
     });

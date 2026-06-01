@@ -54,7 +54,7 @@ export function sortActivitiesByDeployDate<T extends ActivityFormDraftLike>(
       sortDir
     );
     if (ta !== tb) {
-      return desc ? tb - ta : ta - tb;
+      return desc ? (tb > ta ? 1 : -1) : (ta > tb ? 1 : -1);
     }
     const ca = new Date(a.createdAt ?? 0).getTime();
     const cb = new Date(b.createdAt ?? 0).getTime();
