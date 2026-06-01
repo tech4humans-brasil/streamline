@@ -1,4 +1,4 @@
-import { useColorModeValue } from "@chakra-ui/react";
+import { useColorMode } from "@chakra-ui/react";
 import React, { useCallback, useMemo } from "react";
 import ReactSelect, { MultiValue, StylesConfig } from "react-select";
 import { useTranslation } from "react-i18next";
@@ -22,15 +22,26 @@ const TicketNameMultiSelect: React.FC<Props> = ({
   isDisabled,
 }) => {
   const { t } = useTranslation();
-  const borderColor = useColorModeValue("gray.200", "whiteAlpha.300");
-  const bg = useColorModeValue("white", "gray.700");
-  const focusBorderColor = useColorModeValue("blue.500", "blue.300");
-  const placeholderColor = useColorModeValue("gray.500", "gray.400");
-  const tagBg = useColorModeValue("blue.100", "blue.900");
-  const tagColor = useColorModeValue("gray.800", "white");
-  const menuBg = useColorModeValue("white", "gray.700");
-  const optionHoverBg = useColorModeValue("gray.100", "whiteAlpha.200");
-  const optionSelectedBg = useColorModeValue("blue.50", "blue.900");
+  const { colorMode } = useColorMode();
+
+  // Mesmas cores do Select em components/atoms/Inputs/Select (react-select não resolve tokens Chakra).
+  const borderColor = colorMode === "light" ? "#cbd5e0" : "#4a5568";
+  const backgroundColor = colorMode === "light" ? "#ffffff" : "#2d3748";
+  const backgroundColorSelected =
+    colorMode === "light" ? "#90cdf4" : "#395161";
+  const backgroundColorHover = colorMode === "light" ? "#e9e9e9" : "#363636";
+  const focusBorderColor = colorMode === "light" ? "#3182ce" : "#63b3ed";
+  const placeholderColor = colorMode === "light" ? "#718096" : "#a0aec0";
+  const color = colorMode === "light" ? "#000000" : "#ffffff";
+
+  const backgroundOption = useCallback(
+    (isSelected: boolean, isFocused: boolean) => {
+      if (isSelected) return backgroundColorSelected;
+      if (isFocused) return backgroundColorHover;
+      return backgroundColor;
+    },
+    [backgroundColor, backgroundColorSelected, backgroundColorHover]
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: ["activity-names"],
@@ -66,7 +77,7 @@ const TicketNameMultiSelect: React.FC<Props> = ({
         borderWidth: "1px",
         borderStyle: "solid",
         borderRadius: "0.375rem",
-        backgroundColor: bg,
+        backgroundColor,
         boxShadow: state.isFocused ? `0 0 0 1px ${focusBorderColor}` : "none",
         fontSize: "14px",
         cursor: "pointer",
@@ -87,7 +98,7 @@ const TicketNameMultiSelect: React.FC<Props> = ({
         ...provided,
         margin: 0,
         padding: 0,
-        color: "inherit",
+        color,
       }),
       placeholder: (provided) => ({
         ...provided,
@@ -97,65 +108,71 @@ const TicketNameMultiSelect: React.FC<Props> = ({
       indicatorsContainer: (provided) => ({
         ...provided,
         height: CONTROL_MIN_HEIGHT,
+        color,
       }),
       dropdownIndicator: (provided) => ({
         ...provided,
         padding: "0 8px",
+        color,
       }),
       clearIndicator: (provided) => ({
         ...provided,
         padding: "0 4px",
+        color,
       }),
       multiValue: (provided) => ({
         ...provided,
-        backgroundColor: tagBg,
+        backgroundColor: backgroundColorSelected,
         maxWidth: "120px",
       }),
       multiValueLabel: (provided) => ({
         ...provided,
-        color: tagColor,
+        color,
         fontSize: "12px",
         padding: "0 4px",
       }),
       multiValueRemove: (provided) => ({
         ...provided,
-        color: tagColor,
+        color,
         ":hover": {
-          backgroundColor: tagBg,
-          color: tagColor,
+          backgroundColor: backgroundColorSelected,
+          color,
         },
       }),
       menu: (provided) => ({
         ...provided,
         borderRadius: "0.375rem",
-        backgroundColor: menuBg,
+        backgroundColor,
         border: `1px solid ${borderColor}`,
         zIndex: 3,
-        boxShadow: "md",
+        boxShadow: "none",
+        overflow: "hidden",
+      }),
+      menuList: (provided) => ({
+        ...provided,
+        backgroundColor,
+        padding: 0,
       }),
       option: (provided, state) => ({
         ...provided,
-        backgroundColor: state.isSelected
-          ? optionSelectedBg
-          : state.isFocused
-            ? optionHoverBg
-            : menuBg,
-        color: "inherit",
+        backgroundColor: backgroundOption(state.isSelected, state.isFocused),
+        color,
         fontSize: "14px",
         cursor: "pointer",
+        ":active": {
+          backgroundColor: backgroundColorSelected,
+        },
       }),
     }),
     [
-      bg,
+      backgroundColor,
+      backgroundColorSelected,
+      backgroundOption,
       borderColor,
+      color,
       focusBorderColor,
       isDisabled,
-      menuBg,
-      optionHoverBg,
-      optionSelectedBg,
       placeholderColor,
-      tagBg,
-      tagColor,
     ]
   );
 
