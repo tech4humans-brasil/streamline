@@ -8,8 +8,9 @@ interface FormData {
   [key: string]: string | string[];
 }
 
-const Container: React.FC<React.HTMLAttributes<HTMLDivElement>> = memo(
-  ({ children }) => {
+const Container: React.FC<
+  React.HTMLAttributes<HTMLDivElement> & { resetPageOnSubmit?: boolean }
+> = memo(({ children, resetPageOnSubmit = false }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const methods = useForm({
       defaultValues: Object.fromEntries(searchParams),
@@ -17,6 +18,10 @@ const Container: React.FC<React.HTMLAttributes<HTMLDivElement>> = memo(
 
     const onSubmit = methods.handleSubmit((data: FormData) => {
       const next = new URLSearchParams(searchParams);
+
+      if (resetPageOnSubmit) {
+        next.set("page", "1");
+      }
 
       Object.keys(data).forEach((key) => {
         if (key.startsWith("pi")) return;

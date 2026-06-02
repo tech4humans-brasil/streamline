@@ -307,6 +307,19 @@
     "schedules": "Agendamentos",
     "equipments": "Equipamentos"
   },
+  "activitiesList": {
+    "deployDate": "Data de deploy",
+    "sortBy": "Ordenar por",
+    "sortDir": "Ordem",
+    "sortCreatedAt": "Data de criação",
+    "sortDeployDate": "Data de deploy",
+    "sortAscending": "Crescente",
+    "sortDescending": "Decrescente",
+    "createdBy": "Criado por",
+    "moreFilters": "Mais filtros",
+    "finishedAll": "Todos",
+    "selectTicketNames": "Selecione os nomes dos tickets"
+  },
   "table": {
     "noData": "Nenhum dado encontrado",
     "error": "Erro ao carregar dados"

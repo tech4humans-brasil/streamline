@@ -13,7 +13,8 @@
     "pretest": "npm run build",
     "test": "jest",
     "test:wacth": "jest --watch",
-    "create-activity-dashboard-indexes": "node scripts/create-activity-dashboard-indexes.js"
+    "create-activity-dashboard-indexes": "node scripts/create-activity-dashboard-indexes.js",
+    "copy-project-config": "ts-node --transpile-only scripts/copy-project-config.ts"
   },
   "dependencies": {
     "@azure/functions": "^4.5.0",
