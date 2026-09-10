@@ -9,6 +9,7 @@ import {
 import * as yup from "yup";
 import res from "../utils/apiResponse";
 import { authenticate } from "../services/authenticate";
+import { buildSession } from "../services/session";
 import mongo from "../services/mongo";
 import { Connection } from "mongoose";
 import { IInstitute } from "../models/client/Institute";
@@ -63,6 +64,11 @@ type callbackSchema = (schema: typeof yup) => {
 
 const LOGGING = process.env.LOGGING === "true";
 
+// Header que carrega o acronym do tenant nas requisições autenticadas por
+// Keycloak. O token não traz tenant, e não deve: a mesma identidade pode ter
+// registro em mais de um cliente, com papéis diferentes.
+export const TENANT_HEADER = "x-tenant";
+
 export default class Http {
   private handler: HttpHandler;
   private isPublic: boolean = false;
@@ -101,17 +107,14 @@ export default class Http {
         if (auth.kind === "legacy") {
           user = auth.payload as unknown as User;
         } else {
-          // GV-1688 monta a sessão completa juntando estas claims ao registro
-          // do usuário no banco do tenant. Enquanto isso não existe, os campos
-          // de domínio (matriculation, institutes, slug, photo_url) ficam
-          // ausentes: eles não estão no token do Keycloak e não devem estar.
-          user = {
-            id: auth.identity.sub,
-            name: auth.identity.name,
-            email: auth.identity.email,
-            roles: auth.identity.realmRoles as unknown as IUserRoles,
-            permissions: [],
-          } as unknown as User;
+          // O token do Keycloak traz identidade, não domínio. Os campos por
+          // tenant (matriculation, institutes, slug, photo_url, permissions)
+          // vêm do banco do cliente, e o tenant vem do header porque a mesma
+          // pessoa pode ter registro em mais de um.
+          user = (await buildSession(
+            auth.identity,
+            headers[TENANT_HEADER]
+          )) as unknown as User;
         }
 
         if (this.permission) {
