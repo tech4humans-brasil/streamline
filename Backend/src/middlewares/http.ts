@@ -72,6 +72,7 @@ export const TENANT_HEADER = "x-tenant";
 export default class Http {
   private handler: HttpHandler;
   private isPublic: boolean = false;
+  private authenticatedOnly: boolean = false;
   private schemaValidator = yup.object().shape({
     body: yup.object().shape({}).nullable(),
     query: yup.object().shape({}).nullable(),
@@ -204,11 +205,14 @@ export default class Http {
 
       return res.internalServerError();
     } finally {
-      if (this.conn) {
-        if (LOGGING) {
-          this.log.response_at = new Date();
-          await this.log.save();
-        }
+      // `this.log` só existe se a criação do registro chegou a acontecer. Um
+      // erro anterior a isso deixava o finally estourar e mascarar a exceção
+      // original, trocando a resposta de erro por falha da function.
+      if (this.conn && LOGGING && this.log) {
+        this.log.response_at = new Date();
+        await this.log.save().catch((error) => {
+          console.error("[http] failed to persist log", error);
+        });
       }
       // await mongo.disconnect(this.conn);
     }
@@ -223,6 +227,16 @@ export default class Http {
     this.name = name;
     this.permission = permission;
 
+    // Fail-closed no registro, não no request: endpoint novo que esqueça de
+    // declarar autorização derruba o boot, em vez de subir liberado e ninguém
+    // perceber. As três saídas são explícitas — permission, público ou
+    // autenticado sem permission.
+    if (!permission && !this.isPublic && !this.authenticatedOnly) {
+      throw new Error(
+        `${name}: declare permission, setPublic() ou setAuthenticatedOnly()`
+      );
+    }
+
     app.http(name, {
       ...options,
       route: options.route ?? name.toLowerCase().replace(/\s/g, "-"),
@@ -234,6 +248,15 @@ export default class Http {
 
   public setPublic = (): this => {
     this.isPublic = true;
+    return this;
+  };
+
+  // Declara que o endpoint exige sessão válida mas nenhuma permission
+  // específica. Existe para que "sem permission" seja sempre uma decisão
+  // escrita, e nunca esquecimento: o `configure` recusa endpoint que não
+  // declarou nada.
+  public setAuthenticatedOnly = (): this => {
+    this.authenticatedOnly = true;
     return this;
   };
 

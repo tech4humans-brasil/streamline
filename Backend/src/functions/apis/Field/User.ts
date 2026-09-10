@@ -26,6 +26,7 @@ const handler: HttpHandler = async (conn, req) => {
 
 export default new Http(handler).configure({
   name: "FieldTeacherList",
+  permission: "user.read",
   options: {
     methods: ["GET"],
     route: "field/users",

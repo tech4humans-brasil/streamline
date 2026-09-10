@@ -14,7 +14,10 @@ const handler: HttpHandler = async (conn, req) => {
   }
 };
 
-export default new Http(handler).configure({
+export default new Http(handler)
+  // Sem permission especifica: stub sem efeito: instancia o servico e devolve resposta fixa.
+  .setAuthenticatedOnly()
+  .configure({
   name: "ClicksignWebhookEvents",
   options: {
     methods: ["GET"],

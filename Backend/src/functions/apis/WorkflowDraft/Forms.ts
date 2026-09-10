@@ -255,6 +255,7 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .configure({
     name: "WorkflowForms",
+    permission: "workflowDraft.read",
     options: {
       methods: ["GET"],
       route: "workflows-draft/forms",

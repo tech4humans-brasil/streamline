@@ -57,6 +57,8 @@ export default new Http(handler)
       size: schema.number().required().min(1).max(1024 * 1024 * 10), // 10MB
     }),
   }))
+  // Sem permission especifica: SAS escopado no container do proprio usuario (req.user.id).
+  .setAuthenticatedOnly()
   .configure({
     name: "ClientSasUrl",
     options: {
