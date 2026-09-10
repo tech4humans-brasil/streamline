@@ -6,6 +6,7 @@ import Register from "@pages/Auth/Register";
 import ForgotPassword from "@pages/Auth/ForgotPassword";
 import AlterPassword from "@pages/Auth/AlterPassword";
 import TwoStep from "@pages/Auth/TwoStep";
+import Callback from "@pages/Auth/Callback";
 const routes: RouteType = [
   {
     path: "/",
@@ -18,6 +19,10 @@ const routes: RouteType = [
   {
     path: "/auth/forgot-password",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/auth/callback",
+    element: <Callback />,
   },
   {
     path: "/auth/two-step",

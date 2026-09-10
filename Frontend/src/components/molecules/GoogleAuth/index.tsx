@@ -1,5 +1,5 @@
 import { samlGoogle } from "@apis/auth";
-import { Box, Center, Spinner, useToast } from "@chakra-ui/react";
+import { Box, Button, Center, Spinner, useToast } from "@chakra-ui/react";
 import useAuth from "@hooks/useAuth";
 import {
   CredentialResponse,
@@ -8,15 +8,18 @@ import {
 } from "@react-oauth/google";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { isEnabled as oidcEnabled, login as oidcLogin } from "@services/oidc";
 
 const GoogleAuth = ({ clientId = null, slug = null }: { clientId: string | null, slug: string | null }) => {
   const toast = useToast();
   const [, setAuth] = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [redirecting, setRedirecting] = useState(false);
 
   const redirect = searchParams.get("redirect") ?? "/portal";
 
@@ -60,6 +63,44 @@ const GoogleAuth = ({ clientId = null, slug = null }: { clientId: string | null,
     [mutateAsync, slug]
   );
 
+  const handleKeycloak = useCallback(async () => {
+    setRedirecting(true);
+    try {
+      await oidcLogin(slug ?? "", redirect);
+    } catch (error) {
+      setRedirecting(false);
+      toast({
+        title: "Erro ao iniciar o login",
+        description: (error as Error)?.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        icon: <FaExclamationCircle />,
+      });
+    }
+  }, [slug, redirect, toast]);
+
+  // Com o Keycloak configurado, o botão passa a acionar o realm em vez do
+  // client OAuth do Google. A experiência é a mesma: o `kc_idp_hint` faz o
+  // Keycloak pular a própria tela e ir direto à conta Google.
+  if (oidcEnabled()) {
+    return (
+      <Button
+        w="100%"
+        size="lg"
+        variant="outline"
+        leftIcon={<FcGoogle size={20} />}
+        onClick={handleKeycloak}
+        isLoading={redirecting}
+        loadingText="Redirecionando…"
+      >
+        Entrar com Google
+      </Button>
+    );
+  }
+
+  // Caminho legado, mantido enquanto o AUTH_MODE do backend aceita os dois e
+  // o cutoff do GV-1426 não aconteceu. Sai no GV-1695.
   if (!clientId) {
     return null;
   }
