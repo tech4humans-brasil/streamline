@@ -6,7 +6,7 @@ import { buildSession, touchLastLogin } from "../../../services/session";
 // Devolve a sessão do Streamline para um access token do Keycloak. O frontend
 // chama isso depois do callback OIDC, no lugar de decodificar o token: as
 // claims trazem identidade, não os campos de domínio por tenant.
-export const handler: HttpHandler = async (_, req) => {
+export const handler: HttpHandler = async (_, req, context) => {
   const auth = await authenticate(req.headers);
 
   if (auth.kind !== "keycloak") {
@@ -17,6 +17,7 @@ export const handler: HttpHandler = async (_, req) => {
 
   const session = await buildSession(auth.identity, req.headers[TENANT_HEADER], {
     withPhotoSas: true,
+    log: (message) => context.log(message),
   });
 
   void touchLastLogin(session.slug, session.id);

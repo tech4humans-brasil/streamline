@@ -20,6 +20,13 @@ const INITIAL_ROLE = IUserRoles.student;
 
 const PHOTO_SAS_TTL_SECONDS = 86400 * 30;
 
+// `console.log` não é coletado pelo Application Insights nas Functions Node —
+// só o que passa pelo `context`. Sem isto a auditoria da correlação de
+// identidade fica invisível em produção, que é justamente onde ela importa.
+export type SessionLogger = (message: string) => void;
+
+const defaultLogger: SessionLogger = (message) => console.log(message);
+
 export interface StreamlineSession {
   id: string;
   name: string;
@@ -58,7 +65,8 @@ const provision = async (
   repository: UserRepository,
   instituteRepository: InstituteRepository,
   identity: KeycloakIdentity,
-  acronym: string
+  acronym: string,
+  log: SessionLogger
 ): Promise<IUser> => {
   if (!identity.email) {
     throw notFound;
@@ -85,14 +93,15 @@ const provision = async (
     await user.save();
   }
 
-  console.log(`[session] provisioned ${identity.email} on ${acronym}`);
+  log(`[session] provisioned ${identity.email} on ${acronym}`);
 
   return user;
 };
 
 const locate = async (
   repository: UserRepository,
-  identity: KeycloakIdentity
+  identity: KeycloakIdentity,
+  log: SessionLogger
 ): Promise<IUser | null> => {
   const bySub = await repository.findOne({
     where: { keycloak_sub: identity.sub },
@@ -116,9 +125,7 @@ const locate = async (
   if (byEmail) {
     byEmail.keycloak_sub = identity.sub;
     await byEmail.save();
-    console.log(
-      `[session] reconciled ${identity.email} -> sub ${identity.sub}`
-    );
+    log(`[session] reconciled ${identity.email} -> sub ${identity.sub}`);
   }
 
   return byEmail;
@@ -127,20 +134,23 @@ const locate = async (
 export const buildSession = async (
   identity: KeycloakIdentity,
   acronym: string,
-  options: { withPhotoSas?: boolean } = {}
+  options: { withPhotoSas?: boolean; log?: SessionLogger } = {}
 ): Promise<StreamlineSession> => {
+  const log = options.log ?? defaultLogger;
+
   const { conn, acronym: slug } = await resolveTenant(acronym);
 
   const repository = new UserRepository(conn);
 
-  let user = await locate(repository, identity);
+  let user = await locate(repository, identity, log);
 
   if (!user) {
     user = await provision(
       repository,
       new InstituteRepository(conn),
       identity,
-      slug
+      slug,
+      log
     );
   }
 
