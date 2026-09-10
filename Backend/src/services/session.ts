@@ -6,7 +6,11 @@ import UserRepository from "../repositories/User";
 import InstituteRepository from "../repositories/Institute";
 import { IUser, IUserProviders, IUserRoles } from "../models/client/User";
 import { Permissions } from "./permissions";
-import BlobUploader, { FileUploaded } from "./upload";
+// Só o tipo é importado de forma estática. O módulo `upload` puxa `file-type`,
+// que é ESM, e arrastá-lo para a cadeia do middleware quebrava as suítes de
+// endpoint no Jest. Ele também estoura no import quando a connection string do
+// storage falta, o que não deveria ser exigência para autenticar.
+import type { FileUploaded } from "./upload";
 import { KeycloakIdentity } from "./authenticate";
 
 // Papel inicial de usuário provisionado no primeiro acesso. Mantém o
@@ -152,6 +156,7 @@ export const buildSession = async (
   // sessão, não nos 98 endpoints da aplicação.
   if (options.withPhotoSas && photo) {
     try {
+      const { default: BlobUploader } = await import("./upload");
       photo = await new BlobUploader(user._id.toString()).updateSas(
         photo,
         PHOTO_SAS_TTL_SECONDS
