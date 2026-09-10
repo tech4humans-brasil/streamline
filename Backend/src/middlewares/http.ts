@@ -112,10 +112,9 @@ export default class Http {
           // tenant (matriculation, institutes, slug, photo_url, permissions)
           // vêm do banco do cliente, e o tenant vem do header porque a mesma
           // pessoa pode ter registro em mais de um.
-          user = (await buildSession(
-            auth.identity,
-            headers[TENANT_HEADER]
-          )) as unknown as User;
+          user = (await buildSession(auth.identity, headers[TENANT_HEADER], {
+            log: (message) => context.log(message),
+          })) as unknown as User;
         }
 
         if (this.permission) {
