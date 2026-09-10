@@ -13,7 +13,19 @@
     "MONGO_PARAMS": "",
     "SENTRY_DSN": "",
     "SENDGRID_API_KEY": "",
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "AUTH_MODE": "both",
+    "KEYCLOAK_ISSUER": "https://id.techforhumans.com.br/realms/t4h",
+    "KEYCLOAK_AUDIENCE": "",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "MONGO_ADMIN_DB": "global",
+    "LOGGING": "false",
+    "EMAIL_ACCOUNT": "",
+    "DISCORD_WEBHOOK_URL": "",
+    "CLICKSIGN_API_KEY": "",
+    "GOOGLE_CLOUD_PROJECT_ID": "",
+    "RECAPTCHA_SITE_KEY": "",
+    "GOOGLE_JSON_AUTH_CREDENTIALS": "{}"
   },
   "Host": {
     "CORS": "*"

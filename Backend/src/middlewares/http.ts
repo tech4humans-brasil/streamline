@@ -8,7 +8,7 @@ import {
 } from "@azure/functions";
 import * as yup from "yup";
 import res from "../utils/apiResponse";
-import jwt from "../services/jwt";
+import { authenticate } from "../services/authenticate";
 import mongo from "../services/mongo";
 import { Connection } from "mongoose";
 import { IInstitute } from "../models/client/Institute";
@@ -96,7 +96,23 @@ export default class Http {
       let user: User = null;
 
       if (!this.isPublic) {
-        user = jwt.verify(headers);
+        const auth = await authenticate(headers);
+
+        if (auth.kind === "legacy") {
+          user = auth.payload as unknown as User;
+        } else {
+          // GV-1688 monta a sessão completa juntando estas claims ao registro
+          // do usuário no banco do tenant. Enquanto isso não existe, os campos
+          // de domínio (matriculation, institutes, slug, photo_url) ficam
+          // ausentes: eles não estão no token do Keycloak e não devem estar.
+          user = {
+            id: auth.identity.sub,
+            name: auth.identity.name,
+            email: auth.identity.email,
+            roles: auth.identity.realmRoles as unknown as IUserRoles,
+            permissions: [],
+          } as unknown as User;
+        }
 
         if (this.permission) {
           const permissions = new Permissions(user.permissions);
