@@ -89,6 +89,12 @@ jobs:
           VITE_GA_TOKEN: ${{ secrets.GA_TOKEN }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
+          # Valores públicos: acabam no bundle servido ao navegador de qualquer
+          # forma, por isso vars e não secrets. Sem eles o frontend cai no
+          # login legado do Google em vez de usar o Keycloak.
+          VITE_KEYCLOAK_ISSUER: ${{ vars.VITE_KEYCLOAK_ISSUER }}
+          VITE_KEYCLOAK_CLIENT_ID: ${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
+          VITE_KEYCLOAK_IDP_HINT: ${{ vars.VITE_KEYCLOAK_IDP_HINT }}
         run: |
               cd ${{ env.PROJECT_PATH }}
               npm run build
