@@ -1,7 +1,7 @@
 import useAuth from "./hooks/useAuth";
 import { publicRoutes, privateRoutes } from "./routes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import api from "./services/api";
+import { setSessionLostHandler } from "./services/api";
 import { useEffect, useMemo } from "react";
 import ReactGA from "react-ga4";
 
@@ -9,18 +9,14 @@ function App() {
   const [auth, setAuth] = useAuth();
   const permissions = auth?.permissions ?? [];
 
-  api.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      if (error.response?.status === 401 && window.location.pathname !== "/") {
-        window.location.href = "/";
-        setAuth(null);
-      }
-      return Promise.reject(new Error(error));
-    }
-  );
+  // O interceptor vive no serviço e é registrado uma única vez. Aqui só se diz
+  // o que fazer quando a renovação já falhou e a sessão não tem volta.
+  useEffect(() => {
+    setSessionLostHandler(() => {
+      setAuth(null);
+      window.location.href = `/?redirect=${window.location.pathname}`;
+    });
+  }, [setAuth]);
 
   const privateRoutesPermitted = useMemo(() => {
     if (!permissions) return privateRoutes;

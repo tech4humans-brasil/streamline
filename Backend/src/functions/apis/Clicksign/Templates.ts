@@ -37,7 +37,10 @@ const handler: HttpHandler = async (_, req) => {
   }
 };
 
-export default new Http(handler).configure({
+export default new Http(handler)
+  // Sem permission especifica: o catalogo de permissions nao tem verbo para clicksign. Pendente de decisao.
+  .setAuthenticatedOnly()
+  .configure({
   name: "ClicksignTemplatesList",
   options: {
     methods: ["GET"],

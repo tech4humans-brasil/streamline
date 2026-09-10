@@ -33,6 +33,7 @@ const handler: HttpHandler = async (conn) => {
 
 export default new Http(handler).configure({
   name: "UserForms",
+  permission: "user.read",
   options: {
     methods: ["GET"],
     route: "user/forms",

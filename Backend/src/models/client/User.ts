@@ -32,6 +32,7 @@ export type IUser = {
   institutes: mongoose.Types.DocumentArray<IInstitute>;
   active: boolean;
   providers: IUserProviders[];
+  keycloak_sub?: string | null;
   photo_url?: FileUploaded | null;
   isExternal: boolean;
   tutorials: string[];
@@ -73,6 +74,11 @@ export const schema: Schema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
+    // `sub` do Keycloak. É a chave estável da identidade: e-mail muda, `sub`
+    // não. Sem default e sem unique de propósito — `sparse` não pula documento
+    // com o campo presente em null, então um default null quebraria o unique
+    // em cima dos usuários que ainda não logaram via Keycloak.
+    keycloak_sub: { type: String, index: true, sparse: true },
     password: { type: String, required: true },
     active: { type: Boolean, default: true, index: true },
     photo_url: { type: Object, default: null },

@@ -75,6 +75,7 @@ const handler: HttpHandler = async (conn, req) => {
 export default new Http(handler)
   .configure({
     name: "ScheduleForms",
+    permission: "schedule.read",
     options: {
       methods: ["GET"],
       route: "schedules/forms",

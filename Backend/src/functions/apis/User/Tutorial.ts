@@ -3,7 +3,11 @@ import res from "../../../utils/apiResponse";
 import UserRepository from "../../../repositories/User";
 
 const handler: HttpHandler = async (conn, req) => {
-  const { id } = req.params as { id: string };
+  // O `{id}` da rota é ignorado de propósito. Antes ele era usado para
+  // carregar e salvar o documento, o que deixava qualquer usuário autenticado
+  // escrever no array de tutoriais de outra pessoa, bastando passar o _id
+  // dela. Tutorial é estado do próprio usuário e sai da sessão.
+  const id = req.user.id;
   const { tutorial } = req.query as { tutorial: string };
   const userRepository = new UserRepository(conn);
 
@@ -36,6 +40,7 @@ export default new Http(handler)
       tutorial: schema.string(),
     }),
   }))
+  .setAuthenticatedOnly()
   .configure({
     name: "UserTutorial",
     options: {

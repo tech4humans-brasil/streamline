@@ -3,7 +3,12 @@ import * as jwt from "jsonwebtoken";
 const secret = process.env.JWT_SECRET as string;
 const secretResetPassword = process.env.JWT_RESET_PASSWORD_SECRET as string;
 
-if (!secret || !secretResetPassword) {
+// Com AUTH_MODE=keycloak o token local não é mais emitido nem aceito, e os
+// segredos saem do Function App (GV-1695). Exigi-los aqui impediria o app de
+// subir justamente no estado final da migração.
+const legacyTokensEnabled = (process.env.AUTH_MODE || "both") !== "keycloak";
+
+if (legacyTokensEnabled && (!secret || !secretResetPassword)) {
   throw new Error("JWT_SECRET is not defined");
 }
 
@@ -56,10 +61,13 @@ const getTokenFromHeaders = (headers: Record<string, string | string[] | undefin
   return token;
 };
 
+export { getTokenFromHeaders };
+
 export default {
   sign,
   verify,
   decode,
   signResetPassword,
   verifyResetPassword,
+  getTokenFromHeaders,
 };

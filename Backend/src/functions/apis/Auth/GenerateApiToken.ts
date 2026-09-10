@@ -35,7 +35,10 @@ export const handler: HttpHandler = async (_, req) => {
   });
 };
 
-export default new Http(handler).configure({
+export default new Http(handler)
+  // Sem permission especifica: destino decidido no GV-1693. O token herda as permissions de quem pede, sem escalada.
+  .setAuthenticatedOnly()
+  .configure({
   name: "AuthGenerateApiToken",
   options: {
     methods: ["POST"],
