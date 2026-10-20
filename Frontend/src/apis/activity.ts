@@ -134,6 +134,20 @@ export const addUsersInInteraction = async (data: {
   return res.data.data;
 };
 
+export const replaceUserInInteraction = async (data: {
+  id: string;
+  interactionId: string;
+  answerId: string;
+  userId: string;
+}) => {
+  const res = await api.patch<ReqActivity>(
+    `/activity/${data.id}/interaction/${data.interactionId}/answers/${data.answerId}/user`,
+    { userId: data.userId }
+  );
+
+  return res.data.data;
+};
+
 export const updateActivityStatus = async ({
   id,
   statusId,

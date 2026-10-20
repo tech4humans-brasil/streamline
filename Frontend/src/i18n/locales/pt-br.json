@@ -892,7 +892,12 @@
       "signatory": "Signatário",
       "pendingPeople": "Pessoas pendentes",
       "pendingResponse": "Pendente de resposta",
-      "errorMessage": "Erro ao executar a ação, entre em contato com o suporte"
+      "errorMessage": "Erro ao executar a ação, entre em contato com o suporte",
+      "editApprovers": "Editar aprovadores",
+      "editApproversHint": "Troque quem ainda não respondeu. Quem já respondeu não pode ser trocado.",
+      "replaceWith": "Substituir por",
+      "editApproversSuccess": "Aprovadores atualizados",
+      "editApproversError": "Erro ao atualizar aprovadores"
     }
   },
   "response": {
