@@ -714,7 +714,12 @@
       "signatory": "Signatory",
       "pendingPeople": "Pending people",
       "pendingResponse": "Pending response",
-      "errorMessage": "Error executing action, contact support"
+      "errorMessage": "Error executing action, contact support",
+      "editApprovers": "Edit approvers",
+      "editApproversHint": "Replace who hasn't answered yet. Answers already sent can't be changed.",
+      "replaceWith": "Replace with",
+      "editApproversSuccess": "Approvers updated",
+      "editApproversError": "Error updating approvers"
     }
   },
   "profile": {

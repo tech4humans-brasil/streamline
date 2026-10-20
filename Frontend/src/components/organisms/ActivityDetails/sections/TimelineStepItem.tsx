@@ -31,6 +31,7 @@ import { RiWebhookLine } from "react-icons/ri";
 import useAuth from "@hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import AddInteractionUser from "./AddInteractionUser";
+import EditInteractionUsers from "./EditInteractionUsers";
 import { AiFillSignature } from "react-icons/ai";
 import { ClicksignRequirements } from "@utils/clicksign";
 import { convertDateTime } from "@utils/date";
@@ -347,6 +348,8 @@ const InteractionContent = ({
       )}
 
       <AddInteractionUser interaction={interaction} />
+
+      <EditInteractionUsers interaction={interaction} />
 
       {interaction.dueDate && !interaction.finished && (
         <Tag size="sm" variant="subtle" colorScheme="gray" w="fit-content">
